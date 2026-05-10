@@ -747,15 +747,18 @@
       </div>
     </div>
     <div class="form-row">
-      <label class="form-label">Tipo de ativo</label>
-      <select class="form-select" id="ativo-tipo">
-        <option value="Investimento">💹 Investimento</option>
-        <option value="Poupança">🏦 Poupança</option>
-        <option value="Cripto">₿ Cripto</option>
-        <option value="PPR">📄 PPR</option>
-        <option value="Imobiliário">🏠 Imobiliário</option>
-        <option value="Outro">📦 Outro</option>
-      </select>
+      <label class="form-label" style="display:flex;justify-content:space-between;align-items:center;">
+        Tipo de ativo
+        <button type="button" onclick="toggleNovoTipo()" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:11px;padding:2px 8px;cursor:pointer;font-family:'DM Sans',sans-serif;">+ Novo tipo</button>
+      </label>
+      <select class="form-select" id="ativo-tipo"></select>
+      <div id="novo-tipo-row" style="display:none;margin-top:8px;">
+        <div class="form-input-row">
+          <input type="text" class="form-input" id="novo-tipo-emoji" maxlength="2" placeholder="🏷️" style="max-width:60px;text-align:center;">
+          <input type="text" class="form-input" id="novo-tipo-nome" placeholder="Nome do tipo">
+          <button type="button" onclick="adicionarNovoTipo()" style="background:#a78bfa;border:none;border-radius:10px;color:#0d0d0d;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;padding:8px 14px;cursor:pointer;white-space:nowrap;">+ Criar</button>
+        </div>
+      </div>
     </div>
     <div class="form-row">
       <label class="form-label">Valor atual (€)</label>
@@ -1039,6 +1042,7 @@ async function loadFromDrive() {
       cofres     = data.cofres     || [];
       streak     = data.streak     || {count:0, lastDate:''};
       ativos          = data.ativos          || [];
+      tiposCustom     = data.tiposCustom     || {};
       deletedAtivoIds = new Set(data.deletedAtivoIds || []);
       deletedIds      = new Set(data.deletedIds      || []);
       deletedCofreIds = new Set(data.deletedCofreIds || []);
@@ -1149,7 +1153,7 @@ async function saveToDrive() {
       }
     }
 
-    const payload = JSON.stringify({ entries, cats, cofres, streak, ativos, deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds], deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys], deletedAtivoIds: [...deletedAtivoIds] });
+    const payload = JSON.stringify({ entries, cats, cofres, streak, ativos, tiposCustom, deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds], deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys], deletedAtivoIds: [...deletedAtivoIds] });
 
     if (driveFileId) {
       await fetch('https://www.googleapis.com/upload/drive/v3/files/' + driveFileId + '?uploadType=media', {
@@ -1216,6 +1220,10 @@ function monthStr()  { const d = new Date(); return `${d.getFullYear()}-${String
 function formatTime(iso) { return new Date(iso).toLocaleTimeString('pt-PT', {hour:'2-digit',minute:'2-digit'}); }
 function formatDate(iso) { return new Date(iso).toLocaleDateString('pt-PT', {day:'2-digit',month:'2-digit'}); }
 function formatCurrency(n) { return '€' + Math.abs(n).toFixed(2).replace('.',','); }
+function parseAmount(val) {
+  // Accept both comma and dot as decimal separator
+  return parseFloat(String(val).replace(',','.'));
+}
 
 // ===== MODE =====
 function setMode(mode) {
@@ -1273,7 +1281,7 @@ function updateStreak() {
 function addEntry() {
   const amountInput = document.getElementById('amount-input');
   const noteInput   = document.getElementById('note-input');
-  const amount = parseFloat(amountInput.value);
+  const amount = parseAmount(amountInput.value);
   if (!amount || amount <= 0) { showToast('⚠️ Insere um valor válido'); amountInput.focus(); return; }
   entries.unshift({ id:Date.now(), type:currentMode, amount, category:getSelectedCat(), note:noteInput.value.trim(), date:todayStr(), ts:new Date().toISOString() });
   saveData(entries);
@@ -1455,10 +1463,10 @@ function submitCofre() {
 
   let valorMensal=0, valorObjetivo=0, frequencia=12;
   if (tipoCofre==='continuo') {
-    valorMensal = parseFloat(document.getElementById('cofre-mensal').value);
+    valorMensal = parseAmount(document.getElementById('cofre-mensal').value);
     if (!valorMensal||valorMensal<=0) { showToast('⚠️ Insere o valor mensal'); return; }
   } else {
-    valorObjetivo = parseFloat(document.getElementById('cofre-objetivo').value);
+    valorObjetivo = parseAmount(document.getElementById('cofre-objetivo').value);
     frequencia    = parseInt(document.getElementById('cofre-frequencia').value);
     if (!valorObjetivo||valorObjetivo<=0) { showToast('⚠️ Insere o valor objetivo'); return; }
     valorMensal = valorObjetivo/frequencia;
@@ -1518,11 +1526,20 @@ function openMovimento(id, tipo) {
   document.getElementById('mov-currency').style.color = isC?'var(--accent-cofre)':'var(--red)';
   document.getElementById('mov-submit-btn').textContent  = isC?'+ Confirmar contribuição':'− Confirmar levantamento';
   document.getElementById('mov-submit-btn').className    = isC?'modal-submit-btn':'modal-submit-btn danger';
-  document.getElementById('mov-amount').value='';
-  document.getElementById('mov-nota').value='';
+  // Prefill value with monthly amount (contribuir only), note with current month
+  const monthNames = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const now = new Date();
+  const monthLabel = monthNames[now.getMonth()] + ' ' + now.getFullYear();
+  if (isC) {
+    document.getElementById('mov-amount').value = cofreMensal(cofre).toFixed(2).replace('.',',');
+    document.getElementById('mov-nota').value   = monthLabel;
+  } else {
+    document.getElementById('mov-amount').value = '';
+    document.getElementById('mov-nota').value   = '';
+  }
   renderMovHistorico(cofre);
   document.getElementById('movimento-modal-overlay').classList.add('open');
-  setTimeout(()=>document.getElementById('mov-amount').focus(),200);
+  setTimeout(()=>{ const el=document.getElementById('mov-amount'); el.focus(); el.select(); },200);
 }
 
 function renderMovHistorico(cofre) {
@@ -1546,7 +1563,7 @@ function closeMovModal() { document.getElementById('movimento-modal-overlay').cl
 function handleMovModalClick(e) { if(e.target===document.getElementById('movimento-modal-overlay')) closeMovModal(); }
 
 function submitMovimento() {
-  const valor = parseFloat(document.getElementById('mov-amount').value);
+  const valor = parseAmount(document.getElementById('mov-amount').value);
   if (!valor||valor<=0) { showToast('⚠️ Insere um valor válido'); return; }
   const cofre = cofres.find(c=>c.id===movCofreId);
   if (!cofre) return;
@@ -1559,8 +1576,7 @@ function submitMovimento() {
   saveCofres(cofres);
   renderMovHistorico(cofre);
   renderCofres();
-  document.getElementById('mov-amount').value='';
-  document.getElementById('mov-nota').value='';
+  closeMovModal();
   showToast(movTipo==='contribuir'?`✅ +${formatCurrency(valor)} adicionado`:`📤 ${formatCurrency(valor)} levantado`);
   if (movTipo==='contribuir'&&cofreCompleto(cofre)) setTimeout(()=>showToast('🎉 Objetivo atingido!'),2400);
 }
@@ -1632,22 +1648,28 @@ let editAtivoId   = null;
 let updateAtivoId = null;
 
 // Tipo colors
-const TIPO_COLORS = {
+const TIPO_COLORS_DEFAULT = {
   'Investimento': '#a78bfa',
   'Poupança':     '#35c8f1',
   'Cripto':       '#c8f135',
   'PPR':          '#f1a835',
   'Imobiliário':  '#ff5e5e',
+  'Dinheiro':     '#4ade80',
   'Outro':        '#888'
 };
-const TIPO_ICONS = {
+const TIPO_ICONS_DEFAULT = {
   'Investimento': '💹',
   'Poupança':     '🏦',
   'Cripto':       '₿',
   'PPR':          '📄',
   'Imobiliário':  '🏠',
+  'Dinheiro':     '💵',
   'Outro':        '📦'
 };
+let tiposCustom = {}; // { nome: { icon, color } }
+
+function getTipoColors() { return {...TIPO_COLORS_DEFAULT, ...Object.fromEntries(Object.entries(tiposCustom).map(([k,v])=>[k,v.color]))}; }
+function getTipoIcons()  { return {...TIPO_ICONS_DEFAULT,  ...Object.fromEntries(Object.entries(tiposCustom).map(([k,v])=>[k,v.icon]))}; }
 
 function setRange(n) {
   patRange = n;
@@ -1701,13 +1723,13 @@ function renderPatrimonio() {
     const varClass  = diff === null ? 'neu' : diff > 0 ? 'pos' : diff < 0 ? 'neg' : 'neu';
     const varText   = diff === null ? '—' : (diff >= 0 ? '+' : '') + formatCurrency(diff) + (pct ? ' (' + (diff>=0?'+':'') + pct + '%)' : '');
     const lastDate  = snapshots.slice(-1)[0]?.date || null;
-    const color     = TIPO_COLORS[a.tipo] || '#888';
+    const color     = getTipoColors()[a.tipo] || '#888';
     return `
       <div class="ativo-card" style="border-left: 3px solid ${color};">
-        <div class="ativo-icon">${a.emoji || TIPO_ICONS[a.tipo] || '📊'}</div>
+        <div class="ativo-icon">${a.emoji || getTipoIcons()[a.tipo] || '📊'}</div>
         <div class="ativo-info">
           <div class="ativo-nome">${a.nome}</div>
-          <div class="ativo-tipo">${TIPO_ICONS[a.tipo] || ''} ${a.tipo}</div>
+          <div class="ativo-tipo">${getTipoIcons()[a.tipo] || ''} ${a.tipo}</div>
           <div class="ativo-updated">${lastDate ? 'Atualizado ' + formatDate(lastDate) : 'Sem registos'}</div>
         </div>
         <div class="ativo-right">
@@ -1801,11 +1823,11 @@ function renderBreakdown(total) {
   const sorted = Object.entries(byTipo).sort((a,b) => b[1]-a[1]);
   document.getElementById('breakdown-list').innerHTML = sorted.map(([tipo, val]) => {
     const pct   = total > 0 ? Math.round(val/total*100) : 0;
-    const color = TIPO_COLORS[tipo] || '#888';
+    const color = getTipoColors()[tipo] || '#888';
     return `
       <div class="breakdown-item">
         <div class="breakdown-row">
-          <span class="breakdown-label">${TIPO_ICONS[tipo]||'📦'} ${tipo}</span>
+          <span class="breakdown-label">${getTipoIcons()[tipo]||'📦'} ${tipo}</span>
           <span class="breakdown-amount">${formatCurrency(val)}</span>
         </div>
         <div class="breakdown-row" style="margin-bottom:6px;">
@@ -1817,12 +1839,41 @@ function renderBreakdown(total) {
 }
 
 // ── Novo Ativo Modal ──
+function renderTipoSelect(selected) {
+  const sel = document.getElementById('ativo-tipo');
+  const icons = getTipoIcons();
+  const allTipos = [...Object.keys(TIPO_COLORS_DEFAULT), ...Object.keys(tiposCustom)];
+  sel.innerHTML = allTipos.map(t => `<option value="${t}" ${t===(selected||'Investimento')?'selected':''}>${icons[t]||'📦'} ${t}</option>`).join('');
+}
+
+function toggleNovoTipo() {
+  const row = document.getElementById('novo-tipo-row');
+  row.style.display = row.style.display === 'none' ? '' : 'none';
+}
+
+function adicionarNovoTipo() {
+  const emoji = document.getElementById('novo-tipo-emoji').value.trim() || '🏷️';
+  const nome  = document.getElementById('novo-tipo-nome').value.trim();
+  if (!nome) { showToast('⚠️ Dá um nome ao tipo'); return; }
+  if (TIPO_COLORS_DEFAULT[nome] || tiposCustom[nome]) { showToast('⚠️ Tipo já existe'); return; }
+  // Assign a color from a palette
+  const palette = ['#f472b6','#fb923c','#facc15','#34d399','#22d3ee','#818cf8'];
+  tiposCustom[nome] = { icon: emoji, color: palette[Object.keys(tiposCustom).length % palette.length] };
+  renderTipoSelect(nome);
+  document.getElementById('novo-tipo-row').style.display = 'none';
+  document.getElementById('novo-tipo-emoji').value = '';
+  document.getElementById('novo-tipo-nome').value  = '';
+  saveAtivos();
+  showToast('✅ Tipo adicionado!');
+}
+
 function openNovoAtivo() {
   editAtivoId = null;
   document.getElementById('ativo-emoji').value = '';
   document.getElementById('ativo-nome').value  = '';
-  document.getElementById('ativo-tipo').value  = 'Investimento';
   document.getElementById('ativo-valor').value = '';
+  document.getElementById('novo-tipo-row').style.display = 'none';
+  renderTipoSelect('Investimento');
   document.getElementById('ativo-modal-title').innerHTML = '📈 Novo Ativo <button class="modal-close" onclick="closeAtivoModal()">✕</button>';
   document.getElementById('ativo-submit-btn').textContent = 'Adicionar ativo';
   document.getElementById('ativo-modal-overlay').classList.add('open');
@@ -1831,10 +1882,10 @@ function closeAtivoModal() { document.getElementById('ativo-modal-overlay').clas
 function handleAtivoModalClick(e) { if(e.target===document.getElementById('ativo-modal-overlay')) closeAtivoModal(); }
 
 function submitAtivo() {
-  const emoji = document.getElementById('ativo-emoji').value.trim() || TIPO_ICONS[document.getElementById('ativo-tipo').value] || '📊';
+  const emoji = document.getElementById('ativo-emoji').value.trim() || getTipoIcons()[document.getElementById('ativo-tipo').value] || '📊';
   const nome  = document.getElementById('ativo-nome').value.trim();
   const tipo  = document.getElementById('ativo-tipo').value;
-  const valor = parseFloat(document.getElementById('ativo-valor').value);
+  const valor = parseAmount(document.getElementById('ativo-valor').value);
   if (!nome) { showToast('⚠️ Dá um nome ao ativo'); return; }
   if (isNaN(valor) || valor < 0) { showToast('⚠️ Insere um valor válido'); return; }
 
@@ -1898,7 +1949,7 @@ function deleteAtivoSnap(ativoId, date) {
 }
 
 function submitUpdateAtivo() {
-  const valor = parseFloat(document.getElementById('update-ativo-valor').value);
+  const valor = parseAmount(document.getElementById('update-ativo-valor').value);
   if (isNaN(valor) || valor < 0) { showToast('⚠️ Insere um valor válido'); return; }
   const ativo = ativos.find(a => a.id === updateAtivoId);
   if (!ativo) return;
