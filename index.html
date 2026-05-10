@@ -236,6 +236,7 @@
     width: 100%; background: var(--card); border: 1px solid #3a2e1a;
     border-radius: var(--radius); padding: 16px 18px; margin-bottom: 20px;
     display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; overflow: hidden;
   }
   .reserva-banner .rb-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
   .reserva-banner .rb-amount { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: var(--accent-cofre); }
@@ -245,6 +246,7 @@
     border-radius: 12px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 800;
     padding: 10px 14px; cursor: pointer; transition: opacity 0.15s;
     white-space: nowrap; line-height: 1.4; text-align: center; flex-shrink: 0;
+    flex-shrink; 0; max-width: 48%;
   }
   .contribuir-todos-btn:hover { opacity: 0.85; }
   .contribuir-todos-btn:disabled { opacity: 0.3; cursor: not-allowed; }
