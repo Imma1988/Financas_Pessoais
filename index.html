@@ -694,7 +694,7 @@
 const CLIENT_ID    = '780147822875-9ecc4n99h3k07lrkb8t8f6v4cvlunon1.apps.googleusercontent.com';
 const ALLOWED_EMAIL = 'imateixeira23054@gmail.com';
 const DRIVE_FILE   = 'financas_dados.json';
-const SCOPES       = 'https://www.googleapis.com/auth/drive.appdata';
+const SCOPES = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file openid email profile';
 
 // ===== STATE =====
 const DEFAULT_CATS = {
@@ -720,7 +720,7 @@ let isSyncing    = false;
 function signIn() {
   const client = google.accounts.oauth2.initTokenClient({
     client_id: CLIENT_ID,
-    scope: SCOPES + ' https://www.googleapis.com/auth/drive.file',
+    scope: SCOPES,
     callback: async (resp) => {
       if (resp.error) { showLoginError(); return; }
       accessToken = resp.access_token;
