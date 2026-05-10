@@ -617,7 +617,7 @@
       <input type="number" id="amount-input" placeholder="0.00" inputmode="decimal" step="0.01" min="0">
     </div>
     <div class="cats-header">
-      <span class="cats-label">Categoria</span>
+      <span class="cats-label">Sub-categoria</span>
       <button class="manage-cats-btn" onclick="openCatModal()">⚙️ Gerir categorias</button>
     </div>
     <div class="cats" id="cats"></div>
@@ -794,14 +794,19 @@
 <div class="modal-overlay" id="cat-modal-overlay" onclick="handleCatModalClick(event)">
   <div class="modal">
     <div class="modal-title">⚙️ Gerir Categorias <button class="modal-close" onclick="closeCatModal()">✕</button></div>
-    <div class="cat-section-label">📤 Categorias de Despesa</div>
-    <div class="cat-list" id="expense-cat-list"></div>
-    <div class="add-cat-form">
-      <input type="text" class="add-cat-emoji" id="new-expense-emoji" maxlength="2" placeholder="🏷️">
-      <input type="text" class="add-cat-name" id="new-expense-name" placeholder="Nome da categoria">
-      <button class="add-cat-btn" onclick="addCat('expense')">+ Adicionar</button>
+
+    <div class="cat-section-label">📤 Despesas — Categorias e Sub-categorias</div>
+    <div id="expense-cat-list"></div>
+    <div style="margin-top:10px;">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">Nova categoria pai</div>
+      <div class="add-cat-form">
+        <input type="text" class="add-cat-emoji" id="new-expense-cat-emoji" maxlength="2" placeholder="🏷️">
+        <input type="text" class="add-cat-name" id="new-expense-cat-name" placeholder="Nome da categoria">
+        <button class="add-cat-btn" onclick="addExpenseCat()">+ Criar</button>
+      </div>
     </div>
-    <div class="cat-section-label">📥 Categorias de Receita</div>
+
+    <div class="cat-section-label" style="margin-top:20px;">📥 Receitas</div>
     <div class="cat-list" id="income-cat-list"></div>
     <div class="add-cat-form">
       <input type="text" class="add-cat-emoji" id="new-income-emoji" maxlength="2" placeholder="🏷️">
@@ -920,13 +925,37 @@ const DRIVE_FILE   = 'financas_dados.json';
 const SCOPES       = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file openid email profile';
 
 // ===== STATE =====
-const DEFAULT_CATS = {
-  expense: ['🍔 Alimentação','🚗 Transporte','🛒 Compras','☕ Café','🏥 Saúde','🎮 Lazer','📱 Subscrições','🏠 Casa','🏦 Cofres','📦 Outro'],
-  income:  ['💼 Salário','💰 Freelance','🎁 Presente','📈 Investimento','💳 Reembolso','📦 Outro']
-};
+const DEFAULT_EXPENSE_CATS = [
+  { cat: '🏠 Habitação',         subs: ['Prestação Crédito Habitação','Condomínio','Seguro Multirriscos','Seguro de vida'] },
+  { cat: '💡 Utilities',         subs: ['Eletricidade','Água','Telecomunicações'] },
+  { cat: '🍕 Comida e bebida',   subs: ['Supermercado','Jantaradas'] },
+  { cat: '🚗 Transportes',       subs: ['Combustível','Portagens e estacionamentos','Manutenção','Seguro carro','Seguro moto'] },
+  { cat: '🛒 Shopping',          subs: ['Extras'] },
+  { cat: '🎓 Educação',          subs: ['Oceanus'] },
+  { cat: '🎬 Entretenimento',    subs: ['Subscrições'] },
+  { cat: '🏥 Saúde',             subs: ['Consultas, exames e farmácias','Piscina'] },
+  { cat: '👨‍👩‍👧 Família e amigos', subs: ['Presentes'] },
+  { cat: '💈 Cuidados pessoais', subs: ['Cabeleireiro'] },
+  { cat: '🏖️ Férias',            subs: ['Férias'] },
+  { cat: '🏦 Cofres',            subs: ['Cofres'] },
+  { cat: '🔷 Outras despesas',   subs: ['Impostos','Despesas bancárias'] },
+];
+const DEFAULT_INCOME_CATS = ['💼 Salário','💰 Freelance','🎁 Presente','📈 Investimento','💳 Reembolso','📦 Outro'];
+
+// Flat list of subcategories with parent lookup
+function getSubcatParent(subcat) {
+  for (const g of expenseCats) {
+    if (g.subs.includes(subcat)) return g.cat;
+  }
+  return null;
+}
+function getAllSubcats() {
+  return expenseCats.flatMap(g => g.subs);
+}
 
 let entries     = [];
-let cats        = JSON.parse(JSON.stringify(DEFAULT_CATS));
+let expenseCats = JSON.parse(JSON.stringify(DEFAULT_EXPENSE_CATS)); // [{cat, subs}]
+let incomeCats  = [...DEFAULT_INCOME_CATS];
 let cofres      = [];
 let streak      = {count:0, lastDate:''};
 let currentMode = 'expense';
@@ -1038,7 +1067,8 @@ async function loadFromDrive() {
       );
       const data = await fileRes.json();
       entries    = data.entries    || [];
-      cats       = data.cats       || JSON.parse(JSON.stringify(DEFAULT_CATS));
+      expenseCats = data.expenseCats || JSON.parse(JSON.stringify(DEFAULT_EXPENSE_CATS));
+      incomeCats  = data.incomeCats  || [...DEFAULT_INCOME_CATS];
       cofres     = data.cofres     || [];
       streak     = data.streak     || {count:0, lastDate:''};
       ativos          = data.ativos          || [];
@@ -1049,7 +1079,7 @@ async function loadFromDrive() {
       deletedMovIds   = new Set(data.deletedMovIds   || []);
       deletedCatKeys  = new Set(data.deletedCatKeys  || []);
     } else {
-      entries = []; cats = JSON.parse(JSON.stringify(DEFAULT_CATS)); cofres = []; streak = {count:0,lastDate:''};
+      entries = []; expenseCats = JSON.parse(JSON.stringify(DEFAULT_EXPENSE_CATS)); incomeCats = [...DEFAULT_INCOME_CATS]; cofres = []; streak = {count:0,lastDate:''};
       await saveToDrive();
     }
     setSyncStatus('saved', 'Guardado');
@@ -1122,19 +1152,30 @@ async function saveToDrive() {
         });
 
         // Merge categories
-
         const remoteDeletedCats = new Set(remote.deletedCatKeys || []);
         remoteDeletedCats.forEach(k => deletedCatKeys.add(k));
-        ['expense','income'].forEach(type => {
-          const remoteCatList = (remote.cats || {})[type] || [];
-          const localSet = new Set(cats[type]);
-          remoteCatList.forEach(c => {
-            const key = type + ':' + c;
-            if (!localSet.has(c) && !deletedCatKeys.has(key)) cats[type].push(c);
-          });
-          // Remove any cat deleted remotely
-          cats[type] = cats[type].filter(c => !deletedCatKeys.has(type + ':' + c));
+        // Merge income cats (flat array)
+        const remoteIncome = remote.incomeCats || [];
+        const localIncomeSet = new Set(incomeCats);
+        remoteIncome.forEach(c => {
+          if (!localIncomeSet.has(c) && !deletedCatKeys.has('income:'+c)) incomeCats.push(c);
         });
+        incomeCats = incomeCats.filter(c => !deletedCatKeys.has('income:'+c));
+        // Merge expense cats (hierarchical)
+        const remoteExpense = remote.expenseCats || [];
+        remoteExpense.forEach(rg => {
+          const lg = expenseCats.find(g => g.cat === rg.cat);
+          if (!lg) {
+            if (!deletedCatKeys.has('expense-cat:'+rg.cat)) expenseCats.push({...rg});
+          } else {
+            const localSubSet = new Set(lg.subs);
+            rg.subs.forEach(s => {
+              if (!localSubSet.has(s) && !deletedCatKeys.has('expense-sub:'+rg.cat+':'+s)) lg.subs.push(s);
+            });
+            lg.subs = lg.subs.filter(s => !deletedCatKeys.has('expense-sub:'+rg.cat+':'+s));
+          }
+        });
+        expenseCats = expenseCats.filter(g => !deletedCatKeys.has('expense-cat:'+g.cat));
 
         // Merge movimentos deleted ids
         const remoteDeletedMovs = new Set(remote.deletedMovIds || []);
@@ -1153,7 +1194,7 @@ async function saveToDrive() {
       }
     }
 
-    const payload = JSON.stringify({ entries, cats, cofres, streak, ativos, tiposCustom, deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds], deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys], deletedAtivoIds: [...deletedAtivoIds] });
+    const payload = JSON.stringify({ entries, expenseCats, incomeCats, cofres, streak, ativos, tiposCustom, deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds], deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys], deletedAtivoIds: [...deletedAtivoIds] });
 
     if (driveFileId) {
       await fetch('https://www.googleapis.com/upload/drive/v3/files/' + driveFileId + '?uploadType=media', {
@@ -1199,7 +1240,7 @@ function setSyncStatus(state, label) {
 
 // ===== STORAGE WRAPPERS =====
 function saveData(d)   { entries = d; scheduleSave(); }
-function saveCats(c)   { cats    = c; scheduleSave(); }
+function saveCatsData(c) { /* legacy no-op */ }
 function saveCofres(c) { cofres  = c; scheduleSave(); }
 function loadStreak()  { return streak; }
 function saveStreak(s) { streak  = s; scheduleSave(); }
@@ -1248,20 +1289,50 @@ function setMode(mode) {
 function renderCats() {
   const container = document.getElementById('cats');
   container.innerHTML = '';
-  cats[currentMode].forEach((cat, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'cat-btn' + (i===0?' active':'');
-    btn.dataset.cat = cat; btn.textContent = cat;
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+  if (currentMode === 'income') {
+    incomeCats.forEach((cat, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'cat-btn' + (i===0?' active':'');
+      btn.dataset.cat = cat; btn.textContent = cat;
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+      container.appendChild(btn);
     });
-    container.appendChild(btn);
-  });
+  } else {
+    // Expense: show category groups with subcategories
+    let firstSub = true;
+    expenseCats.forEach(group => {
+      // Group label
+      const label = document.createElement('div');
+      label.style.cssText = 'width:100%;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:6px 0 4px;font-family:"DM Sans",sans-serif;';
+      label.textContent = group.cat;
+      container.appendChild(label);
+      // Subcategory buttons
+      group.subs.forEach(sub => {
+        const btn = document.createElement('button');
+        btn.className = 'cat-btn' + (firstSub ? ' active' : '');
+        btn.dataset.cat = sub;
+        btn.dataset.parent = group.cat;
+        btn.textContent = sub;
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+        });
+        container.appendChild(btn);
+        firstSub = false;
+      });
+    });
+  }
 }
 function getSelectedCat() {
   const active = document.querySelector('.cat-btn.active');
-  return active ? active.dataset.cat : (cats[currentMode][0] || '📦 Outro');
+  return active ? active.dataset.cat : (currentMode==='income' ? incomeCats[0] : (expenseCats[0]?.subs[0] || 'Outro'));
+}
+function getSelectedParentCat() {
+  const active = document.querySelector('.cat-btn.active');
+  return active?.dataset.parent || getSubcatParent(getSelectedCat()) || '';
 }
 
 // ===== STREAK =====
@@ -1283,7 +1354,8 @@ function addEntry() {
   const noteInput   = document.getElementById('note-input');
   const amount = parseAmount(amountInput.value);
   if (!amount || amount <= 0) { showToast('⚠️ Insere um valor válido'); amountInput.focus(); return; }
-  entries.unshift({ id:Date.now(), type:currentMode, amount, category:getSelectedCat(), note:noteInput.value.trim(), date:todayStr(), ts:new Date().toISOString() });
+  const subcat = getSelectedCat(); const parentcat = currentMode==='expense' ? getSelectedParentCat() : '';
+  entries.unshift({ id:Date.now(), type:currentMode, amount, category:subcat, parentCategory:parentcat, note:noteInput.value.trim(), date:todayStr(), ts:new Date().toISOString() });
   saveData(entries);
   document.getElementById('streak-count').textContent = updateStreak();
   amountInput.value=''; noteInput.value=''; amountInput.focus();
@@ -1339,7 +1411,7 @@ function renderEntries() {
     <div class="entry ${e.type==='income'?'income-entry':'expense-entry'}">
       <div class="entry-icon">${e.category.split(' ')[0]}</div>
       <div class="entry-info">
-        <div class="entry-cat">${e.category.split(' ').slice(1).join(' ')} <span class="type-badge ${e.type}">${e.type==='income'?'receita':'despesa'}</span></div>
+        <div class="entry-cat">${e.category} ${e.parentCategory ? '<span style="font-size:10px;color:var(--muted);font-weight:400;">· '+e.parentCategory+'</span>' : ''} <span class="type-badge ${e.type}">${e.type==='income'?'receita':'despesa'}</span></div>
         <div class="entry-note">${e.note||'—'}</div>
         <div class="entry-time">${formatTime(e.ts)}</div>
       </div>
@@ -1601,43 +1673,94 @@ document.getElementById('mov-amount').addEventListener('keydown', e => { if(e.ke
 function openCatModal()  { renderCatModal(); document.getElementById('cat-modal-overlay').classList.add('open'); }
 function closeCatModal() { document.getElementById('cat-modal-overlay').classList.remove('open'); renderCats(); }
 function handleCatModalClick(e) { if(e.target===document.getElementById('cat-modal-overlay')) closeCatModal(); }
+function saveCats() { scheduleSave(); }
 
 function renderCatModal() {
-  ['expense','income'].forEach(type => {
-    document.getElementById(`${type}-cat-list`).innerHTML = cats[type].map((cat,i)=>`
-      <div class="cat-item">
-        <span class="cat-item-icon">${cat.split(' ')[0]}</span>
-        <span class="cat-item-name">${cat.split(' ').slice(1).join(' ')}</span>
-        <button class="cat-item-del" onclick="deleteCat('${type}',${i})" ${cats[type].length<=1?'disabled':''}>🗑️</button>
-      </div>`).join('');
-  });
+  // Expense: hierarchical
+  const expList = document.getElementById('expense-cat-list');
+  expList.innerHTML = expenseCats.map((g, gi) => `
+    <div style="margin-bottom:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--card2);border-radius:8px;padding:8px 12px;margin-bottom:4px;">
+        <span style="font-size:13px;font-weight:600;">${g.cat}</span>
+        <button class="cat-item-del" onclick="deleteExpenseCat(${gi})" ${expenseCats.length<=1?'disabled':''}>🗑️</button>
+      </div>
+      <div style="padding-left:12px;display:flex;flex-direction:column;gap:4px;">
+        ${g.subs.map((s,si) => `
+          <div class="cat-item" style="padding:7px 12px;">
+            <span class="cat-item-name" style="font-size:13px;">${s}</span>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <button class="cat-item-del" onclick="deleteExpenseSub(${gi},${si})" ${g.subs.length<=1?'disabled':''}>🗑️</button>
+            </div>
+          </div>`).join('')}
+        <div class="add-cat-form" style="margin-top:4px;">
+          <input type="text" class="add-cat-name" id="new-sub-${gi}" placeholder="+ Nova sub-categoria" style="font-size:12px;padding:6px 10px;">
+          <button class="add-cat-btn" onclick="addExpenseSub(${gi})" style="font-size:12px;padding:6px 10px;">+</button>
+        </div>
+      </div>
+    </div>`).join('');
+
+  // Income: flat
+  document.getElementById('income-cat-list').innerHTML = incomeCats.map((cat,i) => `
+    <div class="cat-item">
+      <span class="cat-item-icon">${cat.split(' ')[0]}</span>
+      <span class="cat-item-name">${cat.split(' ').slice(1).join(' ')}</span>
+      <button class="cat-item-del" onclick="deleteIncomeCat(${i})" ${incomeCats.length<=1?'disabled':''}>🗑️</button>
+    </div>`).join('');
 }
 
-function deleteCat(type,index) {
-  if(cats[type].length<=1) return;
-  const key = type + ':' + cats[type][index];
-  deletedCatKeys.add(key);
-  cats[type].splice(index,1); saveCats(cats); renderCatModal();
+function addExpenseCat() {
+  const emoji = document.getElementById('new-expense-cat-emoji').value.trim() || '🏷️';
+  const name  = document.getElementById('new-expense-cat-name').value.trim();
+  if (!name) { showToast('⚠️ Escreve um nome'); return; }
+  const full = emoji + ' ' + name;
+  if (expenseCats.find(g => g.cat === full)) { showToast('⚠️ Categoria já existe'); return; }
+  expenseCats.push({ cat: full, subs: [] });
+  document.getElementById('new-expense-cat-emoji').value = '';
+  document.getElementById('new-expense-cat-name').value  = '';
+  saveCats(); renderCatModal(); showToast('✅ Categoria criada!');
 }
+
+function deleteExpenseCat(gi) {
+  if (expenseCats.length <= 1) return;
+  deletedCatKeys.add('expense-cat:' + expenseCats[gi].cat);
+  expenseCats.splice(gi, 1);
+  saveCats(); renderCatModal();
+}
+
+function addExpenseSub(gi) {
+  const input = document.getElementById('new-sub-' + gi);
+  const name  = input.value.trim();
+  if (!name) return;
+  if (expenseCats[gi].subs.includes(name)) { showToast('⚠️ Sub-categoria já existe'); return; }
+  expenseCats[gi].subs.push(name);
+  input.value = '';
+  saveCats(); renderCatModal(); showToast('✅ Sub-categoria adicionada!');
+}
+
+function deleteExpenseSub(gi, si) {
+  if (expenseCats[gi].subs.length <= 1) return;
+  deletedCatKeys.add('expense-sub:' + expenseCats[gi].cat + ':' + expenseCats[gi].subs[si]);
+  expenseCats[gi].subs.splice(si, 1);
+  saveCats(); renderCatModal();
+}
+
 function addCat(type) {
-  const eEl = document.getElementById(`new-${type}-emoji`);
-  const nEl = document.getElementById(`new-${type}-name`);
+  const eEl = document.getElementById('new-income-emoji');
+  const nEl = document.getElementById('new-income-name');
   const emoji=eEl.value.trim()||'🏷️', name=nEl.value.trim();
   if (!name) { showToast('⚠️ Escreve um nome para a categoria'); return; }
-  const full=`${emoji} ${name}`;
-  if (cats[type].includes(full)) { showToast('⚠️ Categoria já existe'); return; }
-  cats[type].push(full); saveCats(cats);
+  const full=emoji+' '+name;
+  if (incomeCats.includes(full)) { showToast('⚠️ Categoria já existe'); return; }
+  incomeCats.push(full); saveCats();
   eEl.value=''; nEl.value='';
   renderCatModal(); showToast('✅ Categoria adicionada!');
 }
 
-document.addEventListener('keydown', e => {
-  if (!document.getElementById('cat-modal-overlay').classList.contains('open')) return;
-  if (e.key==='Enter') {
-    if ([document.getElementById('new-expense-name'),document.getElementById('new-expense-emoji')].includes(document.activeElement)) addCat('expense');
-    if ([document.getElementById('new-income-name'), document.getElementById('new-income-emoji') ].includes(document.activeElement)) addCat('income');
-  }
-});
+function deleteIncomeCat(index) {
+  if(incomeCats.length<=1) return;
+  deletedCatKeys.add('income:' + incomeCats[index]);
+  incomeCats.splice(index,1); saveCats(); renderCatModal();
+}
 
 
 
