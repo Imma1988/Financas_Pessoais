@@ -979,15 +979,23 @@ function initAuth() {
     }).then(r => r.json()).then(info => {
       if (ALLOWED_EMAILS.includes(info.email)) {
         onAuthorised();
+      } else if (info.error) {
+        // Token expired — try silent refresh before giving up
+        silentRefresh();
       } else {
         localStorage.removeItem('gToken');
         accessToken = null;
       }
     }).catch(() => {
-      localStorage.removeItem('gToken');
-      accessToken = null;
+      // Network error or expired — try silent refresh
+      silentRefresh();
     });
   }
+}
+
+function silentRefresh() {
+  if (!tokenClient) return;
+  tokenClient.requestAccessToken({ prompt: '' });
 }
 
 function signIn() {
@@ -1402,6 +1410,7 @@ function renderCofres() {
         <div class="cofre-actions">
           <button class="cofre-action-btn contribuir" onclick="openMovimento(${c.id},'contribuir')">+ Contribuir</button>
           <button class="cofre-action-btn levantar"   onclick="openMovimento(${c.id},'levantar')">− Levantar</button>
+          <button class="cofre-action-btn levantar"   onclick="openEditCofre(${c.id})">✏️ Editar</button>
           <button class="cofre-action-btn apagar"     onclick="apagarCofre(${c.id})">🗑️</button>
         </div>
       </div>`;
@@ -1410,6 +1419,7 @@ function renderCofres() {
 
 // ---- Novo Cofre ----
 function openNovoCofre() {
+  cofreEditId = null;
   tipoCofre = 'continuo';
   ['cofre-emoji','cofre-nome','cofre-mensal','cofre-objetivo'].forEach(id => document.getElementById(id).value='');
   document.getElementById('cofre-frequencia').value = '12';
@@ -1454,16 +1464,40 @@ function submitCofre() {
     valorMensal = valorObjetivo/frequencia;
   }
 
-  cofres.unshift({
-    id:Date.now(), emoji, nome, tipo:tipoCofre,
-    valorMensal, valorObjetivo, frequencia,
-    saldoAtual:0, movimentos:[],
-    criadoEm:new Date().toISOString()
-  });
+  if (cofreEditId) {
+    cofres = cofres.map(c => c.id === cofreEditId ? {
+      ...c, emoji, nome, tipo: tipoCofre, valorMensal, valorObjetivo, frequencia
+    } : c);
+    cofreEditId = null;
+    showToast('✅ Cofre atualizado!');
+  } else {
+    cofres.unshift({
+      id:Date.now(), emoji, nome, tipo:tipoCofre,
+      valorMensal, valorObjetivo, frequencia,
+      saldoAtual:0, movimentos:[],
+      criadoEm:new Date().toISOString()
+    });
+    showToast('✅ Cofre criado!');
+  }
   saveCofres(cofres);
   closeCofreModal();
   renderCofres();
-  showToast('✅ Cofre criado!');
+}
+
+function openEditCofre(id) {
+  const c = cofres.find(c => c.id === id);
+  if (!c) return;
+  cofreEditId = id;
+  tipoCofre   = c.tipo;
+  document.getElementById('cofre-emoji').value    = c.emoji || '';
+  document.getElementById('cofre-nome').value     = c.nome;
+  document.getElementById('cofre-mensal').value   = c.tipo === 'continuo' ? c.valorMensal : '';
+  document.getElementById('cofre-objetivo').value = c.tipo === 'objetivo' ? c.valorObjetivo : '';
+  document.getElementById('cofre-frequencia').value = c.frequencia || '12';
+  setTipoCofre(c.tipo);
+  if (c.tipo === 'objetivo') calcMensal();
+  document.getElementById('cofre-modal-title').innerHTML = '✏️ Editar Cofre <button class="modal-close" onclick="closeCofreModal()">✕</button>';
+  document.getElementById('cofre-modal-overlay').classList.add('open');
 }
 
 function apagarCofre(id) {
