@@ -426,6 +426,33 @@
   .mv-del { background: none; border: none; color: #333; cursor: pointer; font-size: 13px; padding: 2px 4px; border-radius: 4px; transition: color 0.15s; }
   .mv-del:hover { color: var(--red); }
 
+  /* Cofre confirm modal */
+  .cofre-confirm-card {
+    background: var(--card2); border: 1px solid #3a2e1a;
+    border-radius: 12px; padding: 14px 16px; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .cofre-confirm-card .cc-icon { font-size: 24px; }
+  .cofre-confirm-card .cc-info { flex: 1; }
+  .cofre-confirm-card .cc-nome { font-size: 14px; font-weight: 600; }
+  .cofre-confirm-card .cc-saldo { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .cofre-confirm-card .cc-saldo.insuficiente { color: var(--red); }
+  .confirm-btns { display: flex; gap: 8px; }
+  .confirm-btn-sim {
+    flex: 1; background: var(--accent-cofre); color: #0d0d0d;
+    border: none; border-radius: 10px; padding: 13px;
+    font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800;
+    cursor: pointer; transition: opacity 0.15s;
+  }
+  .confirm-btn-sim:hover { opacity: 0.85; }
+  .confirm-btn-nao {
+    flex: 1; background: var(--card2); color: var(--muted);
+    border: 1px solid var(--border); border-radius: 10px; padding: 13px;
+    font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .confirm-btn-nao:hover { color: var(--text); border-color: #555; }
+
   /* TOAST */
   .toast {
     position: fixed; bottom: 24px; left: 50%;
@@ -809,6 +836,21 @@
   </div>
 </div>
 
+<!-- ===== MODAL: Confirmar Cofre ===== -->
+<div class="modal-overlay" id="cofre-confirm-overlay" onclick="handleCofreConfirmClick(event)">
+  <div class="modal">
+    <div class="modal-title">
+      🏦 Usar cofre? <button class="modal-close" onclick="skipCofreConfirm()">✕</button>
+    </div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">A sub-categoria escolhida tem um cofre associado. Queres descontar desta despesa?</p>
+    <div class="cofre-confirm-card" id="cofre-confirm-card"></div>
+    <div class="confirm-btns">
+      <button class="confirm-btn-sim" onclick="confirmUseCofre()">✅ Sim, descontar</button>
+      <button class="confirm-btn-nao" onclick="skipCofreConfirm()">Não, obrigado</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== MODAL: Categorias ===== -->
 <div class="modal-overlay" id="cat-modal-overlay" onclick="handleCatModalClick(event)">
   <div class="modal">
@@ -881,6 +923,13 @@
       <div class="modal-calc" id="calc-preview" style="display:none;">
         Deves reservar <strong id="calc-mensal-val"></strong> por mês para atingir o objetivo.
       </div>
+    </div>
+
+    <div class="form-row" id="row-subcategoria">
+      <label class="form-label">Sub-categoria associada <span style="color:var(--muted);font-weight:400;">(opcional)</span></label>
+      <select class="form-select" id="cofre-subcategoria">
+        <option value="">— Nenhuma —</option>
+      </select>
     </div>
 
     <button class="modal-submit-btn" onclick="submitCofre()">Criar cofre</button>
@@ -1062,6 +1111,7 @@ async function onAuthorised() {
   await loadFromDrive();
   renderAll();
   renderCats();
+  resetDatePicker();
   // Refresh token every 45 min silently
   setInterval(() => {
     if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
@@ -1292,9 +1342,18 @@ function onDateChange(val) {
   }
 }
 function resetDatePicker() {
-  document.getElementById('date-input').value = '';
-  document.getElementById('date-display').textContent = 'Hoje';
-  document.getElementById('date-display').className = 'date-row-label is-today';
+  // Use date of last entry, or today if none
+  const lastDate = entries.length > 0 ? entries[0].date : todayStr();
+  const isToday  = lastDate === todayStr();
+  document.getElementById('date-input').value = isToday ? '' : lastDate;
+  if (isToday) {
+    document.getElementById('date-display').textContent = 'Hoje';
+    document.getElementById('date-display').className = 'date-row-label is-today';
+  } else {
+    const d = new Date(lastDate + 'T12:00:00');
+    document.getElementById('date-display').textContent = d.toLocaleDateString('pt-PT', { weekday:'short', day:'numeric', month:'short' });
+    document.getElementById('date-display').className = 'date-row-label';
+  }
 }
 function monthStr()  { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; }
 function formatTime(iso) { return new Date(iso).toLocaleTimeString('pt-PT', {hour:'2-digit',minute:'2-digit'}); }
@@ -1388,19 +1447,82 @@ function updateStreak() {
 }
 
 // ===== ADD ENTRY =====
+// Pending entry state for cofre confirm
+let pendingEntry = null;
+
 function addEntry() {
   const amountInput = document.getElementById('amount-input');
   const noteInput   = document.getElementById('note-input');
   const amount = parseAmount(amountInput.value);
   if (!amount || amount <= 0) { showToast('⚠️ Insere um valor válido'); amountInput.focus(); return; }
-  const subcat = getSelectedCat(); const parentcat = currentMode==='expense' ? getSelectedParentCat() : '';
+  const subcat    = getSelectedCat();
+  const parentcat = currentMode==='expense' ? getSelectedParentCat() : '';
   const entryDate = getEntryDate();
-  entries.unshift({ id:Date.now(), type:currentMode, amount, category:subcat, parentCategory:parentcat, note:noteInput.value.trim(), date:entryDate, ts:new Date().toISOString() });
+  const entry = { id:Date.now(), type:currentMode, amount, category:subcat, parentCategory:parentcat, note:noteInput.value.trim(), date:entryDate, ts:new Date().toISOString() };
+
+  // Check if any cofre is associated with this subcategory (expenses only)
+  if (currentMode === 'expense') {
+    const linked = cofres.find(c => c.subcategoria === subcat && !cofreCompleto(c));
+    if (linked) {
+      pendingEntry = entry;
+      showCofreConfirm(linked, amount);
+      amountInput.value=''; noteInput.value=''; resetDatePicker();
+      return;
+    }
+  }
+  commitEntry(entry);
+}
+
+function commitEntry(entry) {
+  entries.unshift(entry);
   saveData(entries);
   document.getElementById('streak-count').textContent = updateStreak();
-  amountInput.value=''; noteInput.value=''; resetDatePicker(); amountInput.focus();
+  document.getElementById('amount-input').value='';
+  document.getElementById('note-input').value='';
+  resetDatePicker();
+  document.getElementById('amount-input').focus();
   renderAll();
-  showToast(getMotivationToast(entries.filter(e=>e.date===todayStr()).length, currentMode));
+  showToast(getMotivationToast(entries.filter(e=>e.date===todayStr()).length, entry.type));
+}
+
+function showCofreConfirm(cofre, amount) {
+  const insuficiente = amount > cofre.saldoAtual;
+  document.getElementById('cofre-confirm-card').innerHTML = `
+    <div class="cc-icon">${cofre.emoji||'🏦'}</div>
+    <div class="cc-info">
+      <div class="cc-nome">${cofre.nome}</div>
+      <div class="cc-saldo ${insuficiente?'insuficiente':''}">
+        Saldo: ${formatCurrency(cofre.saldoAtual)}
+        ${insuficiente ? ' — ⚠️ insuficiente para cobrir a despesa' : ''}
+      </div>
+    </div>`;
+  document.getElementById('cofre-confirm-overlay').classList.add('open');
+}
+
+function confirmUseCofre() {
+  if (!pendingEntry) return;
+  const linked = cofres.find(c => c.subcategoria === pendingEntry.category);
+  if (linked) {
+    const valor = pendingEntry.amount;
+    const mov   = { id: Date.now().toString(), tipo:'levantar', valor, nota: pendingEntry.note || pendingEntry.category, ts: new Date().toISOString() };
+    if (!linked.movimentos) linked.movimentos = [];
+    linked.movimentos.push(mov);
+    linked.saldoAtual = Math.max(0, +(linked.saldoAtual - valor).toFixed(2));
+    saveCofres(cofres);
+  }
+  commitEntry(pendingEntry);
+  pendingEntry = null;
+  document.getElementById('cofre-confirm-overlay').classList.remove('open');
+  renderCofres();
+}
+
+function skipCofreConfirm() {
+  if (pendingEntry) { commitEntry(pendingEntry); pendingEntry = null; }
+  document.getElementById('cofre-confirm-overlay').classList.remove('open');
+}
+
+function handleCofreConfirmClick(e) {
+  if (e.target === document.getElementById('cofre-confirm-overlay')) skipCofreConfirm();
 }
 
 document.getElementById('amount-input').addEventListener('keydown', e => { if(e.key==='Enter') addEntry(); });
@@ -1502,6 +1624,7 @@ function renderCofres() {
     const completo = cofreCompleto(c);
     const pct      = c.tipo==='objetivo' ? Math.min(100,Math.round(c.saldoAtual/c.valorObjetivo*100)) : null;
     const tipoLabel = c.tipo==='continuo' ? 'Fundo contínuo' : `Objetivo ${(freqLabel[String(c.frequencia)]||'').toLowerCase()}`;
+    const subcatBadge = c.subcategoria ? `<span style="font-size:10px;background:rgba(241,168,53,0.15);color:var(--accent-cofre);border-radius:4px;padding:2px 6px;font-weight:700;margin-left:6px;">🔗 ${c.subcategoria}</span>` : '';
 
     const progressHTML = c.tipo==='objetivo' ? `
       <div class="cofre-progress-wrap">
@@ -1517,7 +1640,7 @@ function renderCofres() {
         <div class="cofre-top">
           <div class="cofre-emoji">${c.emoji||'🏦'}</div>
           <div class="cofre-info">
-            <div class="cofre-nome">${c.nome}${completo?'<span class="pausado-badge">✓ Atingido</span>':''}</div>
+            <div class="cofre-nome">${c.nome}${completo?'<span class="pausado-badge">✓ Atingido</span>':''}${subcatBadge}</div>
             <div class="cofre-tipo">${tipoLabel}</div>
           </div>
           <div>
@@ -1538,6 +1661,13 @@ function renderCofres() {
 }
 
 // ---- Novo Cofre ----
+function populateCofreSubcatSelect(selected) {
+  const sel = document.getElementById('cofre-subcategoria');
+  const allSubs = expenseCats.flatMap(g => g.subs);
+  sel.innerHTML = '<option value="">— Nenhuma —</option>' +
+    allSubs.map(s => `<option value="${s}" ${s===selected?'selected':''}>${s}</option>`).join('');
+}
+
 function openNovoCofre() {
   cofreEditId = null;
   tipoCofre = 'continuo';
@@ -1545,6 +1675,8 @@ function openNovoCofre() {
   document.getElementById('cofre-frequencia').value = '12';
   document.getElementById('calc-preview').style.display = 'none';
   setTipoCofre('continuo');
+  populateCofreSubcatSelect('');
+  document.getElementById('cofre-modal-title').innerHTML = '🏦 Novo Cofre <button class="modal-close" onclick="closeCofreModal()">✕</button>';
   document.getElementById('cofre-modal-overlay').classList.add('open');
 }
 function closeCofreModal()  { document.getElementById('cofre-modal-overlay').classList.remove('open'); }
@@ -1585,15 +1717,18 @@ function submitCofre() {
   }
 
   if (cofreEditId) {
+    const subcategoria = document.getElementById('cofre-subcategoria').value;
     cofres = cofres.map(c => c.id === cofreEditId ? {
-      ...c, emoji, nome, tipo: tipoCofre, valorMensal, valorObjetivo, frequencia
+      ...c, emoji, nome, tipo: tipoCofre, valorMensal, valorObjetivo, frequencia, subcategoria: subcategoria || ''
     } : c);
     cofreEditId = null;
     showToast('✅ Cofre atualizado!');
   } else {
+    const subcategoria = document.getElementById('cofre-subcategoria').value;
     cofres.unshift({
       id:Date.now(), emoji, nome, tipo:tipoCofre,
       valorMensal, valorObjetivo, frequencia,
+      subcategoria: subcategoria || '',
       saldoAtual:0, movimentos:[],
       criadoEm:new Date().toISOString()
     });
@@ -1616,6 +1751,7 @@ function openEditCofre(id) {
   document.getElementById('cofre-frequencia').value = c.frequencia || '12';
   setTipoCofre(c.tipo);
   if (c.tipo === 'objetivo') calcMensal();
+  populateCofreSubcatSelect(c.subcategoria || '');
   document.getElementById('cofre-modal-title').innerHTML = '✏️ Editar Cofre <button class="modal-close" onclick="closeCofreModal()">✕</button>';
   document.getElementById('cofre-modal-overlay').classList.add('open');
 }
