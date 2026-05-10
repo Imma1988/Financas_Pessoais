@@ -63,11 +63,7 @@
   }
   .header-left h1 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
   .header-left .date { font-size: 12px; color: var(--muted); margin-top: 2px; text-transform: capitalize; }
-  .streak-badge {
-    background: var(--accent); color: #0d0d0d;
-    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 11px;
-    padding: 6px 12px; border-radius: 99px; display: flex; align-items: center; gap: 5px;
-  }
+
 
   /* MOTIVATION */
   .motivation {
@@ -619,9 +615,9 @@
   <div class="header">
     <div class="header-left">
       <h1>💸 Finanças</h1>
-      <div class="date" id="today-label"></div>
+      <div class="date" id="today-label" onclick="openCicloSettings()" style="cursor:pointer;" title="Configurar ciclo">⚙️ <span id="ciclo-label-header"></span></div>
     </div>
-    <div class="streak-badge">🔥 <span id="streak-count">0</span> dias</div>
+
   </div>
 
   <div class="motivation" id="motivation-bar">
@@ -836,6 +832,20 @@
   </div>
 </div>
 
+<!-- ===== MODAL: Ciclo ===== -->
+<div class="modal-overlay" id="ciclo-modal-overlay" onclick="if(event.target===this)closeCicloModal()">
+  <div class="modal">
+    <div class="modal-title">⚙️ Ciclo financeiro <button class="modal-close" onclick="closeCicloModal()">✕</button></div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Define o dia do mês em que começa o teu ciclo financeiro.</p>
+    <div class="form-row">
+      <label class="form-label">Dia de início do ciclo</label>
+      <input type="number" class="form-input" id="ciclo-dia-input" min="1" max="28" placeholder="25">
+    </div>
+    <div class="modal-calc" id="ciclo-preview"></div>
+    <button class="modal-submit-btn" onclick="saveCicloSettings()">Guardar</button>
+  </div>
+</div>
+
 <!-- ===== MODAL: Confirmar Cofre ===== -->
 <div class="modal-overlay" id="cofre-confirm-overlay" onclick="handleCofreConfirmClick(event)">
   <div class="modal">
@@ -1025,7 +1035,6 @@ let entries     = [];
 let expenseCats = JSON.parse(JSON.stringify(DEFAULT_EXPENSE_CATS)); // [{cat, subs}]
 let incomeCats  = [...DEFAULT_INCOME_CATS];
 let cofres      = [];
-let streak      = {count:0, lastDate:''};
 let currentMode = 'expense';
 let tipoCofre   = 'continuo';
 let movCofreId  = null;
@@ -1036,6 +1045,9 @@ let deletedCofreIds = new Set();
 let deletedMovIds   = new Set(); // cofreId:movId
 let deletedCatKeys  = new Set(); // type:name
 let deletedAtivoIds = new Set();
+let ativos          = [];
+let tiposCustom     = {};
+let cicloInicio     = 25; // day of month cycle starts
 let accessToken  = null;
 let driveFileId  = null;
 let syncTimeout  = null;
@@ -1139,16 +1151,16 @@ async function loadFromDrive() {
       expenseCats = data.expenseCats || JSON.parse(JSON.stringify(DEFAULT_EXPENSE_CATS));
       incomeCats  = data.incomeCats  || [...DEFAULT_INCOME_CATS];
       cofres     = data.cofres     || [];
-      streak     = data.streak     || {count:0, lastDate:''};
       ativos          = data.ativos          || [];
       tiposCustom     = data.tiposCustom     || {};
+      cicloInicio     = data.cicloInicio     || 25;
       deletedAtivoIds = new Set(data.deletedAtivoIds || []);
       deletedIds      = new Set(data.deletedIds      || []);
       deletedCofreIds = new Set(data.deletedCofreIds || []);
       deletedMovIds   = new Set(data.deletedMovIds   || []);
       deletedCatKeys  = new Set(data.deletedCatKeys  || []);
     } else {
-      entries = []; expenseCats = JSON.parse(JSON.stringify(DEFAULT_EXPENSE_CATS)); incomeCats = [...DEFAULT_INCOME_CATS]; cofres = []; streak = {count:0,lastDate:''};
+      entries = []; expenseCats = JSON.parse(JSON.stringify(DEFAULT_EXPENSE_CATS)); incomeCats = [...DEFAULT_INCOME_CATS]; cofres = [];
       await saveToDrive();
     }
     setSyncStatus('saved', 'Guardado');
@@ -1263,7 +1275,7 @@ async function saveToDrive() {
       }
     }
 
-    const payload = JSON.stringify({ entries, expenseCats, incomeCats, cofres, streak, ativos, tiposCustom, deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds], deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys], deletedAtivoIds: [...deletedAtivoIds] });
+    const payload = JSON.stringify({ entries, expenseCats, incomeCats, cofres, ativos, cicloInicio, tiposCustom, deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds], deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys], deletedAtivoIds: [...deletedAtivoIds] });
 
     if (driveFileId) {
       await fetch('https://www.googleapis.com/upload/drive/v3/files/' + driveFileId + '?uploadType=media', {
@@ -1311,8 +1323,7 @@ function setSyncStatus(state, label) {
 function saveData(d)   { entries = d; scheduleSave(); }
 function saveCatsData(c) { /* legacy no-op */ }
 function saveCofres(c) { cofres  = c; scheduleSave(); }
-function loadStreak()  { return streak; }
-function saveStreak(s) { streak  = s; scheduleSave(); }
+
 
 // ===== NAV =====
 function switchView(view) {
@@ -1326,6 +1337,40 @@ function switchView(view) {
 
 // ===== HELPERS =====
 function todayStr()  { return new Date().toISOString().split('T')[0]; }
+
+function getCicloRange() {
+  // Returns {start, end} strings for current cycle based on cicloInicio
+  const now   = new Date();
+  const day   = now.getDate();
+  let startY, startM, endY, endM;
+  if (day >= cicloInicio) {
+    // e.g. today is 27 May, ciclo is 25 → cycle: 25 May → 24 Jun
+    startY = now.getFullYear(); startM = now.getMonth();
+    const endDate = new Date(startY, startM + 1, cicloInicio - 1);
+    endY = endDate.getFullYear(); endM = endDate.getMonth();
+  } else {
+    // e.g. today is 10 May, ciclo is 25 → cycle: 25 Apr → 24 May
+    const startDate = new Date(now.getFullYear(), now.getMonth() - 1, cicloInicio);
+    startY = startDate.getFullYear(); startM = startDate.getMonth();
+    const endDate = new Date(now.getFullYear(), now.getMonth(), cicloInicio - 1);
+    endY = endDate.getFullYear(); endM = endDate.getMonth();
+  }
+  const pad = n => String(n).padStart(2,'0');
+  const start = `${startY}-${pad(startM+1)}-${pad(cicloInicio)}`;
+  const end   = `${endY}-${pad(endM+1)}-${pad(cicloInicio-1 || 1)}`;
+  return { start, end };
+}
+
+function isInCurrentCiclo(dateStr) {
+  const { start, end } = getCicloRange();
+  return dateStr >= start && dateStr <= end;
+}
+
+function cicloLabel() {
+  const { start, end } = getCicloRange();
+  const fmt = d => new Date(d+'T12:00:00').toLocaleDateString('pt-PT', {day:'numeric',month:'short'});
+  return fmt(start) + ' – ' + fmt(end);
+}
 function getEntryDate() {
   const val = document.getElementById('date-input').value;
   return val || todayStr();
@@ -1433,18 +1478,7 @@ function getSelectedParentCat() {
   return active?.dataset.parent || getSubcatParent(getSelectedCat()) || '';
 }
 
-// ===== STREAK =====
-function updateStreak() {
-  const s = loadStreak(); const today = todayStr();
-  if (s.lastDate === today) return s.count;
-  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
-  const yStr = yesterday.toISOString().split('T')[0];
-  if (entries.some(e => e.date === today)) {
-    s.count = (s.lastDate === yStr) ? s.count+1 : 1;
-    s.lastDate = today; saveStreak(s);
-  }
-  return s.count;
-}
+
 
 // ===== ADD ENTRY =====
 // Pending entry state for cofre confirm
@@ -1476,13 +1510,12 @@ function addEntry() {
 function commitEntry(entry) {
   entries.unshift(entry);
   saveData(entries);
-  document.getElementById('streak-count').textContent = updateStreak();
   document.getElementById('amount-input').value='';
   document.getElementById('note-input').value='';
   resetDatePicker();
   document.getElementById('amount-input').focus();
   renderAll();
-  showToast(getMotivationToast(entries.filter(e=>e.date===todayStr()).length, entry.type));
+  showToast(getMotivationToast(entries.filter(e=>e.date===todayStr()).length, entry.type)); // today only for motivation
 }
 
 function showCofreConfirm(cofre, amount) {
@@ -1530,29 +1563,27 @@ document.getElementById('note-input').addEventListener('keydown',   e => { if(e.
 
 function deleteEntry(id) { deletedIds.add(id); entries=entries.filter(e=>e.id!==id); saveData(entries); renderAll(); }
 function clearToday() {
-  if (!confirm('Apagar todos os registos de hoje?')) return;
-  entries.filter(e=>e.date===todayStr()).forEach(e => deletedIds.add(e.id));
-  entries=entries.filter(e=>e.date!==todayStr()); saveData(entries); renderAll();
+  if (!confirm('Apagar todos os registos deste ciclo?')) return;
+  entries.filter(e=>isInCurrentCiclo(e.date)).forEach(e => deletedIds.add(e.id));
+  entries=entries.filter(e=>!isInCurrentCiclo(e.date)); saveData(entries); renderAll();
 }
 
 // ===== RENDER REGISTOS =====
-function renderAll() { renderSummary(); renderEntries(); renderMotivation(); renderDate(); renderStreak(); }
+function renderAll() { renderSummary(); renderEntries(); renderMotivation(); renderDate(); }
 
 function renderDate() {
-  document.getElementById('today-label').textContent =
-    new Date().toLocaleDateString('pt-PT', {weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('ciclo-label-header').textContent = cicloLabel();
 }
-function renderStreak() { document.getElementById('streak-count').textContent = loadStreak().count; }
 
 function renderSummary() {
-  const today=todayStr(), month=monthStr();
-  const tE=entries.filter(e=>e.date===today);
-  const mE=entries.filter(e=>e.date.startsWith(month));
-  const tExp=tE.filter(e=>e.type==='expense').reduce((a,e)=>a+e.amount,0);
-  const tInc=tE.filter(e=>e.type==='income').reduce((a,e)=>a+e.amount,0);
-  const mExp=mE.filter(e=>e.type==='expense').reduce((a,e)=>a+e.amount,0);
-  const mInc=mE.filter(e=>e.type==='income').reduce((a,e)=>a+e.amount,0);
-  const bal=mInc-mExp;
+  const today = todayStr();
+  const tE = entries.filter(e=>e.date===today);
+  const cE = entries.filter(e=>isInCurrentCiclo(e.date));
+  const tExp = tE.filter(e=>e.type==='expense').reduce((a,e)=>a+e.amount,0);
+  const tInc = tE.filter(e=>e.type==='income').reduce((a,e)=>a+e.amount,0);
+  const cExp = cE.filter(e=>e.type==='expense').reduce((a,e)=>a+e.amount,0);
+  const cInc = cE.filter(e=>e.type==='income').reduce((a,e)=>a+e.amount,0);
+  const bal  = cInc - cExp;
   document.getElementById('today-expense').textContent = formatCurrency(tExp);
   document.getElementById('today-expense-count').textContent = `${tE.filter(e=>e.type==='expense').length} hoje`;
   document.getElementById('today-income').textContent  = formatCurrency(tInc);
@@ -1560,22 +1591,27 @@ function renderSummary() {
   const balEl = document.getElementById('today-balance');
   balEl.textContent = (bal>=0?'+':'-')+formatCurrency(bal);
   balEl.style.color = bal>=0 ? 'var(--accent)' : 'var(--red)';
+  // Update balance sub label with ciclo range
+  document.querySelector('.summary-card.balance .sub').textContent = cicloLabel();
 }
 
 function renderEntries() {
   const list = document.getElementById('entries-list');
-  const todayEntries = entries.filter(e=>e.date===todayStr());
-  if (!todayEntries.length) {
-    list.innerHTML=`<div class="empty-state"><div class="emoji">📭</div><p>Nenhum registo hoje.<br>Usa o formulário acima — é rápido!</p></div>`;
+  const cicloEntries = entries.filter(e=>isInCurrentCiclo(e.date))
+    .sort((a,b) => new Date(b.ts)-new Date(a.ts));
+  // Update header label
+  document.querySelector('.entries-header h2').textContent = '📋 ' + cicloLabel();
+  if (!cicloEntries.length) {
+    list.innerHTML=`<div class="empty-state"><div class="emoji">📭</div><p>Nenhum registo neste ciclo.<br>Usa o formulário acima — é rápido!</p></div>`;
     return;
   }
-  list.innerHTML = todayEntries.map(e=>`
+  list.innerHTML = cicloEntries.map(e=>`
     <div class="entry ${e.type==='income'?'income-entry':'expense-entry'}">
       <div class="entry-icon">${e.category.split(' ')[0]}</div>
       <div class="entry-info">
         <div class="entry-cat">${e.category} ${e.parentCategory ? '<span style="font-size:10px;color:var(--muted);font-weight:400;">· '+e.parentCategory+'</span>' : ''} <span class="type-badge ${e.type}">${e.type==='income'?'receita':'despesa'}</span></div>
         <div class="entry-note">${e.note||'—'}</div>
-        <div class="entry-time">${formatTime(e.ts)}</div>
+        <div class="entry-time">${formatDate(e.date) !== formatDate(todayStr()+'T00:00:00') ? formatDate(e.date)+' · ' : ''}${formatTime(e.ts)}</div>
       </div>
       <div class="entry-amount ${e.type==='income'?'income-amt':'expense-amt'}">${e.type==='income'?'+':'-'}${formatCurrency(e.amount)}</div>
       <button class="entry-del" onclick="deleteEntry(${e.id})">✕</button>
@@ -1583,7 +1619,7 @@ function renderEntries() {
 }
 
 function renderMotivation() {
-  const count = entries.filter(e=>e.date===todayStr()).length;
+  const count = entries.filter(e=>isInCurrentCiclo(e.date)).length;
   const msgs = [
     {icon:'💡',text:'Regista a tua primeira entrada de hoje. <strong>Menos de 5 segundos!</strong>'},
     {icon:'🎉',text:'Primeiro registo feito! <strong>Continua assim.</strong>'},
@@ -1941,7 +1977,6 @@ function deleteIncomeCat(index) {
 
 
 // ===== PATRIMÓNIO =====
-let ativos        = [];
 let patRange      = 6;
 let editAtivoId   = null;
 let updateAtivoId = null;
@@ -1965,7 +2000,7 @@ const TIPO_ICONS_DEFAULT = {
   'Dinheiro':     '💵',
   'Outro':        '📦'
 };
-let tiposCustom = {}; // { nome: { icon, color } }
+
 
 function getTipoColors() { return {...TIPO_COLORS_DEFAULT, ...Object.fromEntries(Object.entries(tiposCustom).map(([k,v])=>[k,v.color]))}; }
 function getTipoIcons()  { return {...TIPO_ICONS_DEFAULT,  ...Object.fromEntries(Object.entries(tiposCustom).map(([k,v])=>[k,v.icon]))}; }
@@ -2327,6 +2362,31 @@ function submitContribuirTodos() {
     setTimeout(() => showToast(`🎉 "${atingidos[0].nome}" atingiu o objetivo!`), 2500);
   }
 }
+
+// ===== CICLO SETTINGS =====
+function openCicloSettings() {
+  document.getElementById('ciclo-dia-input').value = cicloInicio;
+  updateCicloPreview();
+  document.getElementById('ciclo-modal-overlay').classList.add('open');
+}
+function closeCicloModal() { document.getElementById('ciclo-modal-overlay').classList.remove('open'); }
+function updateCicloPreview() {
+  const dia = parseInt(document.getElementById('ciclo-dia-input').value);
+  if (!dia || dia < 1 || dia > 28) return;
+  const old = cicloInicio; cicloInicio = dia;
+  document.getElementById('ciclo-preview').textContent = 'Ciclo atual: ' + cicloLabel();
+  cicloInicio = old;
+}
+function saveCicloSettings() {
+  const dia = parseInt(document.getElementById('ciclo-dia-input').value);
+  if (!dia || dia < 1 || dia > 28) { showToast('⚠️ Dia entre 1 e 28'); return; }
+  cicloInicio = dia;
+  scheduleSave();
+  closeCicloModal();
+  renderAll();
+  showToast('✅ Ciclo atualizado!');
+}
+document.addEventListener('input', e => { if(e.target.id==='ciclo-dia-input') updateCicloPreview(); });
 
 // ===== TOAST =====
 function showToast(msg) {
