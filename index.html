@@ -232,22 +232,37 @@
   }
   .new-cofre-btn:hover { opacity: 0.85; }
 
-  .reserva-banner {
-    width: 100%; background: var(--card); border: 1px solid #3a2e1a;
-    border-radius: var(--radius); padding: 16px 18px; margin-bottom: 20px;
-    display: flex; justify-content: space-between; align-items: center;
-    gap: 12px; overflow: hidden;
-  }
+.reserva-banner {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid #3a2e1a;
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+  
   .reserva-banner .rb-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
   .reserva-banner .rb-amount { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: var(--accent-cofre); }
   .reserva-banner .rb-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
   .contribuir-todos-btn {
-    background: var(--accent-cofre); color: #0d0d0d; border: none;
-    border-radius: 12px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 800;
-    padding: 10px 14px; cursor: pointer; transition: opacity 0.15s;
-    white-space: nowrap; line-height: 1.4; text-align: center; flex-shrink: 0;
-    flex-shrink; 0; max-width: 48%;
+  width: 100%;
+  background: var(--accent-cofre);
+  color: #0d0d0d;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 12px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  text-align: center;
   }
+  
   .contribuir-todos-btn:hover { opacity: 0.85; }
   .contribuir-todos-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
