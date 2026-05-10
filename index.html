@@ -181,6 +181,20 @@
   .add-btn:hover { opacity: 0.9; }
   .add-btn.income-mode { background: var(--accent-income); }
 
+  .date-row {
+    display: flex; align-items: center; background: var(--card2);
+    border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 10px 14px; margin-bottom: 14px; gap: 8px;
+    transition: border-color 0.2s; cursor: pointer;
+  }
+  .date-row:focus-within { border-color: #444; }
+  .date-row span { font-size: 16px; flex-shrink: 0; }
+  .date-row-label { font-size: 13px; color: var(--text); flex: 1; }
+  .date-row-label.is-today { color: var(--muted); }
+  #date-input {
+    position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none;
+  }
+
   /* ENTRIES */
   .entries-header {
     width: 100%; display: flex; justify-content: space-between;
@@ -624,6 +638,11 @@
     <div class="note-row">
       <span>✏️</span>
       <input type="text" id="note-input" placeholder="Nota opcional (ex: almoço com colegas)">
+    </div>
+    <div class="date-row" onclick="document.getElementById('date-input').showPicker?.() || document.getElementById('date-input').click()">
+      <span>📅</span>
+      <span class="date-row-label is-today" id="date-display">Hoje</span>
+      <input type="date" id="date-input" onchange="onDateChange(this.value)">
     </div>
     <button class="add-btn" id="add-btn" onclick="addEntry()">+ Registar despesa</button>
   </div>
@@ -1257,6 +1276,26 @@ function switchView(view) {
 
 // ===== HELPERS =====
 function todayStr()  { return new Date().toISOString().split('T')[0]; }
+function getEntryDate() {
+  const val = document.getElementById('date-input').value;
+  return val || todayStr();
+}
+function onDateChange(val) {
+  const display = document.getElementById('date-display');
+  if (!val || val === todayStr()) {
+    display.textContent = 'Hoje';
+    display.className = 'date-row-label is-today';
+  } else {
+    const d = new Date(val + 'T12:00:00');
+    display.textContent = d.toLocaleDateString('pt-PT', { weekday:'short', day:'numeric', month:'short' });
+    display.className = 'date-row-label';
+  }
+}
+function resetDatePicker() {
+  document.getElementById('date-input').value = '';
+  document.getElementById('date-display').textContent = 'Hoje';
+  document.getElementById('date-display').className = 'date-row-label is-today';
+}
 function monthStr()  { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; }
 function formatTime(iso) { return new Date(iso).toLocaleTimeString('pt-PT', {hour:'2-digit',minute:'2-digit'}); }
 function formatDate(iso) { return new Date(iso).toLocaleDateString('pt-PT', {day:'2-digit',month:'2-digit'}); }
@@ -1355,10 +1394,11 @@ function addEntry() {
   const amount = parseAmount(amountInput.value);
   if (!amount || amount <= 0) { showToast('⚠️ Insere um valor válido'); amountInput.focus(); return; }
   const subcat = getSelectedCat(); const parentcat = currentMode==='expense' ? getSelectedParentCat() : '';
-  entries.unshift({ id:Date.now(), type:currentMode, amount, category:subcat, parentCategory:parentcat, note:noteInput.value.trim(), date:todayStr(), ts:new Date().toISOString() });
+  const entryDate = getEntryDate();
+  entries.unshift({ id:Date.now(), type:currentMode, amount, category:subcat, parentCategory:parentcat, note:noteInput.value.trim(), date:entryDate, ts:new Date().toISOString() });
   saveData(entries);
   document.getElementById('streak-count').textContent = updateStreak();
-  amountInput.value=''; noteInput.value=''; amountInput.focus();
+  amountInput.value=''; noteInput.value=''; resetDatePicker(); amountInput.focus();
   renderAll();
   showToast(getMotivationToast(entries.filter(e=>e.date===todayStr()).length, currentMode));
 }
@@ -2160,6 +2200,7 @@ function showToast(msg) {
 
 // ===== INIT =====
 window.addEventListener('load', () => {
+  document.getElementById('date-input').max = todayStr();
   if (typeof google !== 'undefined') {
     initAuth();
   } else {
