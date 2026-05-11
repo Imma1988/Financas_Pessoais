@@ -472,20 +472,22 @@
   .rel-cat-subs { display: none; border-top: 1px solid var(--border); }
   .rel-cat-item.open .rel-cat-subs { display: block; }
   .rel-sub-item {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 16px 10px 48px; border-bottom: 1px solid var(--border);
-    font-size: 13px;
+    display: flex; flex-direction: column;
+    border-bottom: 1px solid var(--border); font-size: 13px; cursor: pointer;
   }
   .rel-sub-item:last-child { border-bottom: none; }
+  .rel-sub-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px 10px 48px;
+  }
   .rel-sub-name { color: var(--muted); flex: 1; }
-  .rel-sub-amount { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--red); }
+  .rel-sub-amount { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--red); white-space: nowrap; }
   .rel-sub-vs { font-size: 11px; margin-left: 8px; font-weight: 700; }
   .rel-sub-vs.pos { color: var(--red); }
   .rel-sub-vs.neg { color: var(--accent); }
   .rel-sub-entries { display: none; background: #0f0f0f; }
   .rel-sub-item.sub-open .rel-sub-entries { display: block; }
-  .rel-sub-item { cursor: pointer; }
-  .rel-sub-chevron { font-size: 11px; color: var(--muted); margin-left: 4px; transition: transform 0.2s; }
+  .rel-sub-chevron { font-size: 11px; color: var(--muted); margin-left: 6px; transition: transform 0.2s; display: inline-block; }
   .rel-sub-item.sub-open .rel-sub-chevron { transform: rotate(90deg); }
   .rel-entry-item {
     display: flex; align-items: center; justify-content: space-between;
@@ -3262,8 +3264,10 @@ function renderRelCategorias(expenses, prevExpenses, totalExp) {
 
       const subId = 'rel-sub-' + i + '-' + si;
       return `<div class="rel-sub-item" id="${subId}" onclick="toggleRelSub('${subId}')">
-        <span class="rel-sub-name">${sub}</span>
-        <span class="rel-sub-amount">${formatCurrency(val)}${vsLabel}<span class="rel-sub-chevron">›</span></span>
+        <div class="rel-sub-row">
+          <span class="rel-sub-name">${sub}</span>
+          <span class="rel-sub-amount">${formatCurrency(val)}${vsLabel}<span class="rel-sub-chevron">›</span></span>
+        </div>
         <div class="rel-sub-entries">${entryItems}</div>
       </div>`;
     }).join('');
