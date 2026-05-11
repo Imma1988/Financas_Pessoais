@@ -2898,8 +2898,9 @@ function renderImportReview() {
         </div>
         <div style="display:flex;gap:8px;margin-bottom:6px;">
           <input type="date" class="im-note-input" id="import-date-${i}" value="${m.data}" style="width:140px;flex-shrink:0;">
-          <input type="text" class="im-note-input" id="import-note-${i}" style="flex:1;"  value="${m.descricao.replace(/"/g,'&quot;')}" placeholder="Nota (descrição da despesa)">
-        <div class="im-cat-row" style="margin-top:6px;">
+          <input type="text" class="im-note-input" id="import-note-${i}" style="flex:1;" value="${m.descricao.replace(/"/g,'&quot;')}" placeholder="Nota">
+        </div>
+        <div class="im-cat-row" style="margin-top:0;">
           <select class="im-cat-select" id="import-cat-${i}">
             <option value="">— Sem categoria —</option>
             ${options}
