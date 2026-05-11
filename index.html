@@ -97,15 +97,6 @@
   .header-left .date { font-size: 12px; color: var(--muted); margin-top: 2px; text-transform: capitalize; }
 
 
-  /* MOTIVATION */
-  .motivation {
-    width: 100%; background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 14px 16px;
-    display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
-  }
-  .motivation .icon { font-size: 20px; }
-  .motivation p { font-size: 13px; color: var(--muted); line-height: 1.4; }
-  .motivation p strong { color: var(--text); }
 
   /* SUMMARY */
   .summary {
@@ -117,7 +108,7 @@
     border-radius: var(--radius); padding: 14px 12px;
   }
   .summary-card .label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-  .summary-card .amount { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; }
+  .summary-card .amount { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .summary-card .sub { font-size: 10px; color: var(--muted); margin-top: 4px; }
   .summary-card.expenses .amount { color: var(--red); }
   .summary-card.income .amount   { color: var(--accent-income); }
@@ -755,11 +746,6 @@
       <div class="date" id="today-label" onclick="openCicloSettings()" style="cursor:pointer;" title="Configurar ciclo">⚙️ <span id="ciclo-label-header"></span></div>
     </div>
 
-  </div>
-
-  <div class="motivation" id="motivation-bar">
-    <div class="icon">💡</div>
-    <p id="motivation-text">Regista a tua primeira despesa de hoje. <strong>Menos de 5 segundos!</strong></p>
   </div>
 
   <div class="summary">
@@ -1905,7 +1891,7 @@ function clearToday() {
 }
 
 // ===== RENDER REGISTOS =====
-function renderAll() { renderSummary(); renderEntries(); renderMotivation(); renderDate(); }
+function renderAll() { renderSummary(); renderEntries(); renderDate(); }
 
 function renderDate() {
   document.getElementById('ciclo-label-header').textContent = cicloLabel();
@@ -1954,12 +1940,8 @@ function renderEntries() {
     <div class="entry ${e.type==='income'?'income-entry':'expense-entry'}">
       <div class="entry-icon">${icon}</div>
       <div class="entry-info">
-        <div class="entry-cat">
-          ${e.category}
-          ${e.parentCategory ? `<span style="font-size:10px;color:var(--muted);font-weight:400;"> · ${e.parentCategory}</span>` : ''}
-          <span class="type-badge ${e.type}">${e.type==='income'?'receita':'despesa'}</span>
-        </div>
-        <div class="entry-note">${e.note||'—'}</div>
+        <div class="entry-cat">${e.category}</div>
+        ${e.note ? `<div class="entry-note">${e.note}</div>` : ''}
         <div class="entry-time">${dateLabel}</div>
       </div>
       <div class="entry-amount ${e.type==='income'?'income-amt':'expense-amt'}">${e.type==='income'?'+':'-'}${formatCurrency(e.amount)}</div>
@@ -1971,19 +1953,7 @@ function renderEntries() {
   }).join('');
 }
 
-function renderMotivation() {
-  const count = entries.filter(e=>isInCurrentCiclo(e.date)).length;
-  const msgs = [
-    {icon:'💡',text:'Regista a tua primeira entrada de hoje. <strong>Menos de 5 segundos!</strong>'},
-    {icon:'🎉',text:'Primeiro registo feito! <strong>Continua assim.</strong>'},
-    {icon:'🚀',text:'Já tens 2 registos hoje! Cada registo conta.'},
-    {icon:'🔥',text:'Estás a arrasar! O controlo financeiro começa aqui.'},
-    {icon:'💪',text:'Incrível! Quanto mais registas, mais controlo tens.'},
-  ];
-  const m = msgs[Math.min(count,msgs.length-1)];
-  document.getElementById('motivation-bar').querySelector('.icon').textContent = m.icon;
-  document.getElementById('motivation-text').innerHTML = m.text;
-}
+
 
 function getMotivationToast(count,mode) {
   if (mode==='income') return ['✅ Receita registada!','💰 Boa! +1 receita','🚀 Continua assim!','💪 Estás a arrasar!'][Math.min(count-1,3)];
