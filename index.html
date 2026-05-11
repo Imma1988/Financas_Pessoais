@@ -797,10 +797,16 @@
   </div>
 
   <div class="entries-header">
-    <h2>📋 Hoje</h2>
-    <button class="clear-btn" onclick="clearToday()">Limpar hoje</button>
+    <h2 id="entries-h2">📋</h2>
+    <div style="display:flex;gap:6px;align-items:center;">
+      <button class="clear-btn" id="ciclo-prev-btn" onclick="navigateCiclo(-1)" style="font-size:16px;padding:4px 8px;">‹</button>
+      <button class="clear-btn" id="ciclo-next-btn" onclick="navigateCiclo(1)"  style="font-size:16px;padding:4px 8px;">›</button>
+      <button class="clear-btn" onclick="clearToday()">Limpar</button>
+    </div>
   </div>
-  <div class="entries" id="entries-list"></div>
+  <div class="entries" id="entries-list"
+    ontouchstart="handleSwipeStart(event)"
+    ontouchend="handleSwipeEnd(event)"></div>
 </div>
 
 <!-- ===== VIEW: COFRES ===== -->
@@ -1315,6 +1321,7 @@ let deletedAtivoIds = new Set();
 let ativos          = [];
 let tiposCustom     = {};
 let cicloInicio     = 25; // day of month cycle starts
+let cicloOffset     = 0;  // 0 = current, -1 = previous, etc.
 let accessToken  = null;
 let driveFileId  = null;
 let syncTimeout  = null;
@@ -1594,27 +1601,22 @@ function menuNav(view) { closeMenu(); switchView(view); }
 // ===== HELPERS =====
 function todayStr()  { return new Date().toISOString().split('T')[0]; }
 
-function getCicloRange() {
-  // Returns {start, end} strings for current cycle based on cicloInicio
-  const now   = new Date();
-  const day   = now.getDate();
-  let startY, startM, endY, endM;
-  if (day >= cicloInicio) {
-    // e.g. today is 27 May, ciclo is 25 → cycle: 25 May → 24 Jun
-    startY = now.getFullYear(); startM = now.getMonth();
-    const endDate = new Date(startY, startM + 1, cicloInicio - 1);
-    endY = endDate.getFullYear(); endM = endDate.getMonth();
-  } else {
-    // e.g. today is 10 May, ciclo is 25 → cycle: 25 Apr → 24 May
-    const startDate = new Date(now.getFullYear(), now.getMonth() - 1, cicloInicio);
-    startY = startDate.getFullYear(); startM = startDate.getMonth();
-    const endDate = new Date(now.getFullYear(), now.getMonth(), cicloInicio - 1);
-    endY = endDate.getFullYear(); endM = endDate.getMonth();
-  }
+function getCicloRange(offset) {
+  // Returns {start, end} for cycle at offset (0=current, -1=previous, etc.)
+  offset = offset !== undefined ? offset : cicloOffset;
+  const now = new Date();
+  const day = now.getDate();
+  // Find base start month
+  let baseYear = now.getFullYear();
+  let baseMonth = now.getMonth();
+  if (day < cicloInicio) baseMonth -= 1;
+  // Apply offset
+  baseMonth += offset;
+  const startDate = new Date(baseYear, baseMonth, cicloInicio);
+  const endDate   = new Date(baseYear, baseMonth + 1, cicloInicio - 1);
   const pad = n => String(n).padStart(2,'0');
-  const start = `${startY}-${pad(startM+1)}-${pad(cicloInicio)}`;
-  const end   = `${endY}-${pad(endM+1)}-${pad(cicloInicio-1 || 1)}`;
-  return { start, end };
+  const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  return { start: fmt(startDate), end: fmt(endDate) };
 }
 
 function isInCurrentCiclo(dateStr) {
@@ -1622,10 +1624,18 @@ function isInCurrentCiclo(dateStr) {
   return dateStr >= start && dateStr <= end;
 }
 
-function cicloLabel() {
-  const { start, end } = getCicloRange();
+function cicloLabel(offset) {
+  const { start, end } = getCicloRange(offset !== undefined ? offset : cicloOffset);
   const fmt = d => new Date(d+'T12:00:00').toLocaleDateString('pt-PT', {day:'numeric',month:'short'});
   return fmt(start) + ' – ' + fmt(end);
+}
+
+function navigateCiclo(delta) {
+  cicloOffset += delta;
+  // Don't go into the future
+  if (cicloOffset > 0) cicloOffset = 0;
+  renderAll();
+  resetDatePicker();
 }
 function getEntryDate() {
   const val = document.getElementById('date-input').value;
@@ -1890,6 +1900,16 @@ function clearToday() {
   entries=entries.filter(e=>!isInCurrentCiclo(e.date)); saveData(entries); renderAll();
 }
 
+// Swipe navigation
+let swipeStartX = 0;
+function handleSwipeStart(e) { swipeStartX = e.touches[0].clientX; }
+function handleSwipeEnd(e) {
+  const dx = e.changedTouches[0].clientX - swipeStartX;
+  if (Math.abs(dx) < 60) return; // min swipe distance
+  if (dx < 0) navigateCiclo(-1); // swipe left = previous
+  else if (cicloOffset < 0) navigateCiclo(1); // swipe right = next
+}
+
 // ===== RENDER REGISTOS =====
 function renderAll() { renderSummary(); renderEntries(); renderDate(); }
 
@@ -1922,7 +1942,9 @@ function renderEntries() {
   const cicloEntries = entries.filter(e=>isInCurrentCiclo(e.date))
     .sort((a,b) => new Date(b.ts)-new Date(a.ts));
   // Update header label
-  document.querySelector('.entries-header h2').textContent = '📋 ' + cicloLabel();
+  document.getElementById('entries-h2').textContent = '📋 ' + cicloLabel();
+  document.getElementById('ciclo-next-btn').style.opacity = cicloOffset >= 0 ? '0.3' : '1';
+  document.getElementById('ciclo-next-btn').disabled = cicloOffset >= 0;
   if (!cicloEntries.length) {
     list.innerHTML=`<div class="empty-state"><div class="emoji">📭</div><p>Nenhum registo neste ciclo.<br>Usa o formulário acima — é rápido!</p></div>`;
     return;
@@ -2874,8 +2896,9 @@ function renderImportReview() {
           <div class="im-desc">${m.descricao}${autoTag}${dupTag}</div>
           <div class="im-amount ${isExpense?'expense':'income'}">${isExpense?'-':'+'}${formatCurrency(m.valor)}</div>
         </div>
-        <div class="im-date">📅 ${m.data}</div>
-        <input type="text" class="im-note-input" id="import-note-${i}" value="${m.descricao.replace(/"/g,'&quot;')}" placeholder="Nota (descrição da despesa)">
+        <div style="display:flex;gap:8px;margin-bottom:6px;">
+          <input type="date" class="im-note-input" id="import-date-${i}" value="${m.data}" style="width:140px;flex-shrink:0;">
+          <input type="text" class="im-note-input" id="import-note-${i}" style="flex:1;"  value="${m.descricao.replace(/"/g,'&quot;')}" placeholder="Nota (descrição da despesa)">
         <div class="im-cat-row" style="margin-top:6px;">
           <select class="im-cat-select" id="import-cat-${i}">
             <option value="">— Sem categoria —</option>
@@ -2932,7 +2955,7 @@ function submitImport() {
       category: subcat || (m.tipo==='expense' ? '🔷 Outras despesas' : incomeCats[0]),
       parentCategory: parentcat,
       note: document.getElementById('import-note-' + i)?.value || m.descricao,
-      date: m.data,
+      date: document.getElementById('import-date-' + i)?.value || m.data,
       ts: new Date().toISOString()
     });
     count++;
