@@ -454,6 +454,12 @@
   .mv-del { background: none; border: none; color: #333; cursor: pointer; font-size: 13px; padding: 2px 4px; border-radius: 4px; transition: color 0.15s; }
   .mv-del:hover { color: var(--red); }
 
+  /* Edit entry */
+  .edit-entry-type-toggle { display:flex; gap:6px; margin-bottom:12px; }
+  .edit-type-btn { flex:1; background:var(--card2); border:1.5px solid var(--border); border-radius:9px; padding:9px; font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:var(--muted); cursor:pointer; transition:all 0.2s; }
+  .edit-type-btn.active-expense { background:var(--red); color:#fff; border-color:var(--red); }
+  .edit-type-btn.active-income  { background:var(--accent-income); color:#0d0d0d; border-color:var(--accent-income); }
+
   /* Relatórios */
   .rel-cat-item {
     background: var(--card); border: 1px solid var(--border);
@@ -1070,6 +1076,40 @@
         <button class="import-submit-btn" onclick="submitImport()">✅ Registar selecionados</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Editar Registo ===== -->
+<div class="modal-overlay" id="edit-entry-overlay" onclick="if(event.target===this)closeEditEntry()">
+  <div class="modal">
+    <div class="modal-title">✏️ Editar registo <button class="modal-close" onclick="closeEditEntry()">✕</button></div>
+
+    <div class="edit-entry-type-toggle">
+      <button class="edit-type-btn" id="edit-btn-expense" onclick="setEditMode('expense')">📤 Despesa</button>
+      <button class="edit-type-btn" id="edit-btn-income"  onclick="setEditMode('income')">📥 Receita</button>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Valor (€)</label>
+      <input type="number" class="form-input" id="edit-amount" inputmode="decimal" step="0.01" min="0">
+    </div>
+
+    <div class="form-row" id="edit-cat-row">
+      <label class="form-label">Sub-categoria</label>
+      <select class="form-select" id="edit-category"></select>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Nota</label>
+      <input type="text" class="form-input" id="edit-note" placeholder="Nota opcional">
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Data</label>
+      <input type="date" class="form-input" id="edit-date">
+    </div>
+
+    <button class="modal-submit-btn" onclick="submitEditEntry()">Guardar alterações</button>
   </div>
 </div>
 
@@ -1804,6 +1844,60 @@ document.getElementById('amount-input').addEventListener('keydown', e => { if(e.
 document.getElementById('note-input').addEventListener('keydown',   e => { if(e.key==='Enter') addEntry(); });
 
 function deleteEntry(id) { deletedIds.add(id); entries=entries.filter(e=>e.id!==id); saveData(entries); renderAll(); }
+
+let editEntryId = null;
+let editEntryMode = 'expense';
+
+function openEditEntry(id) {
+  const e = entries.find(x => x.id === id);
+  if (!e) return;
+  editEntryId   = id;
+  editEntryMode = e.type;
+
+  setEditMode(e.type);
+  document.getElementById('edit-amount').value = e.amount;
+  document.getElementById('edit-note').value   = e.note || '';
+  document.getElementById('edit-date').value   = e.date;
+  document.getElementById('edit-date').max     = todayStr();
+
+  populateEditCatSelect(e.type, e.category);
+  document.getElementById('edit-entry-overlay').classList.add('open');
+}
+
+function setEditMode(mode) {
+  editEntryMode = mode;
+  document.getElementById('edit-btn-expense').className = 'edit-type-btn' + (mode==='expense'?' active-expense':'');
+  document.getElementById('edit-btn-income').className  = 'edit-type-btn' + (mode==='income'?' active-income':'');
+  populateEditCatSelect(mode, null);
+}
+
+function populateEditCatSelect(type, selected) {
+  const sel  = document.getElementById('edit-category');
+  const cats = type==='income' ? incomeCats : expenseCats.flatMap(g => g.subs);
+  sel.innerHTML = cats.map(c => `<option value="${c}" ${c===selected?'selected':''}>${c}</option>`).join('');
+}
+
+function closeEditEntry() { document.getElementById('edit-entry-overlay').classList.remove('open'); }
+
+function submitEditEntry() {
+  const amount = parseAmount(document.getElementById('edit-amount').value);
+  const cat    = document.getElementById('edit-category').value;
+  const note   = document.getElementById('edit-note').value.trim();
+  const date   = document.getElementById('edit-date').value;
+
+  if (!amount || amount <= 0) { showToast('⚠️ Insere um valor válido'); return; }
+  if (!date) { showToast('⚠️ Escolhe uma data'); return; }
+
+  const parentcat = editEntryMode==='expense' ? getSubcatParent(cat) : '';
+  entries = entries.map(e => e.id === editEntryId ? {
+    ...e, type: editEntryMode, amount, category: cat, parentCategory: parentcat, note, date
+  } : e);
+
+  saveData(entries);
+  closeEditEntry();
+  renderAll();
+  showToast('✅ Registo atualizado!');
+}
 function clearToday() {
   if (!confirm('Apagar todos os registos deste ciclo?')) return;
   entries.filter(e=>isInCurrentCiclo(e.date)).forEach(e => deletedIds.add(e.id));
@@ -1847,17 +1941,34 @@ function renderEntries() {
     list.innerHTML=`<div class="empty-state"><div class="emoji">📭</div><p>Nenhum registo neste ciclo.<br>Usa o formulário acima — é rápido!</p></div>`;
     return;
   }
-  list.innerHTML = cicloEntries.map(e=>`
+  list.innerHTML = cicloEntries.map(e=>{
+    // Get icon from parent category
+    const parentCat = e.parentCategory || e.category;
+    const catGroup  = expenseCats.find(g => g.cat === parentCat);
+    const icon      = e.type==='income'
+      ? (incomeCats.find(c=>c===e.category)||'💰').split(' ')[0]
+      : (catGroup?.cat.split(' ')[0] || '📦');
+    const isToday   = e.date === todayStr();
+    const dateLabel = isToday ? formatTime(e.ts) : formatDate(e.date) + ' · ' + formatTime(e.ts);
+    return `
     <div class="entry ${e.type==='income'?'income-entry':'expense-entry'}">
-      <div class="entry-icon">${e.category.split(' ')[0]}</div>
+      <div class="entry-icon">${icon}</div>
       <div class="entry-info">
-        <div class="entry-cat">${e.category} ${e.parentCategory ? '<span style="font-size:10px;color:var(--muted);font-weight:400;">· '+e.parentCategory+'</span>' : ''} <span class="type-badge ${e.type}">${e.type==='income'?'receita':'despesa'}</span></div>
+        <div class="entry-cat">
+          ${e.category}
+          ${e.parentCategory ? `<span style="font-size:10px;color:var(--muted);font-weight:400;"> · ${e.parentCategory}</span>` : ''}
+          <span class="type-badge ${e.type}">${e.type==='income'?'receita':'despesa'}</span>
+        </div>
         <div class="entry-note">${e.note||'—'}</div>
-        <div class="entry-time">${formatDate(e.date) !== formatDate(todayStr()+'T00:00:00') ? formatDate(e.date)+' · ' : ''}${formatTime(e.ts)}</div>
+        <div class="entry-time">${dateLabel}</div>
       </div>
       <div class="entry-amount ${e.type==='income'?'income-amt':'expense-amt'}">${e.type==='income'?'+':'-'}${formatCurrency(e.amount)}</div>
-      <button class="entry-del" onclick="deleteEntry(${e.id})">✕</button>
-    </div>`).join('');
+      <div style="display:flex;flex-direction:column;gap:2px;flex-shrink:0;">
+        <button class="entry-del" onclick="openEditEntry(${e.id})" title="Editar" style="color:var(--muted);">✏️</button>
+        <button class="entry-del" onclick="deleteEntry(${e.id})" title="Apagar">✕</button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function renderMotivation() {
