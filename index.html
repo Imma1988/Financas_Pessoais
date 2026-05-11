@@ -3262,10 +3262,8 @@ function renderRelCategorias(expenses, prevExpenses, totalExp) {
 
       const subId = 'rel-sub-' + i + '-' + si;
       return `<div class="rel-sub-item" id="${subId}" onclick="toggleRelSub('${subId}')">
-        <div class="rel-sub-item" style="cursor:pointer;border-bottom:none;padding-bottom:0;">
-          <span class="rel-sub-name">${sub}</span>
-          <span class="rel-sub-amount">${formatCurrency(val)}${vsLabel}<span class="rel-sub-chevron">›</span></span>
-        </div>
+        <span class="rel-sub-name">${sub}</span>
+        <span class="rel-sub-amount">${formatCurrency(val)}${vsLabel}<span class="rel-sub-chevron">›</span></span>
         <div class="rel-sub-entries">${entryItems}</div>
       </div>`;
     }).join('');
