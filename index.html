@@ -457,6 +457,17 @@
   .im-skip-btn { background: none; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-size: 11px; padding: 6px 10px; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
   .im-skip-btn:hover { color: var(--red); border-color: var(--red); }
   .im-skip-btn.unskip { color: var(--accent); border-color: var(--accent); }
+  .im-note-input {
+    width: 100%; background: var(--card); border: 1.5px solid var(--border);
+    border-radius: 8px; color: var(--text); font-family: 'DM Sans',sans-serif;
+    font-size: 12px; padding: 6px 10px; outline: none; margin-top: 6px;
+    transition: border-color 0.2s;
+  }
+  .im-note-input:focus { border-color: #555; }
+  .im-duplicate-badge {
+    font-size: 10px; background: rgba(255,94,94,0.15); color: var(--red);
+    border-radius: 4px; padding: 2px 6px; font-weight: 700; margin-left: 6px;
+  }
 
   .import-actions { display: flex; gap: 8px; margin-top: 16px; }
   .import-submit-btn { flex: 1; background: #a78bfa; color: #0d0d0d; border: none; border-radius: 12px; padding: 14px; font-family: 'Syne',sans-serif; font-size: 15px; font-weight: 800; cursor: pointer; transition: opacity 0.15s; }
@@ -2571,8 +2582,16 @@ function fileToBase64(file) {
 }
 
 function normalizeDesc(desc) {
-  // Normalize description for memory matching — uppercase, remove numbers/dates/extra spaces
   return desc.toUpperCase().replace(/[0-9]/g, '').replace(/\s+/g, ' ').trim().substring(0, 40);
+}
+
+function isDuplicate(m) {
+  // Check if an entry with same date, amount and similar description already exists
+  return entries.some(e =>
+    e.date === m.data &&
+    Math.abs(e.amount - m.valor) < 0.01 &&
+    normalizeDesc(e.note || '') === normalizeDesc(m.descricao)
+  );
 }
 
 function findMemoryMatch(m) {
@@ -2602,9 +2621,11 @@ function renderImportReview() {
     else if (mem?.subcat) { m._autoSubcat = mem.subcat; autoMatched++; }
   });
 
+  const autoDups = importedMovements.filter(m => isDuplicate(m)).length;
   let summary = `${importedMovements.length} movimentos encontrados.`;
-  if (autoMatched > 0) summary += ` ${autoMatched} já categorizados automaticamente.`;
-  if (autoSkipped > 0) summary += ` ${autoSkipped} marcados para saltar.`;
+  if (autoMatched > 0) summary += ` ${autoMatched} já categorizados.`;
+  if (autoSkipped > 0) summary += ` ${autoSkipped} da memória.`;
+  if (autoDups > 0) summary += ` ${autoDups} possíveis duplicados.`;
   document.getElementById('import-summary').textContent = summary;
 
   document.getElementById('import-movements-list').innerHTML = importedMovements.map((m, i) => {
@@ -2612,20 +2633,23 @@ function renderImportReview() {
     const subcats    = isExpense ? allSubcats : incomeSubcats;
     const bestSubcat = m._autoSubcat || m.subcategoria;
     const options    = subcats.map(s => `<option value="${s}" ${s===bestSubcat?'selected':''}>${s}</option>`).join('');
-    const isSkipped  = m._autoSkip || false;
+    const duplicate  = isDuplicate(m);
+    const isSkipped  = m._autoSkip || duplicate || false;
     const skipLabel  = isSkipped ? 'Incluir' : 'Saltar';
     const skipClass  = isSkipped ? 'im-skip-btn unskip' : 'im-skip-btn';
     const autoTag    = m._autoSkip ? '<span style="font-size:10px;color:var(--muted);margin-left:6px;">🧠 memória</span>'
                      : m._autoSubcat ? '<span style="font-size:10px;color:var(--accent);margin-left:6px;">🧠 memória</span>'
                      : '';
+    const dupTag     = duplicate ? '<span class="im-duplicate-badge">⚠️ duplicado</span>' : '';
     return `
       <div class="import-movement ${isSkipped?'skipped':''}" id="import-mov-${i}">
         <div class="im-top">
-          <div class="im-desc">${m.descricao}${autoTag}</div>
+          <div class="im-desc">${m.descricao}${autoTag}${dupTag}</div>
           <div class="im-amount ${isExpense?'expense':'income'}">${isExpense?'-':'+'}${formatCurrency(m.valor)}</div>
         </div>
         <div class="im-date">📅 ${m.data}</div>
-        <div class="im-cat-row">
+        <input type="text" class="im-note-input" id="import-note-${i}" value="${m.descricao.replace(/"/g,'&quot;')}" placeholder="Nota (descrição da despesa)">
+        <div class="im-cat-row" style="margin-top:6px;">
           <select class="im-cat-select" id="import-cat-${i}">
             <option value="">— Sem categoria —</option>
             ${options}
@@ -2637,7 +2661,7 @@ function renderImportReview() {
 
   // Init skipped state
   importedMovements.forEach((m, i) => {
-    if (m._autoSkip) document.getElementById('import-mov-' + i).classList.add('skipped');
+    if (m._autoSkip || isDuplicate(m)) document.getElementById('import-mov-' + i).classList.add('skipped');
   });
 }
 
@@ -2680,7 +2704,7 @@ function submitImport() {
       amount: m.valor,
       category: subcat || (m.tipo==='expense' ? '🔷 Outras despesas' : incomeCats[0]),
       parentCategory: parentcat,
-      note: m.descricao,
+      note: document.getElementById('import-note-' + i)?.value || m.descricao,
       date: m.data,
       ts: new Date().toISOString()
     });
