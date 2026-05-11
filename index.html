@@ -482,6 +482,20 @@
   .rel-sub-vs { font-size: 11px; margin-left: 8px; font-weight: 700; }
   .rel-sub-vs.pos { color: var(--red); }
   .rel-sub-vs.neg { color: var(--accent); }
+  .rel-sub-entries { display: none; background: #0f0f0f; }
+  .rel-sub-item.sub-open .rel-sub-entries { display: block; }
+  .rel-sub-item { cursor: pointer; }
+  .rel-sub-chevron { font-size: 11px; color: var(--muted); margin-left: 4px; transition: transform 0.2s; }
+  .rel-sub-item.sub-open .rel-sub-chevron { transform: rotate(90deg); }
+  .rel-entry-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 16px 8px 56px; border-bottom: 1px solid #1a1a1a; font-size: 12px;
+  }
+  .rel-entry-item:last-child { border-bottom: none; }
+  .rel-entry-left { flex: 1; min-width: 0; }
+  .rel-entry-note { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rel-entry-date { font-size: 10px; color: #444; margin-top: 1px; }
+  .rel-entry-amount { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; color: var(--red); flex-shrink: 0; margin-left: 8px; }
 
   /* Bar chart for comparison */
   .bar-chart { width: 100%; }
@@ -3225,15 +3239,34 @@ function renderRelCategorias(expenses, prevExpenses, totalExp) {
     const prevTot = prevCatData[cat]?.total || 0;
     const diff    = prevTot > 0 ? data.total - prevTot : null;
 
-    const subs = Object.entries(data.subs).sort((a,b)=>b[1]-a[1]).map(([sub, val]) => {
-      const prevSub = prevCatData[cat]?.subs?.[sub] || 0;
-      const subDiff = prevSub > 0 ? val - prevSub : null;
-      const vsLabel = subDiff !== null
+    const subs = Object.entries(data.subs).sort((a,b)=>b[1]-a[1]).map(([sub, val], si) => {
+      const prevSub  = prevCatData[cat]?.subs?.[sub] || 0;
+      const subDiff  = prevSub > 0 ? val - prevSub : null;
+      const vsLabel  = subDiff !== null
         ? `<span class="rel-sub-vs ${subDiff>0?'pos':'neg'}">${subDiff>0?'+':'-'}${formatCurrency(subDiff)}</span>`
         : '';
-      return `<div class="rel-sub-item">
-        <span class="rel-sub-name">${sub}</span>
-        <span class="rel-sub-amount">${formatCurrency(val)}${vsLabel}</span>
+
+      // Entries for this sub-category
+      const subEntries = expenses
+        .filter(e => e.category === sub)
+        .sort((a,b) => new Date(b.date) - new Date(a.date));
+
+      const entryItems = subEntries.map(e => `
+        <div class="rel-entry-item">
+          <div class="rel-entry-left">
+            <div class="rel-entry-note">${e.note || '—'}</div>
+            <div class="rel-entry-date">${formatDate(e.date)}</div>
+          </div>
+          <div class="rel-entry-amount">${formatCurrency(e.amount)}</div>
+        </div>`).join('');
+
+      const subId = 'rel-sub-' + i + '-' + si;
+      return `<div class="rel-sub-item" id="${subId}" onclick="toggleRelSub('${subId}')">
+        <div class="rel-sub-item" style="cursor:pointer;border-bottom:none;padding-bottom:0;">
+          <span class="rel-sub-name">${sub}</span>
+          <span class="rel-sub-amount">${formatCurrency(val)}${vsLabel}<span class="rel-sub-chevron">›</span></span>
+        </div>
+        <div class="rel-sub-entries">${entryItems}</div>
       </div>`;
     }).join('');
 
@@ -3257,6 +3290,11 @@ function renderRelCategorias(expenses, prevExpenses, totalExp) {
 
 function toggleRelCat(i) {
   document.getElementById('rel-cat-' + i).classList.toggle('open');
+}
+
+function toggleRelSub(id) {
+  event.stopPropagation();
+  document.getElementById(id).classList.toggle('sub-open');
 }
 
 // ===== TOAST =====
