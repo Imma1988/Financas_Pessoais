@@ -852,12 +852,9 @@
     <div class="modal-title">
       🏦 Usar cofre? <button class="modal-close" onclick="skipCofreConfirm()">✕</button>
     </div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">A sub-categoria escolhida tem um cofre associado. Queres descontar desta despesa?</p>
-    <div class="cofre-confirm-card" id="cofre-confirm-card"></div>
-    <div class="confirm-btns">
-      <button class="confirm-btn-sim" onclick="confirmUseCofre()">✅ Sim, descontar</button>
-      <button class="confirm-btn-nao" onclick="skipCofreConfirm()">Não, obrigado</button>
-    </div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;" id="cofre-confirm-desc">A sub-categoria escolhida tem cofres associados. Escolhe qual usar:</p>
+    <div id="cofre-confirm-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;"></div>
+    <button class="confirm-btn-nao" style="width:100%;" onclick="skipCofreConfirm()">Não usar cofre</button>
   </div>
 </div>
 
@@ -1494,10 +1491,10 @@ function addEntry() {
   const entryDate = getEntryDate();
   const entry = { id:Date.now(), type:currentMode, amount, category:subcat, parentCategory:parentcat, note:noteInput.value.trim(), date:entryDate, ts:new Date().toISOString() };
 
-  // Check if any cofre is associated with this subcategory (expenses only)
+  // Check if any cofres are associated with this subcategory (expenses only)
   if (currentMode === 'expense') {
-    const linked = cofres.find(c => c.subcategoria === subcat && !cofreCompleto(c));
-    if (linked) {
+    const linked = cofres.filter(c => c.subcategoria === subcat && !cofreCompleto(c));
+    if (linked.length > 0) {
       pendingEntry = entry;
       showCofreConfirm(linked, amount);
       amountInput.value=''; noteInput.value=''; resetDatePicker();
@@ -1515,32 +1512,44 @@ function commitEntry(entry) {
   resetDatePicker();
   document.getElementById('amount-input').focus();
   renderAll();
-  showToast(getMotivationToast(entries.filter(e=>e.date===todayStr()).length, entry.type)); // today only for motivation
+  showToast(getMotivationToast(entries.filter(e=>e.date===todayStr()).length, entry.type));
 }
 
-function showCofreConfirm(cofre, amount) {
-  const insuficiente = amount > cofre.saldoAtual;
-  document.getElementById('cofre-confirm-card').innerHTML = `
-    <div class="cc-icon">${cofre.emoji||'🏦'}</div>
-    <div class="cc-info">
-      <div class="cc-nome">${cofre.nome}</div>
-      <div class="cc-saldo ${insuficiente?'insuficiente':''}">
-        Saldo: ${formatCurrency(cofre.saldoAtual)}
-        ${insuficiente ? ' — ⚠️ insuficiente para cobrir a despesa' : ''}
-      </div>
-    </div>`;
+function showCofreConfirm(linkedCofres, amount) {
+  const desc = document.getElementById('cofre-confirm-desc');
+  desc.textContent = linkedCofres.length === 1
+    ? 'A sub-categoria escolhida tem um cofre associado. Queres descontar desta despesa?'
+    : `Existem ${linkedCofres.length} cofres associados a esta sub-categoria. Escolhe qual usar:`;
+
+  const list = document.getElementById('cofre-confirm-list');
+  list.innerHTML = linkedCofres.map(cofre => {
+    const insuficiente = amount > cofre.saldoAtual;
+    return `
+      <div class="cofre-confirm-card" style="cursor:pointer;" onclick="confirmUseCofre(${cofre.id})">
+        <div class="cc-icon">${cofre.emoji||'🏦'}</div>
+        <div class="cc-info">
+          <div class="cc-nome">${cofre.nome}</div>
+          <div class="cc-saldo ${insuficiente?'insuficiente':''}">
+            Saldo: ${formatCurrency(cofre.saldoAtual)}
+            ${insuficiente ? ' — ⚠️ insuficiente' : ''}
+          </div>
+        </div>
+        <div style="font-size:20px;color:var(--accent-cofre);">›</div>
+      </div>`;
+  }).join('');
+
   document.getElementById('cofre-confirm-overlay').classList.add('open');
 }
 
-function confirmUseCofre() {
+function confirmUseCofre(cofreId) {
   if (!pendingEntry) return;
-  const linked = cofres.find(c => c.subcategoria === pendingEntry.category);
-  if (linked) {
+  const cofre = cofres.find(c => c.id === cofreId);
+  if (cofre) {
     const valor = pendingEntry.amount;
     const mov   = { id: Date.now().toString(), tipo:'levantar', valor, nota: pendingEntry.note || pendingEntry.category, ts: new Date().toISOString() };
-    if (!linked.movimentos) linked.movimentos = [];
-    linked.movimentos.push(mov);
-    linked.saldoAtual = Math.max(0, +(linked.saldoAtual - valor).toFixed(2));
+    if (!cofre.movimentos) cofre.movimentos = [];
+    cofre.movimentos.push(mov);
+    cofre.saldoAtual = Math.max(0, +(cofre.saldoAtual - valor).toFixed(2));
     saveCofres(cofres);
   }
   commitEntry(pendingEntry);
