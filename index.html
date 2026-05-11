@@ -2483,13 +2483,23 @@ async function processImportFile(file) {
     let fileContent = '';
     const ext = file.name.split('.').pop().toLowerCase();
 
-    // All file types: send as base64 with correct mime type
-    const base64 = await fileToBase64(file);
-    const mimeType = ext === 'pdf' ? 'application/pdf'
-      : ext === 'csv' ? 'text/csv'
-      : ext === 'xlsx' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      : 'application/vnd.ms-excel';
-    fileContent = { base64, mimeType };
+    if (ext === 'pdf') {
+      // PDF: send as base64
+      const base64 = await fileToBase64(file);
+      fileContent = { base64, mimeType: 'application/pdf' };
+    } else if (ext === 'csv') {
+      // CSV: send as plain text
+      const text = await file.text();
+      fileContent = { text };
+    } else {
+      // XLS/XLSX: convert to CSV using SheetJS
+      const XLSX = await import('https://cdn.sheetjs.com/xlsx-0.20.1/package/xlsx.mjs');
+      const arrayBuffer = await file.arrayBuffer();
+      const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      fileContent = { text: XLSX.utils.sheet_to_csv(sheet) };
+    }
 
     // Build prompt for Gemini
     const allSubcats = expenseCats.flatMap(g => g.subs);
@@ -2515,12 +2525,13 @@ Regras:
 - Ignora movimentos entre contas próprias e transferências internas
 - Devolve APENAS o JSON, sem texto adicional`;
 
+    const filePart = fileContent.base64
+      ? { inline_data: { mime_type: fileContent.mimeType, data: fileContent.base64 } }
+      : { text: 'Conteúdo do ficheiro:\n' + fileContent.text.substring(0, 12000) };
+
     const requestBody = {
       contents: [{
-        parts: [
-          { text: promptText },
-          { inline_data: { mime_type: fileContent.mimeType, data: fileContent.base64 } }
-        ]
+        parts: [ { text: promptText }, filePart ]
       }],
       generationConfig: { temperature: 0.1 }
     };
