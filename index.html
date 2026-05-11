@@ -2902,7 +2902,8 @@ function setRelatorioPeriod(p) {
   ['atual','anterior','intervalo'].forEach(x => {
     document.getElementById('rel-ciclo-' + x).className = 'range-btn' + (p===x?' active':'');
   });
-  document.getElementById('rel-intervalo-inputs').style.display = p==='intervalo' ? 'block' : 'none';
+  document.getElementById('rel-intervalo-inputs').style.display = p==='intervalo' ? 'flex' : 'none';
+  if (p==='intervalo') { document.getElementById('rel-intervalo-inputs').style.flexDirection='column'; }
   renderRelatorios();
 }
 
@@ -2916,17 +2917,21 @@ function getRelatorioDates() {
     const day = now.getDate();
     let s, e;
     if (day >= cicloInicio) {
-      // current cycle starts this month, previous started last month
+      // Current cycle: cicloInicio this month → cicloInicio-1 next month
+      // Previous cycle: cicloInicio last month → cicloInicio-1 this month
       const ps = new Date(now.getFullYear(), now.getMonth()-1, cicloInicio);
       const pe = new Date(now.getFullYear(), now.getMonth(), cicloInicio-1);
       s = ps.toISOString().split('T')[0];
       e = pe.toISOString().split('T')[0];
     } else {
+      // Current cycle started last month
+      // Previous cycle: cicloInicio 2 months ago → cicloInicio-1 last month
       const ps = new Date(now.getFullYear(), now.getMonth()-2, cicloInicio);
       const pe = new Date(now.getFullYear(), now.getMonth()-1, cicloInicio-1);
       s = ps.toISOString().split('T')[0];
       e = pe.toISOString().split('T')[0];
     }
+    console.log('Período anterior:', s, 'até', e);
     const fmt = d => new Date(d+'T12:00:00').toLocaleDateString('pt-PT',{day:'numeric',month:'short'});
     return { start: s, end: e, label: fmt(s) + ' – ' + fmt(e) };
   }
@@ -2944,7 +2949,15 @@ function getEntriesForPeriod(start, end) {
 
 function renderRelatorios() {
   const dates = getRelatorioDates();
-  if (!dates) return;
+  if (!dates) {
+    // Show prompt to select dates
+    document.getElementById('rel-categories-list').innerHTML = '<div class="empty-state"><div class="emoji">📅</div><p>Escolhe um intervalo de datas para ver o relatório.</p></div>';
+    document.getElementById('rel-chart-container').innerHTML = '';
+    document.getElementById('relatorio-period-label').textContent = '';
+    ['rel-total-expense','rel-total-income','rel-saldo'].forEach(id => document.getElementById(id).textContent = '€0');
+    ['rel-vs-expense','rel-vs-income'].forEach(id => document.getElementById(id).textContent = '');
+    return;
+  }
   document.getElementById('relatorio-period-label').textContent = dates.label;
 
   const periodEntries  = getEntriesForPeriod(dates.start, dates.end);
