@@ -2482,12 +2482,18 @@ async function processImportFile(file) {
     const ext = file.name.split('.').pop().toLowerCase();
 
     if (ext === 'pdf') {
-      // Convert PDF to base64
       const base64 = await fileToBase64(file);
       fileContent = base64;
-    } else {
-      // Read CSV/XLS as text
+    } else if (ext === 'csv') {
       fileContent = await file.text();
+    } else if (ext === 'xls' || ext === 'xlsx') {
+      // Use SheetJS to convert Excel to CSV text
+      const XLSX = await import('https://cdn.sheetjs.com/xlsx-0.20.1/package/xlsx.mjs');
+      const arrayBuffer = await file.arrayBuffer();
+      const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      fileContent = XLSX.utils.sheet_to_csv(sheet);
     }
 
     // Build prompt for Gemini
@@ -2514,7 +2520,7 @@ Regras:
 - Ignora movimentos entre contas próprias e transferências internas
 - Devolve APENAS o JSON, sem texto adicional
 
-${ext === 'pdf' ? 'O ficheiro é um PDF em base64:' : 'O conteúdo do ficheiro é:'}
+${ext === 'pdf' ? 'O ficheiro é um PDF em base64:' : 'O conteúdo CSV do ficheiro é:'}
 ${fileContent.substring(0, 8000)}`;
 
     const requestBody = {
