@@ -422,6 +422,46 @@
   .mv-del { background: none; border: none; color: #333; cursor: pointer; font-size: 13px; padding: 2px 4px; border-radius: 4px; transition: color 0.15s; }
   .mv-del:hover { color: var(--red); }
 
+  /* Import extrato */
+  .import-drop-zone {
+    border: 2px dashed var(--border); border-radius: 12px;
+    padding: 32px 20px; text-align: center; cursor: pointer;
+    transition: border-color 0.2s, background 0.2s; margin-bottom: 16px;
+  }
+  .import-drop-zone:hover, .import-drop-zone.dragover {
+    border-color: #a78bfa; background: rgba(167,139,250,0.05);
+  }
+  .import-drop-zone .dz-icon { font-size: 36px; margin-bottom: 8px; }
+  .import-drop-zone .dz-label { font-size: 14px; color: var(--muted); }
+  .import-drop-zone .dz-sub { font-size: 12px; color: #444; margin-top: 4px; }
+  .import-file-input { display: none; }
+
+  .import-loading { text-align: center; padding: 32px 20px; }
+  .import-loading .il-icon { font-size: 36px; margin-bottom: 12px; animation: spin 1.5s linear infinite; display: inline-block; }
+  @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  .import-loading .il-text { font-size: 14px; color: var(--muted); }
+
+  .import-movement {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px; margin-bottom: 10px;
+  }
+  .import-movement.skipped { opacity: 0.4; }
+  .im-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .im-desc { font-size: 13px; font-weight: 500; flex: 1; margin-right: 10px; }
+  .im-amount { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; flex-shrink: 0; }
+  .im-amount.expense { color: var(--red); }
+  .im-amount.income  { color: var(--accent-income); }
+  .im-date { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+  .im-cat-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .im-cat-select { flex: 1; background: var(--card); border: 1.5px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'DM Sans',sans-serif; font-size: 12px; padding: 6px 10px; outline: none; min-width: 0; }
+  .im-skip-btn { background: none; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-size: 11px; padding: 6px 10px; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+  .im-skip-btn:hover { color: var(--red); border-color: var(--red); }
+  .im-skip-btn.unskip { color: var(--accent); border-color: var(--accent); }
+
+  .import-actions { display: flex; gap: 8px; margin-top: 16px; }
+  .import-submit-btn { flex: 1; background: #a78bfa; color: #0d0d0d; border: none; border-radius: 12px; padding: 14px; font-family: 'Syne',sans-serif; font-size: 15px; font-weight: 800; cursor: pointer; transition: opacity 0.15s; }
+  .import-submit-btn:hover { opacity: 0.85; }
+
   /* Cofre confirm modal */
   .cofre-confirm-card {
     background: var(--card2); border: 1px solid #3a2e1a;
@@ -644,7 +684,10 @@
   </div>
 
   <div class="quick-add" id="quick-add">
-    <h2>⚡ Registo rápido</h2>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <h2 style="margin-bottom:0;">⚡ Registo rápido</h2>
+      <button onclick="openImport()" style="background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;padding:6px 12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;" onmouseover="this.style.color='#a78bfa';this.style.borderColor='#a78bfa'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border)'">📥 Importar extrato</button>
+    </div>
     <div class="type-toggle">
       <button class="type-btn active-expense" id="btn-expense" onclick="setMode('expense')">📤 Despesa</button>
       <button class="type-btn" id="btn-income" onclick="setMode('income')">📥 Receita</button>
@@ -832,6 +875,37 @@
   </div>
 </div>
 
+<!-- ===== MODAL: Importar Extrato ===== -->
+<div class="modal-overlay" id="import-modal-overlay" onclick="handleImportModalClick(event)">
+  <div class="modal" style="max-height:90vh;">
+    <div class="modal-title" id="import-modal-title">
+      📥 Importar Extrato <button class="modal-close" onclick="closeImport()">✕</button>
+    </div>
+    <div id="import-upload-section">
+      <div class="import-drop-zone" id="import-drop-zone" onclick="document.getElementById('import-file-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+        <div class="dz-icon">📄</div>
+        <div class="dz-label">Clica ou arrasta o ficheiro aqui</div>
+        <div class="dz-sub">PDF ou Excel (.xls, .xlsx, .csv) do Santander</div>
+      </div>
+      <input type="file" class="import-file-input" id="import-file-input" accept=".pdf,.xls,.xlsx,.csv" onchange="handleFileSelect(event)">
+      <p style="font-size:12px;color:var(--muted);text-align:center;">No homebanking do Santander: <strong>Movimentos → Exportar</strong></p>
+    </div>
+    <div id="import-loading-section" style="display:none;">
+      <div class="import-loading">
+        <div class="il-icon">⚙️</div>
+        <div class="il-text">A analisar os movimentos com IA...</div>
+      </div>
+    </div>
+    <div id="import-review-section" style="display:none;">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px;" id="import-summary"></p>
+      <div id="import-movements-list"></div>
+      <div class="import-actions">
+        <button class="import-submit-btn" onclick="submitImport()">✅ Registar selecionados</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ===== MODAL: Ciclo ===== -->
 <div class="modal-overlay" id="ciclo-modal-overlay" onclick="if(event.target===this)closeCicloModal()">
   <div class="modal">
@@ -994,6 +1068,7 @@
 <script>
 // ===== CONFIG =====
 const CLIENT_ID    = '780147822875-9ecc4n99h3k07lrkb8t8f6v4cvlunon1.apps.googleusercontent.com';
+const WORKER_URL   = 'https://financas-gemini.imateixeira23054.workers.dev';
 const ALLOWED_EMAILS = ['imateixeira23054@gmail.com', 'joanap.apostolo@gmail.com'];
 const DRIVE_OWNER_EMAIL = 'imateixeira23054@gmail.com';
 const DRIVE_FILE   = 'financas_dados.json';
@@ -2370,6 +2445,181 @@ function submitContribuirTodos() {
   if (atingidos.length) {
     setTimeout(() => showToast(`🎉 "${atingidos[0].nome}" atingiu o objetivo!`), 2500);
   }
+}
+
+// ===== IMPORTAR EXTRATO =====
+let importedMovements = [];
+
+function openImport() {
+  importedMovements = [];
+  document.getElementById('import-upload-section').style.display = '';
+  document.getElementById('import-loading-section').style.display = 'none';
+  document.getElementById('import-review-section').style.display = 'none';
+  document.getElementById('import-file-input').value = '';
+  document.getElementById('import-modal-overlay').classList.add('open');
+}
+function closeImport() { document.getElementById('import-modal-overlay').classList.remove('open'); }
+function handleImportModalClick(e) { if(e.target===document.getElementById('import-modal-overlay')) closeImport(); }
+function handleDragOver(e)  { e.preventDefault(); document.getElementById('import-drop-zone').classList.add('dragover'); }
+function handleDragLeave(e) { document.getElementById('import-drop-zone').classList.remove('dragover'); }
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('import-drop-zone').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) processImportFile(file);
+}
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) processImportFile(file);
+}
+
+async function processImportFile(file) {
+  document.getElementById('import-upload-section').style.display = 'none';
+  document.getElementById('import-loading-section').style.display = '';
+
+  try {
+    let fileContent = '';
+    const ext = file.name.split('.').pop().toLowerCase();
+
+    if (ext === 'pdf') {
+      // Convert PDF to base64
+      const base64 = await fileToBase64(file);
+      fileContent = base64;
+    } else {
+      // Read CSV/XLS as text
+      fileContent = await file.text();
+    }
+
+    // Build prompt for Gemini
+    const allSubcats = expenseCats.flatMap(g => g.subs);
+    const prompt = `Analisa este extrato bancário do Santander e extrai os movimentos financeiros.
+Para cada movimento, devolve um JSON com esta estrutura exata:
+{
+  "movimentos": [
+    {
+      "data": "YYYY-MM-DD",
+      "descricao": "descrição original",
+      "valor": 12.50,
+      "tipo": "expense" ou "income",
+      "subcategoria": "nome da sub-categoria mais adequada ou null se não souberes"
+    }
+  ]
+}
+
+Sub-categorias disponíveis para despesas: ${allSubcats.join(', ')}
+
+Regras:
+- valor sempre positivo
+- tipo "income" para entradas de dinheiro, "expense" para saídas
+- Ignora movimentos entre contas próprias e transferências internas
+- Devolve APENAS o JSON, sem texto adicional
+
+${ext === 'pdf' ? 'O ficheiro é um PDF em base64:' : 'O conteúdo do ficheiro é:'}
+${fileContent.substring(0, 8000)}`;
+
+    const requestBody = {
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.1 }
+    };
+
+    // Call Gemini via Cloudflare Worker
+    const response = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody)
+    });
+
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    // Parse JSON from response
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('Resposta inválida do Gemini');
+    const parsed = JSON.parse(jsonMatch[0]);
+    importedMovements = parsed.movimentos || [];
+
+    renderImportReview();
+  } catch(e) {
+    console.error(e);
+    showToast('❌ Erro ao processar ficheiro: ' + e.message);
+    document.getElementById('import-upload-section').style.display = '';
+    document.getElementById('import-loading-section').style.display = 'none';
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderImportReview() {
+  document.getElementById('import-loading-section').style.display = 'none';
+  document.getElementById('import-review-section').style.display = '';
+
+  const allSubcats = expenseCats.flatMap(g => g.subs);
+  const incomeSubcats = incomeCats;
+
+  document.getElementById('import-summary').textContent =
+    `${importedMovements.length} movimentos encontrados. Revê e ajusta as categorias antes de registar.`;
+
+  document.getElementById('import-movements-list').innerHTML = importedMovements.map((m, i) => {
+    const isExpense = m.tipo === 'expense';
+    const subcats   = isExpense ? allSubcats : incomeSubcats;
+    const options   = subcats.map(s => `<option value="${s}" ${s===m.subcategoria?'selected':''}>${s}</option>`).join('');
+    return `
+      <div class="import-movement" id="import-mov-${i}">
+        <div class="im-top">
+          <div class="im-desc">${m.descricao}</div>
+          <div class="im-amount ${isExpense?'expense':'income'}">${isExpense?'-':'+'}${formatCurrency(m.valor)}</div>
+        </div>
+        <div class="im-date">📅 ${m.data}</div>
+        <div class="im-cat-row">
+          <select class="im-cat-select" id="import-cat-${i}">
+            <option value="">— Sem categoria —</option>
+            ${options}
+          </select>
+          <button class="im-skip-btn" id="import-skip-${i}" onclick="toggleSkipMovement(${i})">Saltar</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function toggleSkipMovement(i) {
+  const card = document.getElementById('import-mov-' + i);
+  const btn  = document.getElementById('import-skip-' + i);
+  const skipped = card.classList.toggle('skipped');
+  btn.textContent = skipped ? 'Incluir' : 'Saltar';
+  btn.className = skipped ? 'im-skip-btn unskip' : 'im-skip-btn';
+}
+
+function submitImport() {
+  const allSubcats = expenseCats.flatMap(g => g.subs);
+  let count = 0;
+  importedMovements.forEach((m, i) => {
+    const card = document.getElementById('import-mov-' + i);
+    if (card.classList.contains('skipped')) return;
+    const subcat = document.getElementById('import-cat-' + i).value;
+    const parentcat = m.tipo === 'expense' ? getSubcatParent(subcat) : '';
+    entries.unshift({
+      id: Date.now() + i,
+      type: m.tipo,
+      amount: m.valor,
+      category: subcat || (m.tipo==='expense' ? '🔷 Outras despesas' : incomeCats[0]),
+      parentCategory: parentcat,
+      note: m.descricao,
+      date: m.data,
+      ts: new Date().toISOString()
+    });
+    count++;
+  });
+  saveData(entries);
+  closeImport();
+  renderAll();
+  showToast(`✅ ${count} movimentos registados!`);
 }
 
 // ===== CICLO SETTINGS =====
