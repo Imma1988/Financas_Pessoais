@@ -1908,6 +1908,7 @@ function submitEditEntry() {
   saveData(entries);
   closeEditEntry();
   renderAll();
+  if (document.getElementById('view-relatorios').classList.contains('active')) renderRelatorios();
   showToast('✅ Registo atualizado!');
 }
 function clearToday() {
@@ -3254,12 +3255,15 @@ function renderRelCategorias(expenses, prevExpenses, totalExp) {
         .sort((a,b) => new Date(b.date) - new Date(a.date));
 
       const entryItems = subEntries.map(e => `
-        <div class="rel-entry-item">
+        <div class="rel-entry-item" onclick="event.stopPropagation(); openEditEntry(${e.id})" style="cursor:pointer;" onmouseover="this.style.background='#1a1a1a'" onmouseout="this.style.background=''">
           <div class="rel-entry-left">
             <div class="rel-entry-note">${e.note || '—'}</div>
             <div class="rel-entry-date">${formatDate(e.date)}</div>
           </div>
-          <div class="rel-entry-amount">${formatCurrency(e.amount)}</div>
+          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+            <div class="rel-entry-amount">${formatCurrency(e.amount)}</div>
+            <span style="font-size:11px;color:#444;">✏️</span>
+          </div>
         </div>`).join('');
 
       const subId = 'rel-sub-' + i + '-' + si;
