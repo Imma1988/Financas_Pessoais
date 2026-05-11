@@ -50,7 +50,39 @@
   }
   .nav-btn .nav-icon { font-size: 20px; }
   .nav-btn.active { color: var(--accent); }
-  .nav-btn.active.cofres-nav { color: var(--accent-cofre); }
+
+  /* Side menu */
+  .menu-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.25s;
+  }
+  .menu-overlay.open { opacity: 1; pointer-events: all; }
+  .side-menu {
+    position: fixed; top: 0; right: 0; bottom: 0; width: 75%; max-width: 300px;
+    background: var(--card); border-left: 1px solid var(--border);
+    z-index: 101; transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(.34,1.1,.64,1);
+    display: flex; flex-direction: column; padding: 48px 0 32px;
+  }
+  .menu-overlay.open .side-menu { transform: translateX(0); }
+  .menu-close {
+    position: absolute; top: 16px; right: 16px;
+    background: var(--card2); border: none; color: var(--muted);
+    font-size: 18px; width: 32px; height: 32px; border-radius: 8px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .menu-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 24px; cursor: pointer; transition: background 0.15s;
+    border: none; background: none; width: 100%; text-align: left;
+    color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px;
+  }
+  .menu-item:hover { background: var(--card2); }
+  .menu-item.active { color: var(--accent); }
+  .menu-item .mi-icon { font-size: 24px; width: 32px; text-align: center; flex-shrink: 0; }
+  .menu-item .mi-label { font-weight: 500; }
+  .menu-item .mi-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .menu-divider { height: 1px; background: var(--border); margin: 8px 24px; }
 
   /* VIEWS */
   .view { display: none; width: 100%; }
@@ -421,6 +453,54 @@
   .mv-amount.negativo { color: var(--red); }
   .mv-del { background: none; border: none; color: #333; cursor: pointer; font-size: 13px; padding: 2px 4px; border-radius: 4px; transition: color 0.15s; }
   .mv-del:hover { color: var(--red); }
+
+  /* Relatórios */
+  .rel-cat-item {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; margin-bottom: 10px; overflow: hidden;
+  }
+  .rel-cat-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; cursor: pointer; transition: background 0.15s;
+  }
+  .rel-cat-header:hover { background: var(--card2); }
+  .rel-cat-icon { font-size: 20px; flex-shrink: 0; }
+  .rel-cat-name { flex: 1; font-size: 14px; font-weight: 600; }
+  .rel-cat-amount { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--red); }
+  .rel-cat-pct { font-size: 11px; color: var(--muted); margin-left: 6px; }
+  .rel-cat-chevron { color: var(--muted); font-size: 12px; transition: transform 0.2s; margin-left: 6px; }
+  .rel-cat-item.open .rel-cat-chevron { transform: rotate(90deg); }
+  .rel-cat-bar { height: 3px; background: var(--card2); margin: 0 16px 10px; border-radius: 99px; }
+  .rel-cat-bar-fill { height: 100%; border-radius: 99px; background: var(--red); transition: width 0.4s; }
+  .rel-cat-subs { display: none; border-top: 1px solid var(--border); }
+  .rel-cat-item.open .rel-cat-subs { display: block; }
+  .rel-sub-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px 10px 48px; border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .rel-sub-item:last-child { border-bottom: none; }
+  .rel-sub-name { color: var(--muted); flex: 1; }
+  .rel-sub-amount { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--red); }
+  .rel-sub-vs { font-size: 11px; margin-left: 8px; font-weight: 700; }
+  .rel-sub-vs.pos { color: var(--red); }
+  .rel-sub-vs.neg { color: var(--accent); }
+
+  /* Bar chart for comparison */
+  .bar-chart { width: 100%; }
+  .bar-group { display: flex; align-items: flex-end; gap: 3px; margin-bottom: 8px; }
+  .bar-wrap { flex: 1; }
+  .bar { border-radius: 4px 4px 0 0; min-height: 2px; transition: height 0.4s; }
+  .bar-label { font-size: 9px; color: var(--muted); text-align: center; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-legend { display: flex; gap: 12px; margin-top: 8px; justify-content: center; }
+  .bar-legend-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--muted); }
+  .bar-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Pie chart */
+  .pie-wrap { display: flex; align-items: center; gap: 16px; }
+  .pie-legend { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .pie-legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .pie-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
   /* Import extrato */
   .import-drop-zone {
@@ -814,16 +894,92 @@
 </div>
 
 <!-- ===== BOTTOM NAV ===== -->
+<!-- VIEW: RELATÓRIOS -->
+<div class="view" id="view-relatorios">
+  <div class="patrimonio-header">
+    <div>
+      <h1>📊 Relatórios</h1>
+      <div class="date" id="relatorio-period-label"></div>
+    </div>
+  </div>
+
+  <!-- Period selector -->
+  <div class="range-toggle" style="margin-bottom:16px;">
+    <button class="range-btn active" id="rel-ciclo-atual" onclick="setRelatorioPeriod('atual')">Ciclo atual</button>
+    <button class="range-btn" id="rel-ciclo-anterior" onclick="setRelatorioPeriod('anterior')">Anterior</button>
+    <button class="range-btn" id="rel-intervalo" onclick="setRelatorioPeriod('intervalo')">Intervalo</button>
+  </div>
+
+  <!-- Date range picker (hidden unless intervalo) -->
+  <div id="rel-intervalo-inputs" style="display:none;gap:8px;margin-bottom:16px;">
+    <div style="display:flex;gap:8px;">
+      <div style="flex:1;">
+        <div class="form-label" style="margin-bottom:4px;">De</div>
+        <input type="date" class="form-input" id="rel-from" onchange="renderRelatorios()">
+      </div>
+      <div style="flex:1;">
+        <div class="form-label" style="margin-bottom:4px;">Até</div>
+        <input type="date" class="form-input" id="rel-to" onchange="renderRelatorios()">
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary cards -->
+  <div class="summary" style="margin-bottom:16px;">
+    <div class="summary-card expenses">
+      <div class="label">Despesas</div>
+      <div class="amount" id="rel-total-expense">€0</div>
+      <div class="sub" id="rel-vs-expense"></div>
+    </div>
+    <div class="summary-card income">
+      <div class="label">Receitas</div>
+      <div class="amount" id="rel-total-income">€0</div>
+      <div class="sub" id="rel-vs-income"></div>
+    </div>
+    <div class="summary-card balance">
+      <div class="label">Saldo</div>
+      <div class="amount" id="rel-saldo">€0</div>
+      <div class="sub">período</div>
+    </div>
+  </div>
+
+  <!-- Chart (pie for atual, bars for others) -->
+  <div class="chart-wrap" id="rel-chart-wrap" style="margin-bottom:16px;">
+    <div class="chart-title" id="rel-chart-title">Por categoria</div>
+    <div id="rel-chart-container"></div>
+  </div>
+
+  <!-- Categories breakdown -->
+  <div id="rel-categories-list"></div>
+</div>
+
+<!-- SIDE MENU -->
+<div class="menu-overlay" id="menu-overlay" onclick="handleMenuOverlayClick(event)">
+  <div class="side-menu">
+    <button class="menu-close" onclick="closeMenu()">✕</button>
+    <button class="menu-item" id="menu-cofres" onclick="menuNav('cofres')">
+      <span class="mi-icon">🏦</span>
+      <div><div class="mi-label">Cofres</div><div class="mi-sub">Fundos de reserva</div></div>
+    </button>
+    <button class="menu-item" id="menu-patrimonio" onclick="menuNav('patrimonio')">
+      <span class="mi-icon">📈</span>
+      <div><div class="mi-label">Património</div><div class="mi-sub">Evolução dos teus ativos</div></div>
+    </button>
+    <div class="menu-divider"></div>
+    <button class="menu-item" id="menu-relatorios" onclick="menuNav('relatorios')">
+      <span class="mi-icon">📊</span>
+      <div><div class="mi-label">Relatórios</div><div class="mi-sub">Análise por categoria</div></div>
+    </button>
+  </div>
+</div>
+
 <div class="bottom-nav">
   <div class="bottom-nav-inner">
     <button class="nav-btn active" id="nav-registos" onclick="switchView('registos')">
       <span class="nav-icon">💸</span>Registos
     </button>
-    <button class="nav-btn cofres-nav" id="nav-cofres" onclick="switchView('cofres')">
-      <span class="nav-icon">🏦</span>Cofres
-    </button>
-    <button class="nav-btn patrimonio-nav" id="nav-patrimonio" onclick="switchView('patrimonio')">
-      <span class="nav-icon">📈</span>Património
+    <button class="nav-btn" id="nav-menu" onclick="openMenu()">
+      <span class="nav-icon">☰</span>Menu
     </button>
   </div>
 </div>
@@ -1082,8 +1238,10 @@ const CLIENT_ID    = '780147822875-9ecc4n99h3k07lrkb8t8f6v4cvlunon1.apps.googleu
 const WORKER_URL   = 'https://financas-gemini.imateixeira23054.workers.dev';
 const ALLOWED_EMAILS = ['imateixeira23054@gmail.com', 'joanap.apostolo@gmail.com'];
 const DRIVE_OWNER_EMAIL = 'imateixeira23054@gmail.com';
-const DRIVE_FILE   = 'financas_dados.json';
-const SCOPES       = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file openid email profile';
+const DRIVE_FILE      = 'financas_dados.json';
+const DRIVE_FOLDER_ID = '1oc1dfGzhDSiWZSvGGzeG-gqcPJ5c5E_U';
+const DRIVE_FILE_ID   = '18LBG7_fB7Ya11u3ewLtn_I0YFibv7vYA';
+const SCOPES          = 'https://www.googleapis.com/auth/drive openid email profile';
 
 // ===== STATE =====
 const DEFAULT_EXPENSE_CATS = [
@@ -1216,49 +1374,38 @@ async function onAuthorised() {
 // ===== DRIVE =====
 async function loadFromDrive() {
   setSyncStatus('saving', 'A carregar...');
+  driveFileId = DRIVE_FILE_ID;
   try {
-    const search = await fetch(
-      'https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name%3D%22' + DRIVE_FILE + '%22&fields=files(id)',
+    const fileRes = await fetch(
+      'https://www.googleapis.com/drive/v3/files/' + DRIVE_FILE_ID + '?alt=media',
       { headers: { Authorization: 'Bearer ' + accessToken } }
     );
-    const result = await search.json();
-
-    if (result.files && result.files.length > 0) {
-      driveFileId = result.files[0].id;
-      const fileRes = await fetch(
-        'https://www.googleapis.com/drive/v3/files/' + driveFileId + '?alt=media',
-        { headers: { Authorization: 'Bearer ' + accessToken } }
-      );
-      const data = await fileRes.json();
-      entries    = data.entries    || [];
-      expenseCats = data.expenseCats || JSON.parse(JSON.stringify(DEFAULT_EXPENSE_CATS));
-      incomeCats  = data.incomeCats  || [...DEFAULT_INCOME_CATS];
-      cofres     = data.cofres     || [];
-      ativos          = data.ativos          || [];
-      tiposCustom     = data.tiposCustom     || {};
-      importMemory    = data.importMemory    || { matches: {}, skipped: [] };
-      cicloInicio     = data.cicloInicio     || 25;
-      deletedAtivoIds = new Set(data.deletedAtivoIds || []);
-      deletedIds      = new Set(data.deletedIds      || []);
-      deletedCofreIds = new Set(data.deletedCofreIds || []);
-      deletedMovIds   = new Set(data.deletedMovIds   || []);
-      deletedCatKeys  = new Set(data.deletedCatKeys  || []);
-    } else {
-      entries = []; expenseCats = JSON.parse(JSON.stringify(DEFAULT_EXPENSE_CATS)); incomeCats = [...DEFAULT_INCOME_CATS]; cofres = [];
-      await saveToDrive();
-    }
+    const data = await fileRes.json();
+    entries         = data.entries         || [];
+    expenseCats     = data.expenseCats     || JSON.parse(JSON.stringify(DEFAULT_EXPENSE_CATS));
+    incomeCats      = data.incomeCats      || [...DEFAULT_INCOME_CATS];
+    cofres          = data.cofres          || [];
+    ativos          = data.ativos          || [];
+    tiposCustom     = data.tiposCustom     || {};
+    importMemory    = data.importMemory    || { matches: {}, skipped: [] };
+    cicloInicio     = data.cicloInicio     || 25;
+    deletedAtivoIds = new Set(data.deletedAtivoIds || []);
+    deletedIds      = new Set(data.deletedIds      || []);
+    deletedCofreIds = new Set(data.deletedCofreIds || []);
+    deletedMovIds   = new Set(data.deletedMovIds   || []);
+    deletedCatKeys  = new Set(data.deletedCatKeys  || []);
     setSyncStatus('saved', 'Guardado');
   } catch(e) {
-    setSyncStatus('error', 'Erro');
+    console.error('loadFromDrive error:', e);
+    setSyncStatus('error', 'Erro ao carregar');
   }
 }
 
 async function readFromDrive() {
-  // Read current state from Drive without overwriting local
-  if (!accessToken || !driveFileId) return null;
+  if (!accessToken) return null;
   try {
     const r = await fetch(
-      'https://www.googleapis.com/drive/v3/files/' + driveFileId + '?alt=media',
+      'https://www.googleapis.com/drive/v3/files/' + DRIVE_FILE_ID + '?alt=media',
       { headers: { Authorization: 'Bearer ' + accessToken } }
     );
     return await r.json();
@@ -1361,31 +1508,17 @@ async function saveToDrive() {
 
     const payload = JSON.stringify({ entries, expenseCats, incomeCats, cofres, ativos, cicloInicio, importMemory, tiposCustom, deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds], deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys], deletedAtivoIds: [...deletedAtivoIds] });
 
-    if (driveFileId) {
-      await fetch('https://www.googleapis.com/upload/drive/v3/files/' + driveFileId + '?uploadType=media', {
-        method: 'PATCH',
-        headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-        body: payload
-      });
-    } else {
-      const meta = await fetch('https://www.googleapis.com/drive/v3/files', {
-        method: 'POST',
-        headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: DRIVE_FILE, parents: ['appDataFolder'] })
-      });
-      const metaJson = await meta.json();
-      driveFileId = metaJson.id;
-      await fetch('https://www.googleapis.com/upload/drive/v3/files/' + driveFileId + '?uploadType=media', {
-        method: 'PATCH',
-        headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-        body: payload
-      });
-    }
+    await fetch('https://www.googleapis.com/upload/drive/v3/files/' + DRIVE_FILE_ID + '?uploadType=media', {
+      method: 'PATCH',
+      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+      body: payload
+    });
 
     setSyncStatus('saved', 'Guardado');
     renderAll();
     if (document.getElementById('view-cofres').classList.contains('active')) renderCofres();
   } catch(e) {
+    console.error('saveToDrive error:', e);
     setSyncStatus('error', 'Erro ao guardar');
   }
   isSyncing = false;
@@ -1413,11 +1546,24 @@ function saveCofres(c) { cofres  = c; scheduleSave(); }
 function switchView(view) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + view).classList.add('active');
+  // Update bottom nav
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('nav-' + view).classList.add('active');
+  if (view === 'registos') document.getElementById('nav-registos').classList.add('active');
+  else document.getElementById('nav-menu').classList.add('active');
+  // Update menu items
+  document.querySelectorAll('.menu-item').forEach(b => b.classList.remove('active'));
+  const menuItem = document.getElementById('menu-' + view);
+  if (menuItem) menuItem.classList.add('active');
+  // Render
   if (view === 'cofres') renderCofres();
   if (view === 'patrimonio') renderPatrimonio();
+  if (view === 'relatorios') renderRelatorios();
 }
+
+function openMenu() { document.getElementById('menu-overlay').classList.add('open'); }
+function closeMenu() { document.getElementById('menu-overlay').classList.remove('open'); }
+function handleMenuOverlayClick(e) { if(e.target===document.getElementById('menu-overlay')) closeMenu(); }
+function menuNav(view) { closeMenu(); switchView(view); }
 
 // ===== HELPERS =====
 function todayStr()  { return new Date().toISOString().split('T')[0]; }
@@ -2742,6 +2888,258 @@ function saveCicloSettings() {
   showToast('✅ Ciclo atualizado!');
 }
 document.addEventListener('input', e => { if(e.target.id==='ciclo-dia-input') updateCicloPreview(); });
+
+// ===== RELATÓRIOS =====
+let relatorioPeriod = 'atual';
+
+const CAT_COLORS = [
+  '#a78bfa','#35c8f1','#c8f135','#f1a835','#ff5e5e',
+  '#f135c8','#4ade80','#fb923c','#22d3ee','#818cf8','#facc15','#f472b6'
+];
+
+function setRelatorioPeriod(p) {
+  relatorioPeriod = p;
+  ['atual','anterior','intervalo'].forEach(x => {
+    document.getElementById('rel-ciclo-' + x).className = 'range-btn' + (p===x?' active':'');
+  });
+  document.getElementById('rel-intervalo-inputs').style.display = p==='intervalo' ? 'block' : 'none';
+  renderRelatorios();
+}
+
+function getRelatorioDates() {
+  if (relatorioPeriod === 'atual') {
+    const { start, end } = getCicloRange();
+    return { start, end, label: cicloLabel() };
+  }
+  if (relatorioPeriod === 'anterior') {
+    const now = new Date();
+    const day = now.getDate();
+    let s, e;
+    if (day >= cicloInicio) {
+      // current cycle starts this month, previous started last month
+      const ps = new Date(now.getFullYear(), now.getMonth()-1, cicloInicio);
+      const pe = new Date(now.getFullYear(), now.getMonth(), cicloInicio-1);
+      s = ps.toISOString().split('T')[0];
+      e = pe.toISOString().split('T')[0];
+    } else {
+      const ps = new Date(now.getFullYear(), now.getMonth()-2, cicloInicio);
+      const pe = new Date(now.getFullYear(), now.getMonth()-1, cicloInicio-1);
+      s = ps.toISOString().split('T')[0];
+      e = pe.toISOString().split('T')[0];
+    }
+    const fmt = d => new Date(d+'T12:00:00').toLocaleDateString('pt-PT',{day:'numeric',month:'short'});
+    return { start: s, end: e, label: fmt(s) + ' – ' + fmt(e) };
+  }
+  // intervalo
+  const from = document.getElementById('rel-from')?.value;
+  const to   = document.getElementById('rel-to')?.value;
+  if (!from || !to) return null;
+  const fmt = d => new Date(d+'T12:00:00').toLocaleDateString('pt-PT',{day:'numeric',month:'short'});
+  return { start: from, end: to, label: fmt(from) + ' – ' + fmt(to) };
+}
+
+function getEntriesForPeriod(start, end) {
+  return entries.filter(e => e.date >= start && e.date <= end);
+}
+
+function renderRelatorios() {
+  const dates = getRelatorioDates();
+  if (!dates) return;
+  document.getElementById('relatorio-period-label').textContent = dates.label;
+
+  const periodEntries  = getEntriesForPeriod(dates.start, dates.end);
+  const expenses       = periodEntries.filter(e => e.type === 'expense');
+  const incomes        = periodEntries.filter(e => e.type === 'income');
+  const totalExp       = expenses.reduce((s,e)=>s+e.amount, 0);
+  const totalInc       = incomes.reduce((s,e)=>s+e.amount, 0);
+
+  // Previous period for comparison
+  const prevDates = getPrevPeriodDates(dates);
+  const prevEntries = prevDates ? getEntriesForPeriod(prevDates.start, prevDates.end) : [];
+  const prevExp   = prevEntries.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
+  const prevInc   = prevEntries.filter(e=>e.type==='income').reduce((s,e)=>s+e.amount,0);
+
+  // Summary cards
+  document.getElementById('rel-total-expense').textContent = formatCurrency(totalExp);
+  document.getElementById('rel-total-income').textContent  = formatCurrency(totalInc);
+  const saldo = totalInc - totalExp;
+  const sEl = document.getElementById('rel-saldo');
+  sEl.textContent = (saldo>=0?'+':'')+formatCurrency(saldo).replace('€',saldo<0?'-€':'€');
+  sEl.style.color = saldo >= 0 ? 'var(--accent)' : 'var(--red)';
+
+  // VS labels
+  if (prevDates) {
+    const diffExp = totalExp - prevExp;
+    const diffInc = totalInc - prevInc;
+    document.getElementById('rel-vs-expense').textContent = (diffExp>=0?'+':'')+formatCurrency(diffExp)+' vs anterior';
+    document.getElementById('rel-vs-expense').style.color = diffExp>0?'var(--red)':'var(--accent)';
+    document.getElementById('rel-vs-income').textContent  = (diffInc>=0?'+':'')+formatCurrency(diffInc)+' vs anterior';
+    document.getElementById('rel-vs-income').style.color  = diffInc>0?'var(--accent)':'var(--red)';
+  } else {
+    document.getElementById('rel-vs-expense').textContent = '';
+    document.getElementById('rel-vs-income').textContent  = '';
+  }
+
+  // Chart
+  if (relatorioPeriod === 'atual') {
+    renderPieChart(expenses, totalExp);
+  } else {
+    renderBarChart(expenses, prevEntries.filter(e=>e.type==='expense'), dates, prevDates);
+  }
+
+  // Categories list
+  renderRelCategorias(expenses, prevEntries.filter(e=>e.type==='expense'), totalExp);
+}
+
+function getPrevPeriodDates(dates) {
+  // Get same-length period immediately before
+  const start = new Date(dates.start + 'T12:00:00');
+  const end   = new Date(dates.end   + 'T12:00:00');
+  const days  = Math.round((end-start)/(1000*60*60*24)) + 1;
+  const prevEnd   = new Date(start); prevEnd.setDate(prevEnd.getDate()-1);
+  const prevStart = new Date(prevEnd); prevStart.setDate(prevStart.getDate()-(days-1));
+  return {
+    start: prevStart.toISOString().split('T')[0],
+    end:   prevEnd.toISOString().split('T')[0]
+  };
+}
+
+function getCatData(expenses) {
+  const byParent = {};
+  expenses.forEach(e => {
+    const cat = e.parentCategory || e.category;
+    if (!byParent[cat]) byParent[cat] = { total:0, subs:{} };
+    byParent[cat].total += e.amount;
+    const sub = e.category;
+    byParent[cat].subs[sub] = (byParent[cat].subs[sub]||0) + e.amount;
+  });
+  return Object.entries(byParent).sort((a,b)=>b[1].total-a[1].total);
+}
+
+function renderPieChart(expenses, total) {
+  document.getElementById('rel-chart-title').textContent = 'Por categoria — ' + cicloLabel();
+  const container = document.getElementById('rel-chart-container');
+  if (!expenses.length) { container.innerHTML = '<div class="empty-state" style="padding:20px;"><p>Sem despesas neste período.</p></div>'; return; }
+
+  const catData = getCatData(expenses);
+  const size = 120, cx = 60, cy = 60, r = 50;
+  let angle = -Math.PI/2;
+  let slices = '';
+
+  catData.forEach(([cat, data], i) => {
+    const pct   = data.total / total;
+    const sweep = pct * 2 * Math.PI;
+    const x1 = cx + r * Math.cos(angle);
+    const y1 = cy + r * Math.sin(angle);
+    const x2 = cx + r * Math.cos(angle + sweep);
+    const y2 = cy + r * Math.sin(angle + sweep);
+    const large = sweep > Math.PI ? 1 : 0;
+    const color = CAT_COLORS[i % CAT_COLORS.length];
+    slices += `<path d="M${cx},${cy} L${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 ${large},1 ${x2.toFixed(1)},${y2.toFixed(1)} Z" fill="${color}" stroke="#161616" stroke-width="1.5"/>`;
+    angle += sweep;
+  });
+
+  const legend = catData.map(([cat, data], i) => {
+    const pct = Math.round(data.total/total*100);
+    const color = CAT_COLORS[i % CAT_COLORS.length];
+    const icon = expenseCats.find(g=>g.cat===cat)?.cat.split(' ')[0] || '';
+    return `<div class="pie-legend-item"><div class="pie-legend-dot" style="background:${color}"></div><span>${icon} ${cat.split(' ').slice(1).join(' ')||cat} <strong>${pct}%</strong></span></div>`;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="pie-wrap">
+      <svg width="120" height="120" viewBox="0 0 120 120" style="flex-shrink:0;">${slices}</svg>
+      <div class="pie-legend">${legend}</div>
+    </div>`;
+}
+
+function renderBarChart(expenses, prevExpenses, dates, prevDates) {
+  document.getElementById('rel-chart-title').textContent = 'Comparação por categoria';
+  const container = document.getElementById('rel-chart-container');
+  if (!expenses.length && !prevExpenses.length) { container.innerHTML = ''; return; }
+
+  const catData     = Object.fromEntries(getCatData(expenses));
+  const prevCatData = Object.fromEntries(getCatData(prevExpenses));
+  const allCats     = [...new Set([...Object.keys(catData), ...Object.keys(prevCatData)])];
+  const maxVal      = Math.max(...allCats.map(c => Math.max(catData[c]?.total||0, prevCatData[c]?.total||0)), 1);
+  const barH        = 80;
+
+  const groups = allCats.slice(0,8).map((cat, i) => {
+    const cur  = catData[cat]?.total || 0;
+    const prev = prevCatData[cat]?.total || 0;
+    const hCur  = Math.round((cur/maxVal)*barH);
+    const hPrev = Math.round((prev/maxVal)*barH);
+    const icon  = expenseCats.find(g=>g.cat===cat)?.cat.split(' ')[0] || '📦';
+    return `<div class="bar-wrap">
+      <div class="bar-group" style="height:${barH}px;align-items:flex-end;">
+        <div style="flex:1;"><div class="bar" style="height:${hPrev}px;background:#444;"></div></div>
+        <div style="flex:1;"><div class="bar" style="height:${hCur}px;background:var(--red);"></div></div>
+      </div>
+      <div class="bar-label">${icon}</div>
+    </div>`;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="bar-chart">
+      <div style="display:flex;gap:4px;">${groups}</div>
+      <div class="bar-legend">
+        <div class="bar-legend-item"><div class="bar-legend-dot" style="background:#444"></div>Anterior</div>
+        <div class="bar-legend-item"><div class="bar-legend-dot" style="background:var(--red)"></div>Atual</div>
+      </div>
+    </div>`;
+}
+
+function renderRelCategorias(expenses, prevExpenses, totalExp) {
+  const catData     = getCatData(expenses);
+  const prevCatData = Object.fromEntries(getCatData(prevExpenses));
+  const list        = document.getElementById('rel-categories-list');
+
+  if (!catData.length) {
+    list.innerHTML = '<div class="empty-state"><div class="emoji">📊</div><p>Sem despesas neste período.</p></div>';
+    return;
+  }
+
+  list.innerHTML = catData.map(([cat, data], i) => {
+    const pct     = totalExp > 0 ? Math.round(data.total/totalExp*100) : 0;
+    const color   = CAT_COLORS[i % CAT_COLORS.length];
+    const icon    = cat.split(' ')[0];
+    const name    = cat.split(' ').slice(1).join(' ') || cat;
+    const prevTot = prevCatData[cat]?.total || 0;
+    const diff    = prevTot > 0 ? data.total - prevTot : null;
+
+    const subs = Object.entries(data.subs).sort((a,b)=>b[1]-a[1]).map(([sub, val]) => {
+      const prevSub = prevCatData[cat]?.subs?.[sub] || 0;
+      const subDiff = prevSub > 0 ? val - prevSub : null;
+      const vsLabel = subDiff !== null
+        ? `<span class="rel-sub-vs ${subDiff>0?'pos':'neg'}">${subDiff>0?'+':'-'}${formatCurrency(subDiff)}</span>`
+        : '';
+      return `<div class="rel-sub-item">
+        <span class="rel-sub-name">${sub}</span>
+        <span class="rel-sub-amount">${formatCurrency(val)}${vsLabel}</span>
+      </div>`;
+    }).join('');
+
+    const vsLabel = diff !== null
+      ? `<span style="font-size:11px;color:${diff>0?'var(--red)':'var(--accent)'};margin-left:6px;">${diff>0?'+':'-'}${formatCurrency(diff)}</span>`
+      : '';
+
+    return `<div class="rel-cat-item" id="rel-cat-${i}">
+      <div class="rel-cat-header" onclick="toggleRelCat(${i})">
+        <span class="rel-cat-icon">${icon}</span>
+        <span class="rel-cat-name">${name}</span>
+        <span class="rel-cat-amount">${formatCurrency(data.total)}${vsLabel}</span>
+        <span class="rel-cat-pct">${pct}%</span>
+        <span class="rel-cat-chevron">›</span>
+      </div>
+      <div class="rel-cat-bar"><div class="rel-cat-bar-fill" style="width:${pct}%;background:${color};"></div></div>
+      <div class="rel-cat-subs">${subs}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleRelCat(i) {
+  document.getElementById('rel-cat-' + i).classList.toggle('open');
+}
 
 // ===== TOAST =====
 function showToast(msg) {
