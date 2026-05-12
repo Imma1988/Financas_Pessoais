@@ -2211,7 +2211,7 @@ function renderSummary() {
 function renderEntries() {
   const list = document.getElementById('entries-list');
   const cicloEntries = entries.filter(e=>isInCurrentCiclo(e.date))
-    .sort((a,b) => new Date(b.ts)-new Date(a.ts));
+    .sort((a,b) => new Date(b.date)-new Date(a.date) || new Date(b.ts)-new Date(a.ts));
   // Update header label
   document.getElementById('entries-h2').textContent = '📋 ' + cicloLabel();
   document.getElementById('ciclo-next-btn').style.opacity = cicloOffset >= 0 ? '0.3' : '1';
@@ -2991,7 +2991,7 @@ function openImport() {
   const uploadSection = document.getElementById('import-upload-section');
   uploadSection.style.display = '';
   // Remove any previous error messages
-  uploadSection.querySelectorAll('div[style*="rgba(255,94,94"]').forEach(el => el.remove());
+  uploadSection.querySelectorAll('.import-error-msg').forEach(el => el.remove());
   document.getElementById('import-loading-section').style.display = 'none';
   document.getElementById('import-review-section').style.display = 'none';
   document.getElementById('import-file-input').value = '';
@@ -3078,7 +3078,7 @@ Regras:
       document.getElementById('import-upload-section').style.display = '';
       document.getElementById('import-loading-section').style.display = 'none';
       document.getElementById('import-upload-section').insertAdjacentHTML('beforeend',
-        '<div style="background:rgba(255,94,94,0.1);border:1px solid var(--red);border-radius:10px;padding:12px 14px;margin-top:12px;font-size:13px;color:var(--red);">' +
+        '<div class="import-error-msg" style="background:rgba(255,94,94,0.1);border:1px solid var(--red);border-radius:10px;padding:12px 14px;margin-top:12px;font-size:13px;color:var(--red);">' +
         '⚠️ API key do Gemini não configurada.<br><span style="color:var(--muted);">Vai a <strong style="color:var(--text);">Menu → Definições → Importação com IA</strong> para adicionar a tua key gratuita.</span>' +
         '</div>'
       );
