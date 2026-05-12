@@ -1922,9 +1922,9 @@ let swipeStartX = 0;
 function handleSwipeStart(e) { swipeStartX = e.touches[0].clientX; }
 function handleSwipeEnd(e) {
   const dx = e.changedTouches[0].clientX - swipeStartX;
-  if (Math.abs(dx) < 60) return; // min swipe distance
-  if (dx < 0) navigateCiclo(-1); // swipe left = previous
-  else if (cicloOffset < 0) navigateCiclo(1); // swipe right = next
+  if (Math.abs(dx) < 60) return;
+  if (dx > 0) navigateCiclo(-1); // swipe right = previous
+  else if (cicloOffset < 0) navigateCiclo(1); // swipe left = next
 }
 
 // ===== RENDER REGISTOS =====
@@ -1973,8 +1973,7 @@ function renderEntries() {
     const icon      = e.type==='income'
       ? (incomeCats.find(c=>c===e.category)||'💰').split(' ')[0]
       : (catGroup?.cat.split(' ')[0] || '📦');
-    const isToday   = e.date === todayStr();
-    const dateLabel = isToday ? formatTime(e.ts) : formatDate(e.date) + ' · ' + formatTime(e.ts);
+    const dateLabel = e.date === todayStr() ? 'Hoje' : formatDate(e.date);
     return `
     <div class="entry ${e.type==='income'?'income-entry':'expense-entry'}">
       <div class="entry-icon">${icon}</div>
