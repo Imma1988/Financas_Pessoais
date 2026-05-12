@@ -863,9 +863,9 @@
       <label class="form-label">API Key do Gemini</label>
       <input type="password" class="form-input" id="def-gemini-key" placeholder="AIza...">
     </div>
-    <div style="display:flex;gap:8px;">
-      <button class="modal-submit-btn" style="background:#a78bfa;" onclick="saveGeminiKey()">Guardar key</button>
-      <a href="https://aistudio.google.com/apikey" target="_blank" style="flex:1;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--muted);text-decoration:none;display:flex;align-items:center;justify-content:center;">Obter key gratuita ↗</a>
+    <div style="display:flex;gap:8px;margin-top:4px;">
+      <button style="background:#a78bfa;color:#0d0d0d;border:none;border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="saveGeminiKey()">Guardar</button>
+      <a href="https://aistudio.google.com/apikey" target="_blank" style="background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:13px;font-family:'DM Sans',sans-serif;padding:9px 16px;text-decoration:none;display:inline-flex;align-items:center;">Obter key gratuita ↗</a>
     </div>
     <div id="def-gemini-status" style="font-size:12px;color:var(--muted);margin-top:8px;"></div>
   </div>
@@ -888,8 +888,8 @@
       <input type="text" class="form-input" id="def-shared-input" placeholder="Cole aqui o ID de partilha">
     </div>
     <div style="display:flex;gap:8px;">
-      <button class="modal-submit-btn" onclick="useSharedData()" style="background:var(--accent-cofre);">Usar dados partilhados</button>
-      <button onclick="stopSharing()" style="flex:1;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--red);cursor:pointer;" id="def-stop-sharing">Parar partilha</button>
+      <button style="background:var(--accent-cofre);color:#0d0d0d;border:none;border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="useSharedData()">Usar dados partilhados</button>
+      <button onclick="stopSharing()" id="def-stop-sharing" style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:var(--red);cursor:pointer;">Parar partilha</button>
     </div>
     <div id="def-share-status" style="font-size:12px;color:var(--muted);margin-top:8px;"></div>
   </div>
@@ -902,14 +902,28 @@
       <label class="form-label">Dia de início</label>
       <input type="number" class="form-input" id="def-ciclo-dia" min="1" max="28" placeholder="25">
     </div>
-    <button class="modal-submit-btn" onclick="saveCicloFromDef()">Guardar ciclo</button>
+    <button style="background:var(--accent);color:#0d0d0d;border:none;border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-top:4px;" onclick="saveCicloFromDef()">Guardar ciclo</button>
+  </div>
+
+  <!-- Cofres -->
+  <div class="breakdown-wrap" style="margin-bottom:16px;">
+    <div class="breakdown-title">🏦 Cofres de poupança</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Os cofres permitem separar dinheiro para despesas futuras — reparações, seguros, férias. Cada cofre pode ser associado a uma sub-categoria para descontar automaticamente.</p>
+    <div style="display:flex;align-items:center;justify-content:space-between;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;">
+      <span style="font-size:14px;">Ativar cofres</span>
+      <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;">
+        <input type="checkbox" id="def-cofres-toggle" style="opacity:0;width:0;height:0;" onchange="toggleCofres(this.checked)">
+        <span id="def-cofres-slider" style="position:absolute;inset:0;background:#333;border-radius:99px;transition:background 0.2s;"></span>
+        <span id="def-cofres-knob" style="position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.2s;"></span>
+      </label>
+    </div>
   </div>
 
   <!-- Categorias -->
   <div class="breakdown-wrap">
     <div class="breakdown-title">🏷️ Categorias</div>
     <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Gere as categorias e sub-categorias de despesas e receitas.</p>
-    <button class="modal-submit-btn" style="background:var(--card2);color:var(--text);border:1px solid var(--border);" onclick="openCatModal()">Gerir categorias ›</button>
+    <button style="background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="openCatModal()">Gerir categorias ›</button>
   </div>
 </div>
 
@@ -947,6 +961,48 @@
     Entrar com Google
   </button>
   <div class="login-error" id="login-error">❌ Acesso não autorizado.</div>
+</div>
+
+<!-- ONBOARDING -->
+<div class="modal-overlay" id="onboarding-overlay" style="z-index:998;">
+  <div class="modal" style="max-height:90vh;">
+    <div class="modal-title" style="font-size:18px;">👋 Bem-vindo às Finanças Pessoais!</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6;">Vamos configurar a app em 3 passos rápidos.</p>
+
+    <!-- Step 1 -->
+    <div id="ob-step-1">
+      <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;margin-bottom:8px;">1 de 3 — Ciclo financeiro</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Que dia do mês começa o teu ciclo financeiro? (normalmente o dia em que recebes o salário)</p>
+      <input type="number" class="form-input" id="ob-ciclo" min="1" max="28" placeholder="Ex: 25" value="1">
+      <button class="modal-submit-btn" style="margin-top:12px;" onclick="obNext(1)">Continuar →</button>
+    </div>
+
+    <!-- Step 2 -->
+    <div id="ob-step-2" style="display:none;">
+      <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;margin-bottom:8px;">2 de 3 — Importação de extratos</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Para importares extratos do teu banco automaticamente com IA, precisas de uma API key gratuita do Google.</p>
+      <input type="password" class="form-input" id="ob-gemini" placeholder="Cola aqui a tua API key (opcional)">
+      <a href="https://aistudio.google.com/apikey" target="_blank" style="display:block;font-size:12px;color:#a78bfa;margin-top:6px;margin-bottom:12px;">Como obter a key gratuita ↗</a>
+      <div style="display:flex;gap:8px;">
+        <button class="modal-submit-btn" onclick="obNext(2)">Continuar →</button>
+        <button onclick="obNext(2)" style="background:var(--card2);color:var(--muted);border:1px solid var(--border);border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;cursor:pointer;">Saltar</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div id="ob-step-3" style="display:none;">
+      <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;margin-bottom:8px;">3 de 3 — Cofres de poupança</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Os cofres permitem guardar dinheiro para despesas futuras — reparações, seguros, férias. É uma funcionalidade avançada que podes ativar mais tarde nas Definições.</p>
+      <div style="background:var(--card2);border-radius:10px;padding:14px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px;">🏦 Exemplo</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">Tens um cofre "Seguro do carro" de €600/ano → a app diz-te para guardar €50/mês. Quando pagas o seguro, desconta automaticamente do cofre.</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="modal-submit-btn" style="background:var(--accent-cofre);" onclick="obFinish(true)">✅ Ativar cofres</button>
+        <button onclick="obFinish(false)" style="background:var(--card2);color:var(--muted);border:1px solid var(--border);border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;cursor:pointer;">Agora não</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- LICENSE SCREEN -->
@@ -1068,7 +1124,7 @@
 <div class="menu-overlay" id="menu-overlay" onclick="handleMenuOverlayClick(event)">
   <div class="side-menu">
     <button class="menu-close" onclick="closeMenu()">✕</button>
-    <button class="menu-item" id="menu-cofres" onclick="menuNav('cofres')">
+    <button class="menu-item" id="menu-cofres" onclick="menuNav('cofres')" style="display:none;">
       <span class="mi-icon">🏦</span>
       <div><div class="mi-label">Cofres</div><div class="mi-sub">Fundos de reserva</div></div>
     </button>
@@ -1536,6 +1592,13 @@ async function onAuthorised() {
   renderAll();
   renderCats();
   resetDatePicker();
+  // Apply cofres visibility
+  const menuCofres = document.getElementById('menu-cofres');
+  if (menuCofres) menuCofres.style.display = cofresEnabled ? '' : 'none';
+  // Show onboarding for new users
+  if (entries.length === 0 && !geminiKey && cicloInicio === 25) {
+    setTimeout(showOnboarding, 500);
+  }
   // Refresh token every 45 min silently
   setInterval(() => {
     if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
@@ -1614,6 +1677,7 @@ async function loadFromDrive() {
     tiposCustom     = data.tiposCustom     || {};
     importMemory    = data.importMemory    || { matches: {}, skipped: [] };
     geminiKey       = data.geminiKey       || '';
+    cofresEnabled   = data.cofresEnabled   || false;
     cicloInicio     = data.cicloInicio     || 25;
     deletedAtivoIds = new Set(data.deletedAtivoIds || []);
     deletedIds      = new Set(data.deletedIds      || []);
@@ -1732,7 +1796,7 @@ async function saveToDrive() {
       }
     }
 
-    const payload = JSON.stringify({ entries, expenseCats, incomeCats, cofres, ativos, cicloInicio, importMemory, tiposCustom, geminiKey, deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds], deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys], deletedAtivoIds: [...deletedAtivoIds] });
+    const payload = JSON.stringify({ entries, expenseCats, incomeCats, cofres, ativos, cicloInicio, importMemory, tiposCustom, geminiKey, cofresEnabled, deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds], deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys], deletedAtivoIds: [...deletedAtivoIds] });
 
     await fetch('https://www.googleapis.com/upload/drive/v3/files/' + driveFileId + '?uploadType=media', {
       method: 'PATCH',
@@ -2905,6 +2969,7 @@ function submitContribuirTodos() {
 // ===== IMPORTAR EXTRATO =====
 let importedMovements = [];
 let geminiKey       = '';   // user's own Gemini API key
+let cofresEnabled   = false; // cofres feature off by default
 let sharedFileId    = '';   // if using shared data, the file ID of the owner
 let currentUserEmail = '';
 let importMemory = { matches: {}, skipped: [] }; // { matches: {"CONTINENTE": "Supermercado"}, skipped: ["TRANSFERÊNCIA ENTRE CONTAS"] }
@@ -3182,7 +3247,6 @@ function renderDefinicoes() {
   // Share ID
   const shareInput = document.getElementById('def-share-id');
   if (shareInput) shareInput.value = driveFileId || '';
-  // Shared status
   const stopBtn = document.getElementById('def-stop-sharing');
   if (stopBtn) stopBtn.style.display = sharedFileId ? '' : 'none';
   const shareStatus = document.getElementById('def-share-status');
@@ -3190,6 +3254,29 @@ function renderDefinicoes() {
   // Ciclo
   const cicloInput = document.getElementById('def-ciclo-dia');
   if (cicloInput) cicloInput.value = cicloInicio;
+  // Cofres toggle
+  const toggle = document.getElementById('def-cofres-toggle');
+  if (toggle) {
+    toggle.checked = cofresEnabled;
+    updateCofresToggleUI(cofresEnabled);
+  }
+}
+
+function updateCofresToggleUI(enabled) {
+  const slider = document.getElementById('def-cofres-slider');
+  const knob   = document.getElementById('def-cofres-knob');
+  if (slider) slider.style.background = enabled ? 'var(--accent)' : '#333';
+  if (knob)   knob.style.transform    = enabled ? 'translateX(20px)' : 'translateX(0)';
+}
+
+function toggleCofres(enabled) {
+  cofresEnabled = enabled;
+  updateCofresToggleUI(enabled);
+  // Show/hide cofres in menu
+  const menuItem = document.getElementById('menu-cofres');
+  if (menuItem) menuItem.style.display = enabled ? '' : 'none';
+  scheduleSave();
+  showToast(enabled ? '✅ Cofres ativados!' : 'Cofres desativados');
 }
 
 function saveGeminiKey() {
@@ -3548,6 +3635,35 @@ function toggleRelCat(i) {
 function toggleRelSub(id) {
   event.stopPropagation();
   document.getElementById(id).classList.toggle('sub-open');
+}
+
+// ===== ONBOARDING =====
+function showOnboarding() {
+  document.getElementById('onboarding-overlay').classList.add('open');
+}
+
+function obNext(step) {
+  if (step === 1) {
+    const dia = parseInt(document.getElementById('ob-ciclo').value);
+    if (!dia || dia < 1 || dia > 28) { showToast('⚠️ Dia entre 1 e 28'); return; }
+    cicloInicio = dia;
+  }
+  if (step === 2) {
+    const key = document.getElementById('ob-gemini').value.trim();
+    if (key) geminiKey = key;
+  }
+  document.getElementById('ob-step-' + step).style.display = 'none';
+  document.getElementById('ob-step-' + (step + 1)).style.display = '';
+}
+
+function obFinish(enableCofres) {
+  cofresEnabled = enableCofres;
+  const menuCofres = document.getElementById('menu-cofres');
+  if (menuCofres) menuCofres.style.display = cofresEnabled ? '' : 'none';
+  document.getElementById('onboarding-overlay').classList.remove('open');
+  scheduleSave();
+  renderAll();
+  showToast('✅ Tudo pronto! Bem-vindo!');
 }
 
 // ===== TOAST =====
