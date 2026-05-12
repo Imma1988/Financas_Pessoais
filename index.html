@@ -920,10 +920,17 @@
   </div>
 
   <!-- Categorias -->
-  <div class="breakdown-wrap">
+  <div class="breakdown-wrap" style="margin-bottom:16px;">
     <div class="breakdown-title">🏷️ Categorias</div>
     <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Gere as categorias e sub-categorias de despesas e receitas.</p>
     <button style="background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="openCatModal()">Gerir categorias ›</button>
+  </div>
+
+  <!-- Sessão -->
+  <div class="breakdown-wrap">
+    <div class="breakdown-title">👤 Sessão</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;" id="def-user-email"></p>
+    <button style="background:var(--card2);color:var(--red);border:1px solid var(--border);border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="logoutApp()">Terminar sessão</button>
   </div>
 </div>
 
@@ -1558,6 +1565,11 @@ function logoutAndReset() {
   currentUserEmail = '';
   document.getElementById('license-screen').classList.remove('show');
   document.getElementById('login-screen').classList.remove('hidden');
+}
+
+function logoutApp() {
+  if (!confirm('Terminar sessão?')) return;
+  logoutAndReset();
 }
 
 function signIn() {
@@ -3254,6 +3266,9 @@ function renderDefinicoes() {
   // Ciclo
   const cicloInput = document.getElementById('def-ciclo-dia');
   if (cicloInput) cicloInput.value = cicloInicio;
+  // User email
+  const emailEl = document.getElementById('def-user-email');
+  if (emailEl) emailEl.textContent = 'Sessão iniciada como ' + (currentUserEmail || '—');
   // Cofres toggle
   const toggle = document.getElementById('def-cofres-toggle');
   if (toggle) {
