@@ -1235,6 +1235,9 @@
       </div>
       <input type="file" class="import-file-input" id="import-file-input" accept=".pdf,.xls,.xlsx,.csv" onchange="handleFileSelect(event)">
       <p style="font-size:12px;color:var(--muted);text-align:center;">No homebanking do teu banco procura <strong>Movimentos → Exportar</strong></p>
+      <div id="import-error-msg" style="display:none;background:rgba(255,94,94,0.1);border:1px solid var(--red);border-radius:10px;padding:12px 14px;margin-top:12px;font-size:13px;color:var(--red);">
+        ⚠️ API key do Gemini não configurada.<br><span style="color:var(--muted);">Vai a <strong style="color:var(--text);">Menu → Definições → Importação com IA</strong> para adicionar a tua key gratuita.</span>
+      </div>
     </div>
     <div id="import-loading-section" style="display:none;">
       <div class="import-loading">
@@ -2990,8 +2993,9 @@ function openImport() {
   importedMovements = [];
   const uploadSection = document.getElementById('import-upload-section');
   uploadSection.style.display = '';
-  // Remove any previous error messages
-  uploadSection.querySelectorAll('.import-error-msg').forEach(el => el.remove());
+  // Hide error message
+  const errMsg = document.getElementById('import-error-msg');
+  if (errMsg) errMsg.style.display = 'none';
   document.getElementById('import-loading-section').style.display = 'none';
   document.getElementById('import-review-section').style.display = 'none';
   document.getElementById('import-file-input').value = '';
@@ -3077,11 +3081,7 @@ Regras:
     if (!geminiKey) {
       document.getElementById('import-upload-section').style.display = '';
       document.getElementById('import-loading-section').style.display = 'none';
-      document.getElementById('import-upload-section').insertAdjacentHTML('beforeend',
-        '<div class="import-error-msg" style="background:rgba(255,94,94,0.1);border:1px solid var(--red);border-radius:10px;padding:12px 14px;margin-top:12px;font-size:13px;color:var(--red);">' +
-        '⚠️ API key do Gemini não configurada.<br><span style="color:var(--muted);">Vai a <strong style="color:var(--text);">Menu → Definições → Importação com IA</strong> para adicionar a tua key gratuita.</span>' +
-        '</div>'
-      );
+      document.getElementById('import-error-msg').style.display = '';
       return;
     }
     const response = await fetch(WORKER_URL, {
