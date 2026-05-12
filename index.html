@@ -826,6 +826,73 @@
     ontouchend="handleSwipeEnd(event)"></div>
 </div>
 
+<!-- ===== VIEW: DEFINIÇÕES ===== -->
+<div class="view" id="view-definicoes">
+  <div class="patrimonio-header">
+    <div>
+      <h1>⚙️ Definições</h1>
+      <div class="date">Configurações da app</div>
+    </div>
+  </div>
+
+  <!-- Gemini API Key -->
+  <div class="breakdown-wrap" style="margin-bottom:16px;">
+    <div class="breakdown-title">🤖 Importação com IA</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Para importares extratos bancários precisas de uma API key gratuita do Google Gemini.</p>
+    <div class="form-row" style="margin-bottom:8px;">
+      <label class="form-label">API Key do Gemini</label>
+      <input type="password" class="form-input" id="def-gemini-key" placeholder="AIza...">
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="modal-submit-btn" style="background:#a78bfa;" onclick="saveGeminiKey()">Guardar key</button>
+      <a href="https://aistudio.google.com/apikey" target="_blank" style="flex:1;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--muted);text-decoration:none;display:flex;align-items:center;justify-content:center;">Obter key gratuita ↗</a>
+    </div>
+    <div id="def-gemini-status" style="font-size:12px;color:var(--muted);margin-top:8px;"></div>
+  </div>
+
+  <!-- Partilha -->
+  <div class="breakdown-wrap" style="margin-bottom:16px;">
+    <div class="breakdown-title">👥 Partilha</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Partilha os teus dados com outra pessoa (ex: cônjuge). A outra pessoa cola o teu ID de partilha nas definições dela.</p>
+    <div class="form-row" style="margin-bottom:8px;">
+      <label class="form-label">O teu ID de partilha</label>
+      <div style="display:flex;gap:8px;">
+        <input type="text" class="form-input" id="def-share-id" readonly style="color:var(--muted);font-size:12px;">
+        <button onclick="copyShareId()" style="background:var(--card2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Syne',sans-serif;font-size:12px;font-weight:800;padding:8px 14px;cursor:pointer;white-space:nowrap;">Copiar</button>
+      </div>
+    </div>
+    <div class="menu-divider" style="margin:12px 0;"></div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">Ou usa os dados de outra pessoa:</p>
+    <div class="form-row" style="margin-bottom:8px;">
+      <label class="form-label">ID de partilha do outro utilizador</label>
+      <input type="text" class="form-input" id="def-shared-input" placeholder="Cole aqui o ID de partilha">
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="modal-submit-btn" onclick="useSharedData()" style="background:var(--accent-cofre);">Usar dados partilhados</button>
+      <button onclick="stopSharing()" style="flex:1;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--red);cursor:pointer;" id="def-stop-sharing">Parar partilha</button>
+    </div>
+    <div id="def-share-status" style="font-size:12px;color:var(--muted);margin-top:8px;"></div>
+  </div>
+
+  <!-- Ciclo -->
+  <div class="breakdown-wrap" style="margin-bottom:16px;">
+    <div class="breakdown-title">📅 Ciclo financeiro</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Define o dia do mês em que começa o teu ciclo financeiro.</p>
+    <div class="form-row" style="margin-bottom:8px;">
+      <label class="form-label">Dia de início</label>
+      <input type="number" class="form-input" id="def-ciclo-dia" min="1" max="28" placeholder="25">
+    </div>
+    <button class="modal-submit-btn" onclick="saveCicloFromDef()">Guardar ciclo</button>
+  </div>
+
+  <!-- Categorias -->
+  <div class="breakdown-wrap">
+    <div class="breakdown-title">🏷️ Categorias</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Gere as categorias e sub-categorias de despesas e receitas.</p>
+    <button class="modal-submit-btn" style="background:var(--card2);color:var(--text);border:1px solid var(--border);" onclick="openCatModal()">Gerir categorias ›</button>
+  </div>
+</div>
+
 <!-- ===== VIEW: COFRES ===== -->
 <div class="view" id="view-cofres">
   <div class="cofres-header">
@@ -984,6 +1051,11 @@
     <button class="menu-item" id="menu-relatorios" onclick="menuNav('relatorios')">
       <span class="mi-icon">📊</span>
       <div><div class="mi-label">Relatórios</div><div class="mi-sub">Análise por categoria</div></div>
+    </button>
+    <div class="menu-divider"></div>
+    <button class="menu-item" id="menu-definicoes" onclick="menuNav('definicoes')">
+      <span class="mi-icon">⚙️</span>
+      <div><div class="mi-label">Definições</div><div class="mi-sub">Gemini, partilha, ciclo</div></div>
     </button>
   </div>
 </div>
@@ -1284,13 +1356,10 @@
 <script>
 // ===== CONFIG =====
 const CLIENT_ID    = '780147822875-9ecc4n99h3k07lrkb8t8f6v4cvlunon1.apps.googleusercontent.com';
-const WORKER_URL   = 'https://financas-gemini.imateixeira23054.workers.dev';
-const ALLOWED_EMAILS = ['imateixeira23054@gmail.com', 'joanap.apostolo@gmail.com'];
-const DRIVE_OWNER_EMAIL = 'imateixeira23054@gmail.com';
-const DRIVE_FILE      = 'financas_dados.json';
-const DRIVE_FOLDER_ID = '1oc1dfGzhDSiWZSvGGzeG-gqcPJ5c5E_U';
-const DRIVE_FILE_ID   = '18LBG7_fB7Ya11u3ewLtn_I0YFibv7vYA';
-const SCOPES          = 'https://www.googleapis.com/auth/drive openid email profile';
+const WORKER_URL    = 'https://financas-gemini.imateixeira23054.workers.dev';
+const DRIVE_FILE    = 'financas_dados.json';
+const DRIVE_FOLDER  = 'Finanças Pessoais';
+const SCOPES        = 'https://www.googleapis.com/auth/drive openid email profile';
 
 // ===== STATE =====
 const DEFAULT_EXPENSE_CATS = [
@@ -1361,12 +1430,8 @@ function initAuth() {
           headers: { Authorization: 'Bearer ' + accessToken }
         });
         const info = await r.json();
-        if (!ALLOWED_EMAILS.includes(info.email)) {
-          accessToken = null;
-          localStorage.removeItem('gToken');
-          showLoginError();
-          return;
-        }
+        if (!info.email) { showLoginError(); return; }
+        currentUserEmail = info.email;
         onAuthorised();
       } catch(e) { showLoginError(); }
     }
@@ -1380,7 +1445,8 @@ function initAuth() {
     fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
       headers: { Authorization: 'Bearer ' + accessToken }
     }).then(r => r.json()).then(info => {
-      if (ALLOWED_EMAILS.includes(info.email)) {
+      if (info.email && !info.error) {
+        currentUserEmail = info.email;
         onAuthorised();
       } else if (info.error) {
         // Token expired — try silent refresh before giving up
@@ -1422,12 +1488,66 @@ async function onAuthorised() {
 }
 
 // ===== DRIVE =====
+async function findOrCreateDriveFile() {
+  // If user is using shared data, use that file ID
+  const savedShared = localStorage.getItem('sharedFileId_' + currentUserEmail);
+  if (savedShared) { sharedFileId = savedShared; driveFileId = savedShared; return savedShared; }
+
+  // Search for folder "Finanças Pessoais"
+  const folderSearch = await fetch(
+    "https://www.googleapis.com/drive/v3/files?q=name%3D%22" + encodeURIComponent(DRIVE_FOLDER) + "%22+and+mimeType%3D%22application%2Fvnd.google-apps.folder%22+and+trashed%3Dfalse&fields=files(id)",
+    { headers: { Authorization: 'Bearer ' + accessToken } }
+  );
+  const folderResult = await folderSearch.json();
+  let folderId;
+  if (folderResult.files && folderResult.files.length > 0) {
+    folderId = folderResult.files[0].id;
+  } else {
+    // Create folder
+    const folderRes = await fetch('https://www.googleapis.com/drive/v3/files', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: DRIVE_FOLDER, mimeType: 'application/vnd.google-apps.folder' })
+    });
+    const folder = await folderRes.json();
+    folderId = folder.id;
+  }
+
+  // Search for file inside folder
+  const fileSearch = await fetch(
+    "https://www.googleapis.com/drive/v3/files?q=name%3D%22" + DRIVE_FILE + "%22+and+%27" + folderId + "%27+in+parents+and+trashed%3Dfalse&fields=files(id)",
+    { headers: { Authorization: 'Bearer ' + accessToken } }
+  );
+  const fileResult = await fileSearch.json();
+  let fileId;
+  if (fileResult.files && fileResult.files.length > 0) {
+    fileId = fileResult.files[0].id;
+  } else {
+    // Create empty file
+    const metaRes = await fetch('https://www.googleapis.com/drive/v3/files', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: DRIVE_FILE, parents: [folderId] })
+    });
+    const meta = await metaRes.json();
+    fileId = meta.id;
+    // Init with empty data
+    await fetch('https://www.googleapis.com/upload/drive/v3/files/' + fileId + '?uploadType=media', {
+      method: 'PATCH',
+      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+  }
+  driveFileId = fileId;
+  return fileId;
+}
+
 async function loadFromDrive() {
   setSyncStatus('saving', 'A carregar...');
-  driveFileId = DRIVE_FILE_ID;
   try {
+    await findOrCreateDriveFile();
     const fileRes = await fetch(
-      'https://www.googleapis.com/drive/v3/files/' + DRIVE_FILE_ID + '?alt=media',
+      'https://www.googleapis.com/drive/v3/files/' + driveFileId + '?alt=media',
       { headers: { Authorization: 'Bearer ' + accessToken } }
     );
     const data = await fileRes.json();
@@ -1438,6 +1558,7 @@ async function loadFromDrive() {
     ativos          = data.ativos          || [];
     tiposCustom     = data.tiposCustom     || {};
     importMemory    = data.importMemory    || { matches: {}, skipped: [] };
+    geminiKey       = data.geminiKey       || '';
     cicloInicio     = data.cicloInicio     || 25;
     deletedAtivoIds = new Set(data.deletedAtivoIds || []);
     deletedIds      = new Set(data.deletedIds      || []);
@@ -1452,10 +1573,10 @@ async function loadFromDrive() {
 }
 
 async function readFromDrive() {
-  if (!accessToken) return null;
+  if (!accessToken || !driveFileId) return null;
   try {
     const r = await fetch(
-      'https://www.googleapis.com/drive/v3/files/' + DRIVE_FILE_ID + '?alt=media',
+      'https://www.googleapis.com/drive/v3/files/' + driveFileId + '?alt=media',
       { headers: { Authorization: 'Bearer ' + accessToken } }
     );
     return await r.json();
@@ -1556,9 +1677,9 @@ async function saveToDrive() {
       }
     }
 
-    const payload = JSON.stringify({ entries, expenseCats, incomeCats, cofres, ativos, cicloInicio, importMemory, tiposCustom, deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds], deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys], deletedAtivoIds: [...deletedAtivoIds] });
+    const payload = JSON.stringify({ entries, expenseCats, incomeCats, cofres, ativos, cicloInicio, importMemory, tiposCustom, geminiKey, deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds], deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys], deletedAtivoIds: [...deletedAtivoIds] });
 
-    await fetch('https://www.googleapis.com/upload/drive/v3/files/' + DRIVE_FILE_ID + '?uploadType=media', {
+    await fetch('https://www.googleapis.com/upload/drive/v3/files/' + driveFileId + '?uploadType=media', {
       method: 'PATCH',
       headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
       body: payload
@@ -1608,6 +1729,7 @@ function switchView(view) {
   if (view === 'cofres') renderCofres();
   if (view === 'patrimonio') renderPatrimonio();
   if (view === 'relatorios') renderRelatorios();
+  if (view === 'definicoes') renderDefinicoes();
 }
 
 function openMenu() { document.getElementById('menu-overlay').classList.add('open'); }
@@ -2727,6 +2849,9 @@ function submitContribuirTodos() {
 
 // ===== IMPORTAR EXTRATO =====
 let importedMovements = [];
+let geminiKey       = '';   // user's own Gemini API key
+let sharedFileId    = '';   // if using shared data, the file ID of the owner
+let currentUserEmail = '';
 let importMemory = { matches: {}, skipped: [] }; // { matches: {"CONTINENTE": "Supermercado"}, skipped: ["TRANSFERÊNCIA ENTRE CONTAS"] }
 
 function openImport() {
@@ -2814,10 +2939,13 @@ Regras:
     };
 
     // Call Gemini via Cloudflare Worker
+    if (!geminiKey) {
+      throw new Error('API key do Gemini não configurada. Vai às Definições para adicionar a tua key.');
+    }
     const response = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody)
+      body: JSON.stringify({ ...requestBody, geminiApiKey: geminiKey })
     });
 
     const data = await response.json();
@@ -2984,6 +3112,70 @@ function submitImport() {
   closeImport();
   renderAll();
   showToast(`✅ ${count} movimentos registados!`);
+}
+
+// ===== DEFINIÇÕES =====
+function renderDefinicoes() {
+  // Gemini key
+  const keyInput = document.getElementById('def-gemini-key');
+  if (keyInput) {
+    keyInput.value = geminiKey ? '••••••••••••••••' : '';
+    document.getElementById('def-gemini-status').textContent =
+      geminiKey ? '✅ Key configurada' : '⚠️ Sem key — importação de extratos indisponível';
+    document.getElementById('def-gemini-status').style.color = geminiKey ? 'var(--accent)' : 'var(--accent-cofre)';
+  }
+  // Share ID
+  const shareInput = document.getElementById('def-share-id');
+  if (shareInput) shareInput.value = driveFileId || '';
+  // Shared status
+  const stopBtn = document.getElementById('def-stop-sharing');
+  if (stopBtn) stopBtn.style.display = sharedFileId ? '' : 'none';
+  const shareStatus = document.getElementById('def-share-status');
+  if (shareStatus) shareStatus.textContent = sharedFileId ? '✅ A usar dados partilhados' : '';
+  // Ciclo
+  const cicloInput = document.getElementById('def-ciclo-dia');
+  if (cicloInput) cicloInput.value = cicloInicio;
+}
+
+function saveGeminiKey() {
+  const val = document.getElementById('def-gemini-key').value.trim();
+  if (!val || val.startsWith('•')) { showToast('⚠️ Insere a tua API key'); return; }
+  geminiKey = val;
+  scheduleSave();
+  renderDefinicoes();
+  showToast('✅ Key do Gemini guardada!');
+}
+
+function copyShareId() {
+  navigator.clipboard.writeText(driveFileId || '').then(() => showToast('✅ ID copiado!'));
+}
+
+function useSharedData() {
+  const id = document.getElementById('def-shared-input').value.trim();
+  if (!id) { showToast('⚠️ Cola o ID de partilha'); return; }
+  if (!confirm('Vais passar a usar os dados de outra pessoa. Os teus dados atuais ficam guardados mas deixarás de os ver aqui. Confirmas?')) return;
+  sharedFileId = id;
+  driveFileId  = id;
+  localStorage.setItem('sharedFileId_' + currentUserEmail, id);
+  loadFromDrive().then(() => { renderAll(); renderDefinicoes(); showToast('✅ A usar dados partilhados!'); });
+}
+
+function stopSharing() {
+  if (!confirm('Voltar aos teus dados próprios?')) return;
+  sharedFileId = '';
+  localStorage.removeItem('sharedFileId_' + currentUserEmail);
+  findOrCreateDriveFile().then(() => {
+    loadFromDrive().then(() => { renderAll(); renderDefinicoes(); showToast('✅ A usar os teus dados!'); });
+  });
+}
+
+function saveCicloFromDef() {
+  const dia = parseInt(document.getElementById('def-ciclo-dia').value);
+  if (!dia || dia < 1 || dia > 28) { showToast('⚠️ Dia entre 1 e 28'); return; }
+  cicloInicio = dia;
+  scheduleSave();
+  renderAll();
+  showToast('✅ Ciclo atualizado!');
 }
 
 // ===== CICLO SETTINGS =====
