@@ -446,6 +446,25 @@
   .mv-del { background: none; border: none; color: #333; cursor: pointer; font-size: 13px; padding: 2px 4px; border-radius: 4px; transition: color 0.15s; }
   .mv-del:hover { color: var(--red); }
 
+  /* License screen */
+  #license-screen {
+    position: fixed; inset: 0; background: var(--bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 999; padding: 32px; display: none;
+  }
+  #license-screen.show { display: flex; }
+  .license-icon { font-size: 56px; margin-bottom: 16px; }
+  .license-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 8px; text-align: center; }
+  .license-sub { font-size: 14px; color: var(--muted); margin-bottom: 32px; text-align: center; line-height: 1.6; max-width: 300px; }
+  .buy-btn {
+    background: var(--accent); color: #0d0d0d; border: none; border-radius: 12px;
+    padding: 16px 32px; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800;
+    cursor: pointer; text-decoration: none; display: inline-block; margin-bottom: 12px;
+    transition: opacity 0.15s;
+  }
+  .buy-btn:hover { opacity: 0.85; }
+  .logout-link { font-size: 13px; color: var(--muted); cursor: pointer; text-decoration: underline; margin-top: 8px; }
+
   /* Edit entry */
   .edit-entry-type-toggle { display:flex; gap:6px; margin-bottom:12px; }
   .edit-type-btn { flex:1; background:var(--card2); border:1.5px solid var(--border); border-radius:9px; padding:9px; font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:var(--muted); cursor:pointer; transition:all 0.2s; }
@@ -927,6 +946,15 @@
     Entrar com Google
   </button>
   <div class="login-error" id="login-error">❌ Acesso não autorizado.</div>
+</div>
+
+<!-- LICENSE SCREEN -->
+<div id="license-screen">
+  <div class="license-icon">🔐</div>
+  <div class="license-title">Licença necessária</div>
+  <div class="license-sub">Esta app requer uma licença vitalícia.<br>Acesso único por apenas <strong style="color:var(--accent);">€10</strong>.</div>
+  <a class="buy-btn" href="https://lemonsqueezy.com" target="_blank">Comprar licença — €10</a>
+  <div class="logout-link" onclick="logoutAndReset()">Sair da conta</div>
 </div>
 
 <!-- SYNC INDICATOR -->
@@ -1467,6 +1495,14 @@ function silentRefresh() {
   tokenClient.requestAccessToken({ prompt: '' });
 }
 
+function logoutAndReset() {
+  localStorage.removeItem('gToken');
+  accessToken = null;
+  currentUserEmail = '';
+  document.getElementById('license-screen').classList.remove('show');
+  document.getElementById('login-screen').classList.remove('hidden');
+}
+
 function signIn() {
   if (tokenClient) tokenClient.requestAccessToken({ prompt: 'select_account' });
 }
@@ -1476,6 +1512,24 @@ function showLoginError() {
 }
 
 async function onAuthorised() {
+  // Check license
+  try {
+    const verifyRes = await fetch(WORKER_URL + '/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: currentUserEmail })
+    });
+    const verifyData = await verifyRes.json();
+    if (!verifyData.licensed) {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('license-screen').classList.add('show');
+      return;
+    }
+  } catch(e) {
+    // If verification fails (network error), allow access
+    console.warn('License check failed, allowing access:', e);
+  }
+
   document.getElementById('login-screen').classList.add('hidden');
   await loadFromDrive();
   renderAll();
