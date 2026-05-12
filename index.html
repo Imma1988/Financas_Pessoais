@@ -1566,6 +1566,13 @@ function logoutAndReset() {
   localStorage.removeItem('gToken');
   accessToken = null;
   currentUserEmail = '';
+  // Reset all state
+  entries = []; expenseCats = JSON.parse(JSON.stringify(DEFAULT_EXPENSE_CATS));
+  incomeCats = [...DEFAULT_INCOME_CATS]; cofres = []; ativos = [];
+  geminiKey = ''; cofresEnabled = false; cicloOffset = 0;
+  driveFileId = null; sharedFileId = '';
+  // Go back to registos view
+  switchView('registos');
   document.getElementById('license-screen').classList.remove('show');
   document.getElementById('login-screen').classList.remove('hidden');
 }
