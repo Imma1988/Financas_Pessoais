@@ -781,6 +781,56 @@
   .ativo-btn:hover { color: var(--text); }
   .ativo-btn.del:hover { color: var(--red); }
 
+  /* Category picker button */
+  .cat-picker-btn {
+    width: 100%; background: var(--card2); border: 1.5px solid var(--border);
+    border-radius: 12px; padding: 13px 16px; display: flex; align-items: center;
+    gap: 10px; cursor: pointer; transition: border-color 0.2s; margin-bottom: 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text);
+  }
+  .cat-picker-btn:hover, .cat-picker-btn.has-value { border-color: var(--accent); }
+  .cat-picker-btn #cat-picker-label { flex: 1; text-align: left; }
+  .cat-picker-btn .cat-parent-label { font-size: 11px; color: var(--muted); }
+
+  /* Bottom sheet */
+  .bottom-sheet-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    z-index: 150; opacity: 0; pointer-events: none; transition: opacity 0.25s;
+  }
+  .bottom-sheet-overlay.open { opacity: 1; pointer-events: all; }
+  .bottom-sheet {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    background: var(--card); border-radius: 20px 20px 0 0;
+    border-top: 1px solid var(--border);
+    max-height: 80vh; display: flex; flex-direction: column;
+    transform: translateY(100%); transition: transform 0.3s cubic-bezier(.34,1.1,.64,1);
+    z-index: 151;
+  }
+  .bottom-sheet-overlay.open .bottom-sheet { transform: translateY(0); }
+  .bottom-sheet-handle { width: 36px; height: 4px; background: #333; border-radius: 99px; margin: 12px auto 0; flex-shrink: 0; }
+  .bottom-sheet-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; padding: 12px 20px 8px; flex-shrink: 0; }
+  .bottom-sheet-search {
+    margin: 0 16px 12px; background: var(--card2); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 10px 14px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; flex-shrink: 0;
+  }
+  .bottom-sheet-search:focus { border-color: #555; }
+  .bottom-sheet-list { overflow-y: auto; padding: 0 8px 32px; flex: 1; }
+  .bs-group-label {
+    font-size: 10px; color: var(--muted); text-transform: uppercase;
+    letter-spacing: 1px; padding: 10px 12px 4px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .bs-cat-btn {
+    width: 100%; background: none; border: none; border-radius: 10px;
+    padding: 11px 14px; display: flex; align-items: center; gap: 10px;
+    cursor: pointer; text-align: left; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; transition: background 0.15s;
+  }
+  .bs-cat-btn:hover { background: var(--card2); }
+  .bs-cat-btn.active { background: rgba(200,241,53,0.1); color: var(--accent); }
+  .bs-cat-btn .bs-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
+
   /* Ativo tipo colors */
   .tipo-color-0 { background: #a78bfa; }
   .tipo-color-1 { background: #35c8f1; }
@@ -836,9 +886,14 @@
     </div>
     <div class="cats-header">
       <span class="cats-label">Sub-categoria</span>
-      <button class="manage-cats-btn" onclick="openCatModal()">⚙️ Gerir categorias</button>
+      <button class="manage-cats-btn" onclick="openCatModal()">⚙️ Gerir</button>
     </div>
-    <div class="cats" id="cats"></div>
+    <button class="cat-picker-btn" id="cat-picker-btn" onclick="openCatPicker()">
+      <span id="cat-picker-icon">📦</span>
+      <span id="cat-picker-label">Escolher categoria</span>
+      <span style="color:var(--muted);font-size:12px;">›</span>
+    </button>
+    <div id="cats" style="display:none;"></div>
     <div class="note-row">
       <span>✏️</span>
       <input type="text" id="note-input" placeholder="Nota opcional (ex: almoço com colegas)">
@@ -1027,6 +1082,16 @@
         <button onclick="obFinish(false)" style="background:var(--card2);color:var(--muted);border:1px solid var(--border);border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;cursor:pointer;">Agora não</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- CATEGORY PICKER BOTTOM SHEET -->
+<div class="bottom-sheet-overlay" id="cat-picker-overlay" onclick="handleCatPickerOverlayClick(event)">
+  <div class="bottom-sheet" id="cat-picker-sheet">
+    <div class="bottom-sheet-handle"></div>
+    <div class="bottom-sheet-title" id="cat-picker-title">Escolher categoria</div>
+    <input type="text" class="bottom-sheet-search" id="cat-picker-search" placeholder="🔍 Pesquisar..." oninput="filterCatPicker(this.value)">
+    <div class="bottom-sheet-list" id="cat-picker-list"></div>
   </div>
 </div>
 
@@ -1988,6 +2053,7 @@ function parseAmount(val) {
 // ===== MODE =====
 function setMode(mode) {
   currentMode = mode;
+  selectedCatValue = ''; selectedCatParent = ''; selectedCatIcon = '';
   const qa = document.getElementById('quick-add');
   const btn = document.getElementById('add-btn');
   if (mode === 'expense') {
@@ -2005,53 +2071,119 @@ function setMode(mode) {
 }
 
 // ===== CATS =====
+// Category picker state
+let selectedCatValue  = '';
+let selectedCatParent = '';
+let selectedCatIcon   = '';
+
 function renderCats() {
-  const container = document.getElementById('cats');
-  container.innerHTML = '';
+  // Set default selection
   if (currentMode === 'income') {
-    incomeCats.forEach((cat, i) => {
+    if (!selectedCatValue || !incomeCats.includes(selectedCatValue)) {
+      selectedCatValue  = incomeCats[0] || '';
+      selectedCatParent = '';
+      selectedCatIcon   = '💰';
+    }
+  } else {
+    const allSubs = expenseCats.flatMap(g => g.subs);
+    if (!selectedCatValue || !allSubs.includes(selectedCatValue)) {
+      const firstGroup  = expenseCats[0];
+      selectedCatValue  = firstGroup?.subs[0] || '';
+      selectedCatParent = firstGroup?.cat || '';
+      selectedCatIcon   = firstGroup?.cat.split(' ')[0] || '📦';
+    }
+  }
+  updateCatPickerBtn();
+}
+
+function updateCatPickerBtn() {
+  const btn   = document.getElementById('cat-picker-btn');
+  const label = document.getElementById('cat-picker-label');
+  const icon  = document.getElementById('cat-picker-icon');
+  if (!btn) return;
+  if (selectedCatValue) {
+    label.innerHTML = selectedCatValue +
+      (selectedCatParent ? ' <span class="cat-parent-label">· ' + selectedCatParent.split(' ').slice(1).join(' ') + '</span>' : '');
+    icon.textContent = selectedCatIcon;
+    btn.classList.add('has-value');
+  } else {
+    label.textContent = 'Escolher categoria';
+    icon.textContent  = '📦';
+    btn.classList.remove('has-value');
+  }
+}
+
+function openCatPicker() {
+  const title = document.getElementById('cat-picker-title');
+  title.textContent = currentMode === 'income' ? 'Receita — Categoria' : 'Despesa — Sub-categoria';
+  document.getElementById('cat-picker-search').value = '';
+  renderCatPickerList('');
+  document.getElementById('cat-picker-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('cat-picker-search').focus(), 300);
+}
+
+function closeCatPicker() {
+  document.getElementById('cat-picker-overlay').classList.remove('open');
+}
+
+function handleCatPickerOverlayClick(e) {
+  if (e.target === document.getElementById('cat-picker-overlay')) closeCatPicker();
+}
+
+function filterCatPicker(query) {
+  renderCatPickerList(query.toLowerCase());
+}
+
+function renderCatPickerList(query) {
+  const list = document.getElementById('cat-picker-list');
+  list.innerHTML = '';
+
+  if (currentMode === 'income') {
+    const filtered = incomeCats.filter(c => !query || c.toLowerCase().includes(query));
+    filtered.forEach(cat => {
       const btn = document.createElement('button');
-      btn.className = 'cat-btn' + (i===0?' active':'');
-      btn.dataset.cat = cat; btn.textContent = cat;
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-      });
-      container.appendChild(btn);
+      btn.className = 'bs-cat-btn' + (cat === selectedCatValue ? ' active' : '');
+      btn.innerHTML = '<span class="bs-icon">💰</span><span>' + cat + '</span>';
+      btn.onclick = () => { selectedCatValue = cat; selectedCatParent = ''; selectedCatIcon = '💰'; updateCatPickerBtn(); closeCatPicker(); };
+      list.appendChild(btn);
     });
   } else {
-    // Expense: show category groups with subcategories
-    let firstSub = true;
     expenseCats.forEach(group => {
-      // Group label
-      const label = document.createElement('div');
-      label.style.cssText = 'width:100%;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:6px 0 4px;font-family:"DM Sans",sans-serif;';
-      label.textContent = group.cat;
-      container.appendChild(label);
-      // Subcategory buttons
-      group.subs.forEach(sub => {
-        const btn = document.createElement('button');
-        btn.className = 'cat-btn' + (firstSub ? ' active' : '');
-        btn.dataset.cat = sub;
-        btn.dataset.parent = group.cat;
-        btn.textContent = sub;
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-        });
-        container.appendChild(btn);
-        firstSub = false;
+      const filteredSubs = group.subs.filter(s => !query || s.toLowerCase().includes(query) || group.cat.toLowerCase().includes(query));
+      if (!filteredSubs.length) return;
+      if (!query) {
+        const label = document.createElement('div');
+        label.className = 'bs-group-label';
+        label.textContent = group.cat;
+        list.appendChild(label);
+      }
+      filteredSubs.forEach(sub => {
+        const icon = group.cat.split(' ')[0];
+        const btn  = document.createElement('button');
+        btn.className = 'bs-cat-btn' + (sub === selectedCatValue ? ' active' : '');
+        btn.innerHTML = '<span class="bs-icon">' + icon + '</span><span>' + sub + '</span>';
+        btn.onclick = () => {
+          selectedCatValue  = sub;
+          selectedCatParent = group.cat;
+          selectedCatIcon   = icon;
+          updateCatPickerBtn();
+          closeCatPicker();
+        };
+        list.appendChild(btn);
       });
     });
   }
+
+  if (!list.children.length) {
+    list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:32px;font-size:13px;">Sem resultados para "' + query + '"</div>';
+  }
 }
+
 function getSelectedCat() {
-  const active = document.querySelector('.cat-btn.active');
-  return active ? active.dataset.cat : (currentMode==='income' ? incomeCats[0] : (expenseCats[0]?.subs[0] || 'Outro'));
+  return selectedCatValue || (currentMode==='income' ? incomeCats[0] : (expenseCats[0]?.subs[0] || 'Outro'));
 }
 function getSelectedParentCat() {
-  const active = document.querySelector('.cat-btn.active');
-  return active?.dataset.parent || getSubcatParent(getSelectedCat()) || '';
+  return selectedCatParent || getSubcatParent(getSelectedCat()) || '';
 }
 
 
