@@ -192,11 +192,11 @@
 
   .add-btn {
     width: 100%; background: var(--accent); color: #0d0d0d; border: none;
-    border-radius: 12px; padding: 18px 16px; font-family: 'Syne', sans-serif;
-    font-size: 16px; font-weight: 800; cursor: pointer; line-height: 1.3;
+    border-radius: 12px; padding: 20px 16px; font-family: 'Syne', sans-serif;
+    font-size: 16px; font-weight: 800; cursor: pointer; line-height: 1.5;
     transition: transform 0.1s, opacity 0.15s, background 0.3s;
     display: flex; align-items: center; justify-content: center; gap: 8px;
-    overflow: visible;
+    overflow: visible; min-height: 58px;
   }
   .add-btn:active { transform: scale(0.97); }
   .add-btn:hover { opacity: 0.9; }
@@ -446,6 +446,24 @@
   .mv-amount.negativo { color: var(--red); }
   .mv-del { background: none; border: none; color: #333; cursor: pointer; font-size: 13px; padding: 2px 4px; border-radius: 4px; transition: color 0.15s; }
   .mv-del:hover { color: var(--red); }
+
+  /* Confirm modal */
+  .confirm-modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    z-index: 200; display: flex; align-items: center; justify-content: center;
+    padding: 24px; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .confirm-modal-overlay.open { opacity: 1; pointer-events: all; }
+  .confirm-modal {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px; width: 100%; max-width: 320px;
+  }
+  .confirm-modal-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; margin-bottom: 8px; }
+  .confirm-modal-msg { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 20px; }
+  .confirm-modal-btns { display: flex; gap: 8px; }
+  .confirm-modal-ok { flex: 1; background: var(--red); color: #fff; border: none; border-radius: 10px; padding: 13px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; }
+  .confirm-modal-ok.safe { background: var(--accent); color: #0d0d0d; }
+  .confirm-modal-cancel { flex: 1; background: var(--card2); color: var(--muted); border: 1px solid var(--border); border-radius: 10px; padding: 13px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; }
 
   /* License screen */
   #license-screen {
@@ -1008,6 +1026,18 @@
         <button class="modal-submit-btn" style="background:var(--accent-cofre);" onclick="obFinish(true)">✅ Ativar cofres</button>
         <button onclick="obFinish(false)" style="background:var(--card2);color:var(--muted);border:1px solid var(--border);border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;cursor:pointer;">Agora não</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="confirm-modal-overlay" id="confirm-modal-overlay">
+  <div class="confirm-modal">
+    <div class="confirm-modal-title" id="confirm-modal-title"></div>
+    <div class="confirm-modal-msg" id="confirm-modal-msg"></div>
+    <div class="confirm-modal-btns">
+      <button class="confirm-modal-cancel" onclick="confirmModalResolve(false)">Cancelar</button>
+      <button class="confirm-modal-ok" id="confirm-modal-ok" onclick="confirmModalResolve(true)">Confirmar</button>
     </div>
   </div>
 </div>
@@ -1577,8 +1607,8 @@ function logoutAndReset() {
   document.getElementById('login-screen').classList.remove('hidden');
 }
 
-function logoutApp() {
-  if (!confirm('Terminar sessão?')) return;
+async function logoutApp() {
+  if (!await appConfirm('Tens a certeza que queres terminar sessão?', 'Terminar sessão', 'Terminar sessão')) return;
   logoutAndReset();
 }
 
@@ -2175,8 +2205,8 @@ function submitEditEntry() {
   if (document.getElementById('view-relatorios').classList.contains('active')) renderRelatorios();
   showToast('✅ Registo atualizado!');
 }
-function clearToday() {
-  if (!confirm('Apagar todos os registos deste ciclo?')) return;
+async function clearToday() {
+  if (!await appConfirm('Apagar todos os registos deste ciclo? Esta ação não pode ser desfeita.', 'Limpar ciclo', 'Apagar tudo')) return;
   entries.filter(e=>isInCurrentCiclo(e.date)).forEach(e => deletedIds.add(e.id));
   entries=entries.filter(e=>!isInCurrentCiclo(e.date)); saveData(entries); renderAll();
 }
@@ -2417,8 +2447,8 @@ function openEditCofre(id) {
   document.getElementById('cofre-modal-overlay').classList.add('open');
 }
 
-function apagarCofre(id) {
-  if (!confirm('Apagar este cofre e todo o histórico?')) return;
+async function apagarCofre(id) {
+  if (!await appConfirm('Apagar este cofre e todo o histórico de movimentos?', 'Apagar cofre', 'Apagar')) return;
   deletedCofreIds.add(id);
   cofres=cofres.filter(c=>c.id!==id); saveCofres(cofres); renderCofres();
   showToast('🗑️ Cofre apagado');
@@ -2860,8 +2890,8 @@ function submitAtivo() {
   showToast(editAtivoId ? '✅ Ativo atualizado!' : '✅ Ativo adicionado!');
 }
 
-function apagarAtivo(id) {
-  if (!confirm('Apagar este ativo e todo o histórico?')) return;
+async function apagarAtivo(id) {
+  if (!await appConfirm('Apagar este ativo e todo o histórico de valores?', 'Apagar ativo', 'Apagar')) return;
   deletedAtivoIds.add(id);
   ativos = ativos.filter(a => a.id !== id);
   saveAtivos();
@@ -3324,18 +3354,18 @@ function copyShareId() {
   navigator.clipboard.writeText(driveFileId || '').then(() => showToast('✅ ID copiado!'));
 }
 
-function useSharedData() {
+async function useSharedData() {
   const id = document.getElementById('def-shared-input').value.trim();
   if (!id) { showToast('⚠️ Cola o ID de partilha'); return; }
-  if (!confirm('Vais passar a usar os dados de outra pessoa. Os teus dados atuais ficam guardados mas deixarás de os ver aqui. Confirmas?')) return;
+  if (!await appConfirm('Vais passar a usar os dados de outra pessoa. Os teus dados ficam guardados mas deixarás de os ver aqui.', 'Usar dados partilhados', 'Confirmar', false)) return;
   sharedFileId = id;
   driveFileId  = id;
   localStorage.setItem('sharedFileId_' + currentUserEmail, id);
   loadFromDrive().then(() => { renderAll(); renderDefinicoes(); showToast('✅ A usar dados partilhados!'); });
 }
 
-function stopSharing() {
-  if (!confirm('Voltar aos teus dados próprios?')) return;
+async function stopSharing() {
+  if (!await appConfirm('Voltar a usar os teus dados próprios?', 'Parar partilha', 'Confirmar', false)) return;
   sharedFileId = '';
   localStorage.removeItem('sharedFileId_' + currentUserEmail);
   findOrCreateDriveFile().then(() => {
@@ -3696,6 +3726,25 @@ function obFinish(enableCofres) {
   scheduleSave();
   renderAll();
   showToast('✅ Tudo pronto! Bem-vindo!');
+}
+
+// ===== CONFIRM MODAL =====
+let confirmModalResolve = null;
+
+function appConfirm(msg, title = 'Confirmar', okLabel = 'Confirmar', danger = true) {
+  return new Promise(resolve => {
+    document.getElementById('confirm-modal-title').textContent = title;
+    document.getElementById('confirm-modal-msg').textContent = msg;
+    const okBtn = document.getElementById('confirm-modal-ok');
+    okBtn.textContent = okLabel;
+    okBtn.className = 'confirm-modal-ok' + (danger ? '' : ' safe');
+    confirmModalResolve = (val) => {
+      document.getElementById('confirm-modal-overlay').classList.remove('open');
+      confirmModalResolve = null;
+      resolve(val);
+    };
+    document.getElementById('confirm-modal-overlay').classList.add('open');
+  });
 }
 
 // ===== TOAST =====
