@@ -999,6 +999,21 @@
     <button style="background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="openCatModal()">Gerir categorias ›</button>
   </div>
 
+  <!-- Suporte -->
+  <div class="breakdown-wrap" style="margin-bottom:16px;">
+    <div class="breakdown-title">💬 Suporte</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Tens alguma dúvida ou problema? Envia-nos um email e respondemos o mais rápido possível.</p>
+    <div class="form-row" style="margin-bottom:8px;">
+      <label class="form-label">Assunto</label>
+      <input type="text" class="form-input" id="support-subject" placeholder="Ex: Problema ao importar extrato">
+    </div>
+    <div class="form-row" style="margin-bottom:8px;">
+      <label class="form-label">Mensagem</label>
+      <textarea class="form-input" id="support-message" placeholder="Descreve o teu problema ou dúvida..." style="min-height:90px;resize:vertical;font-family:'DM Sans',sans-serif;font-size:14px;"></textarea>
+    </div>
+    <button style="background:#a78bfa;color:#0d0d0d;border:none;border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="openSupportEmail()">📧 Enviar email de suporte</button>
+  </div>
+
   <!-- Sessão -->
   <div class="breakdown-wrap">
     <div class="breakdown-title">👤 Sessão</div>
@@ -1553,21 +1568,18 @@ const SCOPES        = 'https://www.googleapis.com/auth/drive openid email profil
 
 // ===== STATE =====
 const DEFAULT_EXPENSE_CATS = [
-  { cat: '🏠 Habitação',         subs: ['Prestação Crédito Habitação','Condomínio','Seguro Multirriscos','Seguro de vida'] },
-  { cat: '💡 Utilities',         subs: ['Eletricidade','Água','Telecomunicações'] },
-  { cat: '🍕 Comida e bebida',   subs: ['Supermercado','Jantaradas'] },
-  { cat: '🚗 Transportes',       subs: ['Combustível','Portagens e estacionamentos','Manutenção','Seguro carro','Seguro moto'] },
-  { cat: '🛒 Shopping',          subs: ['Extras'] },
-  { cat: '🎓 Educação',          subs: ['Oceanus'] },
-  { cat: '🎬 Entretenimento',    subs: ['Subscrições'] },
-  { cat: '🏥 Saúde',             subs: ['Consultas, exames e farmácias','Piscina'] },
-  { cat: '👨‍👩‍👧 Família e amigos', subs: ['Presentes'] },
-  { cat: '💈 Cuidados pessoais', subs: ['Cabeleireiro'] },
-  { cat: '🏖️ Férias',            subs: ['Férias'] },
-  { cat: '🏦 Cofres',            subs: ['Cofres'] },
-  { cat: '🔷 Outras despesas',   subs: ['Impostos','Despesas bancárias'] },
+  { cat: '🏠 Habitação',      subs: ['Renda/Prestação','Condomínio','Água','Eletricidade','Gás','Internet','Telefone'] },
+  { cat: '🍽️ Alimentação',    subs: ['Supermercado','Café','Restaurante'] },
+  { cat: '🚗 Transportes',    subs: ['Combustível','Transportes públicos','Estacionamento','Manutenção do carro','Seguro do carro'] },
+  { cat: '🏥 Saúde',          subs: ['Médico','Farmácia','Ginásio','Seguro de saúde'] },
+  { cat: '🎬 Lazer',          subs: ['Férias'] },
+  { cat: '👕 Compras',        subs: ['Roupa','Eletrónica','Casa','Higiene e beleza'] },
+  { cat: '🎓 Educação',       subs: ['Propinas','Livros','Formação','Infantário/Escola'] },
+  { cat: '👨‍👩‍👧 Família',       subs: ['Criança','Animal de estimação','Presentes'] },
+  { cat: '🏦 Poupança',       subs: ['Poupança'] },
+  { cat: '🔷 Outras',         subs: ['Impostos','Despesas bancárias','Outros'] },
 ];
-const DEFAULT_INCOME_CATS = ['💼 Salário','💰 Freelance','🎁 Presente','📈 Investimento','💳 Reembolso','📦 Outro'];
+const DEFAULT_INCOME_CATS = ['💼 Salário','🎁 Presente','📈 Investimento','💳 Reembolso','📦 Outro'];
 
 // Flat list of subcategories with parent lookup
 function getSubcatParent(subcat) {
@@ -1657,6 +1669,17 @@ function silentRefresh() {
   tokenClient.requestAccessToken({ prompt: '' });
 }
 
+function openSupportEmail() {
+  const subject = document.getElementById('support-subject').value.trim() || 'Suporte — Moneyholic';
+  const message = document.getElementById('support-message').value.trim();
+  const version = 'Moneyholic App';
+  const body = message
+    ? message + '\n\n---\nEmail: ' + (currentUserEmail || 'não autenticado') + '\nApp: ' + version
+    : 'Descreve aqui o teu problema...\n\n---\nEmail: ' + (currentUserEmail || 'não autenticado') + '\nApp: ' + version;
+  const mailto = 'mailto:moneyholicapp@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  window.open(mailto, '_blank');
+}
+
 function logoutAndReset() {
   localStorage.removeItem('gToken');
   accessToken = null;
@@ -1712,6 +1735,11 @@ async function onAuthorised() {
   // Apply cofres visibility
   const menuCofres = document.getElementById('menu-cofres');
   if (menuCofres) menuCofres.style.display = cofresEnabled ? '' : 'none';
+  // Ensure Cofres sub-category exists if cofresEnabled
+  if (cofresEnabled) {
+    const poupanca = expenseCats.find(g => g.cat === '🏦 Poupança');
+    if (poupanca && !poupanca.subs.includes('Cofres')) poupanca.subs.push('Cofres');
+  }
   // Show onboarding for new users
   if (entries.length === 0 && !geminiKey && cicloInicio === 25) {
     setTimeout(showOnboarding, 500);
@@ -3469,6 +3497,15 @@ function toggleCofres(enabled) {
   // Show/hide cofres in menu
   const menuItem = document.getElementById('menu-cofres');
   if (menuItem) menuItem.style.display = enabled ? '' : 'none';
+  // Add/remove Cofres sub-category from Poupança
+  const poupanca = expenseCats.find(g => g.cat === '🏦 Poupança');
+  if (poupanca) {
+    if (enabled && !poupanca.subs.includes('Cofres')) {
+      poupanca.subs.push('Cofres');
+    } else if (!enabled) {
+      poupanca.subs = poupanca.subs.filter(s => s !== 'Cofres');
+    }
+  }
   scheduleSave();
   showToast(enabled ? '✅ Cofres ativados!' : 'Cofres desativados');
 }
