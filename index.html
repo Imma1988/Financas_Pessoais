@@ -1728,9 +1728,9 @@ async function findOrCreateDriveFile() {
   const savedShared = localStorage.getItem('sharedFileId_' + currentUserEmail);
   if (savedShared) { sharedFileId = savedShared; driveFileId = savedShared; return savedShared; }
 
-  // Search for folder "Finanças Pessoais"
+  // Search for folder "Finanças Pessoais" — only in user's own Drive
   const folderSearch = await fetch(
-    "https://www.googleapis.com/drive/v3/files?q=name%3D%22" + encodeURIComponent(DRIVE_FOLDER) + "%22+and+mimeType%3D%22application%2Fvnd.google-apps.folder%22+and+trashed%3Dfalse&fields=files(id)",
+    "https://www.googleapis.com/drive/v3/files?q=name%3D%22" + encodeURIComponent(DRIVE_FOLDER) + "%22+and+mimeType%3D%22application%2Fvnd.google-apps.folder%22+and+trashed%3Dfalse+and+%27me%27+in+owners&fields=files(id)",
     { headers: { Authorization: 'Bearer ' + accessToken } }
   );
   const folderResult = await folderSearch.json();
@@ -1748,9 +1748,9 @@ async function findOrCreateDriveFile() {
     folderId = folder.id;
   }
 
-  // Search for file inside folder
+  // Search for file inside folder — only in user's own Drive
   const fileSearch = await fetch(
-    "https://www.googleapis.com/drive/v3/files?q=name%3D%22" + DRIVE_FILE + "%22+and+%27" + folderId + "%27+in+parents+and+trashed%3Dfalse&fields=files(id)",
+    "https://www.googleapis.com/drive/v3/files?q=name%3D%22" + DRIVE_FILE + "%22+and+%27" + folderId + "%27+in+parents+and+trashed%3Dfalse+and+%27me%27+in+owners&fields=files(id)",
     { headers: { Authorization: 'Bearer ' + accessToken } }
   );
   const fileResult = await fileSearch.json();
