@@ -1603,6 +1603,9 @@ async function onAuthorised() {
 
   document.getElementById('login-screen').classList.add('hidden');
   await loadFromDrive();
+  // Apply cofres visibility after data loaded
+  const menuCofresEl = document.getElementById('menu-cofres');
+  if (menuCofresEl) menuCofresEl.style.display = cofresEnabled ? '' : 'none';
   setMode('expense');
   renderAll();
   renderCats();
@@ -2261,7 +2264,8 @@ function handleSwipeEnd(e) {
 function renderAll() { renderSummary(); renderEntries(); renderDate(); }
 
 function renderDate() {
-  document.getElementById('ciclo-label-header').textContent = cicloLabel();
+  const el = document.getElementById('ciclo-label-header');
+  if (el) el.textContent = cicloLabel();
 }
 
 function renderSummary() {
