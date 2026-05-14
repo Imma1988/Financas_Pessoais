@@ -896,18 +896,24 @@
     /* Main content */
     #main-content { flex: 1; overflow-y: auto; height: 100vh; }
 
+    /* Hide header logo on desktop — already in sidebar */
+    .header img { display: none !important; }
+    .header .date { display: none !important; }
+
     /* Views */
-    .view { max-width: 960px !important; margin: 0 auto; padding: 24px 32px 48px !important; }
-    .header { padding: 20px 32px 16px !important; max-width: 960px; margin: 0 auto; }
+    .view { max-width: 100% !important; margin: 0; padding: 24px 32px 48px !important; box-sizing: border-box; }
+    .header { padding: 20px 32px 16px !important; max-width: 100%; }
 
     /* Registos two-column */
     #view-registos {
-      max-width: 1100px !important;
+      max-width: 100% !important;
+      width: 100% !important;
       display: grid !important;
       grid-template-columns: 340px 1fr;
       gap: 0 24px;
       padding: 24px 32px 48px !important;
       align-items: start;
+      box-sizing: border-box;
     }
     #view-registos > .header        { grid-column: 1 / -1; padding: 0 0 16px !important; }
     #view-registos > .summary       { grid-column: 1 / -1; }
@@ -927,7 +933,7 @@
 </style>
 </head>
 <body>
-<div id="app-shell">
+<div id="app-shell" style="display:flex;width:100%;height:100vh;overflow:hidden;">
 
 <div id="desktop-sidebar" style="display:none;">
   <div class="sb-logo">
@@ -944,7 +950,7 @@
   </div>
 </div>
 
-<div id="main-content" style="flex:1;overflow-y:auto;">
+<div id="main-content" style="flex:1;overflow-y:auto;min-width:0;">
 
 
 <!-- ===== VIEW: REGISTOS ===== -->
