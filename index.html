@@ -997,11 +997,11 @@
   </div>
   <div style="padding:0 16px 80px;">
     <div class="type-toggle" style="margin-bottom:12px;">
-      <button class="type-btn active" id="rel-btn-atual" onclick="setRelatorioPeriod('atual')">Atual</button>
-      <button class="type-btn" id="rel-btn-anterior" onclick="setRelatorioPeriod('anterior')">Anterior</button>
-      <button class="type-btn" id="rel-btn-custom" onclick="setRelatorioPeriod('custom')">Intervalo</button>
+      <button class="range-btn active" id="rel-ciclo-atual" onclick="setRelatorioPeriod('atual')">Atual</button>
+      <button class="range-btn" id="rel-ciclo-anterior" onclick="setRelatorioPeriod('anterior')">Anterior</button>
+      <button class="range-btn" id="rel-ciclo-intervalo" onclick="setRelatorioPeriod('intervalo')">Intervalo</button>
     </div>
-    <div id="rel-custom-range" style="display:none;margin-bottom:12px;">
+    <div id="rel-intervalo-inputs" style="display:none;margin-bottom:12px;gap:8px;">
       <input type="date" id="rel-date-from" class="form-input" style="margin-bottom:6px;" onchange="renderRelatorios()">
       <input type="date" id="rel-date-to" class="form-input" onchange="renderRelatorios()">
     </div>
