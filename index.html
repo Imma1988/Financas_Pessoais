@@ -1155,15 +1155,13 @@
 
 
 <!-- ===== MODAL: Cat Picker ===== -->
-<div class="overlay" id="cat-picker-overlay" onclick="handleCatPickerOverlayClick(event)">
+<div class="bottom-sheet-overlay" id="cat-picker-overlay" onclick="handleCatPickerOverlayClick(event)">
   <div class="bottom-sheet" id="cat-picker-sheet">
-    <div class="sheet-handle"></div>
+    <div class="bottom-sheet-handle"></div>
+    <div class="bottom-sheet-title" id="cat-picker-title">Despesa — Sub-categoria</div>
     <div style="padding:0 16px 8px;">
-      <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;margin-bottom:12px;" id="cat-picker-title">Despesa — Sub-categoria</div>
-      <div style="position:relative;margin-bottom:12px;">
-        <input type="text" class="form-input" id="cat-picker-search" placeholder="🔍 Pesquisar..." oninput="renderCatPickerList(this.value)" style="padding-left:12px;">
-      </div>
-      <div id="cat-picker-list" style="max-height:55vh;overflow-y:auto;"></div>
+      <input type="text" class="bottom-sheet-search" id="cat-picker-search" placeholder="🔍 Pesquisar..." oninput="renderCatPickerList(this.value)">
+      <div class="bottom-sheet-list" id="cat-picker-list"></div>
     </div>
   </div>
 </div>
