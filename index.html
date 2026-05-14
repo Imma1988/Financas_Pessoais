@@ -949,7 +949,24 @@
   <div class="header">
     <div class="header-left"><h1>📊 Património</h1></div>
   </div>
-  <div id="patrimonio-content"></div>
+  <div style="padding:0 16px 80px;">
+    <div class="summary" style="margin-bottom:16px;">
+      <div class="summary-card balance" style="flex:1;">
+        <div class="label">Total</div>
+        <div class="amount" id="pat-total">€0</div>
+        <div class="sub" id="pat-var"></div>
+      </div>
+    </div>
+    <div class="chart-wrap" style="margin-bottom:16px;">
+      <div class="chart-title">Evolução</div>
+      <div id="pat-chart" style="height:180px;"></div>
+    </div>
+    <div class="entries-header" style="margin-bottom:8px;">
+      <h2>Ativos</h2>
+      <button class="clear-btn" onclick="openNovoAtivo()">+ Novo</button>
+    </div>
+    <div id="pat-list"></div>
+  </div>
 </div>
 
 <!-- ===== VIEW: RELATÓRIOS ===== -->
@@ -957,16 +974,17 @@
   <div class="header">
     <div class="header-left"><h1>📈 Relatórios</h1></div>
   </div>
-  <div style="padding:0 16px;">
-    <div class="type-toggle" style="margin-bottom:16px;">
+  <div style="padding:0 16px 80px;">
+    <div class="type-toggle" style="margin-bottom:12px;">
       <button class="type-btn active" id="rel-btn-atual" onclick="setRelatorioPeriod('atual')">Atual</button>
       <button class="type-btn" id="rel-btn-anterior" onclick="setRelatorioPeriod('anterior')">Anterior</button>
       <button class="type-btn" id="rel-btn-custom" onclick="setRelatorioPeriod('custom')">Intervalo</button>
     </div>
-    <div id="rel-custom-range" style="display:none;margin-bottom:12px;gap:8px;display:none;">
+    <div id="rel-custom-range" style="display:none;margin-bottom:12px;">
       <input type="date" id="rel-date-from" class="form-input" style="margin-bottom:6px;" onchange="renderRelatorios()">
       <input type="date" id="rel-date-to" class="form-input" onchange="renderRelatorios()">
     </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px;text-align:center;" id="relatorio-period-label"></div>
     <div class="summary" style="margin-bottom:16px;">
       <div class="summary-card expenses">
         <div class="label">Despesas</div>
