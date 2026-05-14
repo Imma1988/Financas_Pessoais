@@ -684,6 +684,21 @@
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
 
+  /* ====== TOGGLE SWITCH ====== */
+  .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider {
+    position: absolute; cursor: pointer; inset: 0;
+    background: #333; border-radius: 24px; transition: background 0.2s;
+  }
+  .toggle-slider:before {
+    content: ''; position: absolute;
+    height: 18px; width: 18px; left: 3px; bottom: 3px;
+    background: white; border-radius: 50%; transition: transform 0.2s;
+  }
+  .toggle-switch input:checked + .toggle-slider { background: var(--accent); }
+  .toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
+
   /* ====== PATRIMÓNIO ====== */
   .nav-btn.active.patrimonio-nav { color: #a78bfa; }
 
@@ -965,7 +980,8 @@
       <h2>Ativos</h2>
       <button class="clear-btn" onclick="openNovoAtivo()">+ Novo</button>
     </div>
-    <div id="pat-list"></div>
+    <div id="ativos-list"></div>
+    <div id="breakdown-list" style="margin-top:16px;"></div>
   </div>
 </div>
 
@@ -1022,8 +1038,9 @@
       <div class="breakdown-title">🤖 Gemini API Key</div>
       <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Necessária para importar extratos com IA. Obtém a tua chave gratuita em <a href="https://aistudio.google.com" target="_blank" style="color:var(--accent);">aistudio.google.com</a></p>
       <div class="form-row" style="margin-bottom:8px;">
-        <input type="password" class="form-input" id="gemini-key-input" placeholder="AIza...">
+        <input type="password" class="form-input" id="def-gemini-key" placeholder="AIza...">
       </div>
+      <div style="font-size:12px;margin-bottom:8px;" id="def-gemini-status"></div>
       <button style="background:var(--accent);color:#0d0d0d;border:none;border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="saveGeminiKey()">Guardar chave</button>
     </div>
 
@@ -1032,9 +1049,11 @@
       <div class="breakdown-title">👥 Partilha</div>
       <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Partilha os teus dados com outro utilizador. Cola o ID do ficheiro do Google Drive.</p>
       <div class="form-row" style="margin-bottom:8px;">
-        <input type="text" class="form-input" id="share-id-input" placeholder="ID do ficheiro Drive">
+        <input type="text" class="form-input" id="def-share-id" placeholder="ID do ficheiro Drive">
       </div>
-      <button style="background:var(--accent-income);color:#0d0d0d;border:none;border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="connectSharedFile()">Ligar ficheiro partilhado</button>
+      <div style="font-size:12px;margin-bottom:8px;" id="def-share-status"></div>
+      <button style="background:var(--accent-income);color:#0d0d0d;border:none;border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="useSharedData()">Ligar ficheiro partilhado</button>
+      <button id="def-stop-sharing" style="background:none;color:var(--red);border:1px solid var(--red);border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;display:none;margin-top:8px;" onclick="stopSharing()">Parar partilha</button>
       <p style="font-size:12px;color:var(--muted);margin-top:8px;">O teu ID: <span id="def-drive-id" style="color:var(--accent);font-size:11px;word-break:break-all;"></span></p>
     </div>
 
@@ -1043,10 +1062,10 @@
       <div class="breakdown-title">📅 Ciclo financeiro</div>
       <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Dia do mês em que começa o teu ciclo financeiro.</p>
       <div class="form-row" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;">
-        <input type="number" class="form-input" id="ciclo-dia-input" min="1" max="28" style="width:80px;" placeholder="25">
+        <input type="number" class="form-input" id="def-ciclo-dia" min="1" max="28" style="width:80px;" placeholder="25">
         <span style="font-size:13px;color:var(--muted);" id="ciclo-preview"></span>
       </div>
-      <button style="background:var(--accent);color:#0d0d0d;border:none;border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="saveCiclo()">Guardar</button>
+      <button style="background:var(--accent);color:#0d0d0d;border:none;border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="saveCicloFromDef()">Guardar</button>
     </div>
 
     <!-- Cofres toggle -->
@@ -1055,7 +1074,7 @@
       <div style="display:flex;align-items:center;justify-content:space-between;">
         <p style="font-size:13px;color:var(--muted);margin:0;">Ativar funcionalidade de cofres de poupança</p>
         <label class="toggle-switch">
-          <input type="checkbox" id="cofres-toggle" onchange="toggleCofres(this.checked)">
+          <input type="checkbox" id="def-cofres-toggle" onchange="toggleCofres(this.checked)">
           <span class="toggle-slider"></span>
         </label>
       </div>
@@ -1588,6 +1607,7 @@ async function onAuthorised() {
   renderAll();
   renderCats();
   resetDatePicker();
+  renderDefinicoes();
   // Apply cofres visibility
   const menuCofres = document.getElementById('menu-cofres');
   if (menuCofres) menuCofres.style.display = cofresEnabled ? '' : 'none';
@@ -2685,6 +2705,7 @@ function setRange(n) {
 }
 
 function renderPatrimonio() {
+  if (!document.getElementById('pat-total')) return;
   if (!ativos.length) {
     document.getElementById('ativos-list').innerHTML =
       '<div class="empty-state"><div class="emoji">📈</div><p>Ainda não tens ativos.<br>Adiciona o primeiro!</p></div>';
@@ -3315,6 +3336,7 @@ function submitImport() {
 
 // ===== DEFINIÇÕES =====
 function renderDefinicoes() {
+  if (!document.getElementById('def-user-email')) return;
   // Gemini key
   const keyInput = document.getElementById('def-gemini-key');
   if (keyInput) {
@@ -3333,6 +3355,9 @@ function renderDefinicoes() {
   // Ciclo
   const cicloInput = document.getElementById('def-ciclo-dia');
   if (cicloInput) cicloInput.value = cicloInicio;
+  // Drive ID (para partilha)
+  const driveIdEl = document.getElementById('def-drive-id');
+  if (driveIdEl) driveIdEl.textContent = driveFileId || '—';
   // User email
   const emailEl = document.getElementById('def-user-email');
   if (emailEl) emailEl.textContent = 'Sessão iniciada como ' + (currentUserEmail || '—');
@@ -3345,10 +3370,8 @@ function renderDefinicoes() {
 }
 
 function updateCofresToggleUI(enabled) {
-  const slider = document.getElementById('def-cofres-slider');
-  const knob   = document.getElementById('def-cofres-knob');
-  if (slider) slider.style.background = enabled ? 'var(--accent)' : '#333';
-  if (knob)   knob.style.transform    = enabled ? 'translateX(20px)' : 'translateX(0)';
+  const toggle = document.getElementById('def-cofres-toggle');
+  if (toggle) toggle.checked = enabled;
 }
 
 function toggleCofres(enabled) {
@@ -3495,6 +3518,7 @@ function getEntriesForPeriod(start, end) {
 }
 
 function renderRelatorios() {
+  if (!document.getElementById('rel-total-expense')) return;
   const dates = getRelatorioDates();
   if (!dates) {
     // Show prompt to select dates
