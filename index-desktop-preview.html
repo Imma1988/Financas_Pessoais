@@ -951,17 +951,35 @@
       max-width: 100% !important;
       width: 100% !important;
       display: grid !important;
-      grid-template-columns: 340px 1fr;
-      gap: 0 24px;
-      padding: 24px 32px 48px !important;
+      grid-template-columns: 380px 1fr;
+      gap: 0 28px;
+      padding: 16px 28px 48px !important;
       align-items: start;
       box-sizing: border-box;
     }
-    #view-registos > .header        { grid-column: 1 / -1; padding: 0 0 16px !important; }
-    #view-registos > .summary       { grid-column: 1 / -1; }
-    #view-registos > .quick-add     { grid-column: 1; position: sticky; top: 24px; }
+    #view-registos > .header         { grid-column: 1 / -1; padding: 0 0 12px !important; }
+    #view-registos > .summary        { grid-column: 1 / -1; margin-bottom: 20px; }
+    #view-registos > .quick-add      { grid-column: 1; position: sticky; top: 16px; width: 100%; }
     #view-registos > .entries-header { grid-column: 2; }
-    #view-registos > #entries-list  { grid-column: 2; }
+    #view-registos > #entries-list   { grid-column: 2; min-height: 400px; }
+
+    /* Quick-add fields full width */
+    #view-registos .quick-add .amount-row,
+    #view-registos .quick-add .cat-picker-btn,
+    #view-registos .quick-add .note-row,
+    #view-registos .quick-add .date-row,
+    #view-registos .quick-add .add-btn { width: 100% !important; box-sizing: border-box; }
+
+    /* Sync indicator position */
+    .sync-indicator, #sync-dot, #sync-label {
+      position: fixed !important;
+      top: 14px !important;
+      left: 230px !important;
+      right: auto !important;
+    }
+
+    /* Sidebar logo bigger */
+    .sb-logo img { width: 180px !important; }
 
     /* Bottom sheets → centered modals */
     .bottom-sheet-overlay { align-items: center !important; justify-content: center !important; }
