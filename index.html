@@ -3347,7 +3347,7 @@ function renderDefinicoes() {
   }
   // Share ID
   const shareInput = document.getElementById('def-share-id');
-  if (shareInput) shareInput.value = driveFileId || '';
+  if (shareInput) shareInput.value = sharedFileId || '';
   const stopBtn = document.getElementById('def-stop-sharing');
   if (stopBtn) stopBtn.style.display = sharedFileId ? '' : 'none';
   const shareStatus = document.getElementById('def-share-status');
