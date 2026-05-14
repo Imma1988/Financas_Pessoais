@@ -955,11 +955,11 @@
       grid-template-columns: 380px 1fr;
       grid-template-rows: auto auto 1fr;
       gap: 0 28px;
-      padding: 16px 28px 16px !important;
+      padding: 8px 28px 16px !important;
       box-sizing: border-box;
       overflow: hidden;
     }
-    #view-registos > .header         { grid-column: 1 / -1; grid-row: 1; padding: 0 0 12px !important; }
+    #view-registos > .header         { grid-column: 1 / -1; grid-row: 1; padding: 4px 0 8px !important; min-height: 0 !important; }
     #view-registos > .summary        { grid-column: 1 / -1; grid-row: 2; margin-bottom: 16px; }
     #view-registos > .quick-add      { grid-column: 1; grid-row: 3; overflow-y: auto; height: 100%; }
     #view-registos > .entries-header { grid-column: 2; grid-row: 3; align-self: start; margin-bottom: 8px; }
@@ -969,16 +969,21 @@
       align-self: start;
       margin-top: 44px;
       overflow-y: auto;
-      height: calc(100vh - 260px);
+      height: calc(100vh - 240px);
       padding-right: 4px;
     }
 
-    /* Quick-add fields full width */
+    /* Hide empty header on desktop registos */
+    #view-registos > .header { display: none !important; }
+
+    /* Quick-add fields full width + compact */
     #view-registos .quick-add .amount-row,
     #view-registos .quick-add .cat-picker-btn,
     #view-registos .quick-add .note-row,
     #view-registos .quick-add .date-row,
     #view-registos .quick-add .add-btn { width: 100% !important; box-sizing: border-box; }
+    #view-registos .quick-add { padding: 16px !important; }
+    #view-registos .quick-add .add-btn { position: sticky; bottom: 0; }
 
     /* Sync indicator — top right corner */
     .header-right.sync-indicator {
