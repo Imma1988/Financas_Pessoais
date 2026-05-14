@@ -3515,8 +3515,8 @@ function getRelatorioDates() {
     return { start: s, end: e, label: fmt(s) + ' – ' + fmt(e) };
   }
   // intervalo
-  const from = document.getElementById('rel-from')?.value;
-  const to   = document.getElementById('rel-to')?.value;
+  const from = document.getElementById('rel-date-from')?.value;
+  const to   = document.getElementById('rel-date-to')?.value;
   if (!from || !to) return null;
   const fmt = d => new Date(d+'T12:00:00').toLocaleDateString('pt-PT',{day:'numeric',month:'short'});
   return { start: from, end: to, label: fmt(from) + ' – ' + fmt(to) };
