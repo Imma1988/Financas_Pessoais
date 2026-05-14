@@ -2084,11 +2084,7 @@ function renderDate() {
 }
 
 function renderSummary() {
-  const today = todayStr();
-  const tE = entries.filter(e=>e.date===today);
   const cE = entries.filter(e=>isInCurrentCiclo(e.date));
-  const tExp = tE.filter(e=>e.type==='expense').reduce((a,e)=>a+e.amount,0);
-  const tInc = tE.filter(e=>e.type==='income').reduce((a,e)=>a+e.amount,0);
   const cExp = cE.filter(e=>e.type==='expense').reduce((a,e)=>a+e.amount,0);
   const cInc = cE.filter(e=>e.type==='income').reduce((a,e)=>a+e.amount,0);
   const bal  = cInc - cExp;
@@ -2098,10 +2094,10 @@ function renderSummary() {
   const incCntEl = document.getElementById('today-income-count');
   const balEl = document.getElementById('today-balance');
   const balSubEl = document.querySelector('.summary-card.balance .sub');
-  if (expEl) expEl.textContent = formatCurrency(tExp);
-  if (expCntEl) expCntEl.textContent = tE.filter(e=>e.type==='expense').length + ' hoje';
-  if (incEl) incEl.textContent = formatCurrency(tInc);
-  if (incCntEl) incCntEl.textContent = tE.filter(e=>e.type==='income').length + ' hoje';
+  if (expEl) expEl.textContent = formatCurrency(cExp);
+  if (expCntEl) expCntEl.textContent = cE.filter(e=>e.type==='expense').length + ' registos';
+  if (incEl) incEl.textContent = formatCurrency(cInc);
+  if (incCntEl) incCntEl.textContent = cE.filter(e=>e.type==='income').length + ' registos';
   if (balEl) { balEl.textContent = (bal>=0?'+':'')+formatCurrency(Math.abs(bal)); balEl.style.color = bal>=0 ? 'var(--accent)' : 'var(--red)'; }
   if (balSubEl) balSubEl.textContent = cicloLabel();
 }
