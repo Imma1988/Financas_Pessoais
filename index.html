@@ -951,12 +951,17 @@
 <div class="view" id="view-cofres">
   <div class="header">
     <div class="header-left"><h1>🏦 Cofres</h1></div>
-    <div class="header-right sync-indicator" style="position:static;font-size:11px;">
-      <div class="sync-dot" id="sync-dot-cofres"></div>
-    </div>
+    <button class="new-cofre-btn" onclick="openNovoCofre()">+ Novo cofre</button>
   </div>
-  <div id="cofres-list"></div>
-  <button class="add-btn" style="margin:16px;" onclick="openNovoCofre()">+ Novo cofre</button>
+  <div class="reserva-banner">
+    <div>
+      <div class="rb-label">Total a reservar por mês</div>
+      <div class="rb-amount" id="reserva-total">€0,00</div>
+      <div class="rb-sub" id="reserva-sub">0 cofres ativos</div>
+    </div>
+    <div class="rb-icon">🪙</div>
+  </div>
+  <div class="cofres-list" id="cofres-list"></div>
 </div>
 
 <!-- ===== VIEW: PATRIMÓNIO ===== -->
