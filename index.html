@@ -931,6 +931,149 @@
     ontouchend="handleSwipeEnd(event)"></div>
 </div>
 
+
+<!-- ===== VIEW: COFRES ===== -->
+<div class="view" id="view-cofres">
+  <div class="header">
+    <div class="header-left"><h1>🏦 Cofres</h1></div>
+    <div class="header-right sync-indicator" style="position:static;font-size:11px;">
+      <div class="sync-dot" id="sync-dot-cofres"></div>
+    </div>
+  </div>
+  <div id="cofres-list"></div>
+  <button class="add-btn" style="margin:16px;" onclick="openNovoCofre()">+ Novo cofre</button>
+</div>
+
+<!-- ===== VIEW: PATRIMÓNIO ===== -->
+<div class="view" id="view-patrimonio">
+  <div class="header">
+    <div class="header-left"><h1>📊 Património</h1></div>
+  </div>
+  <div id="patrimonio-content"></div>
+</div>
+
+<!-- ===== VIEW: RELATÓRIOS ===== -->
+<div class="view" id="view-relatorios">
+  <div class="header">
+    <div class="header-left"><h1>📈 Relatórios</h1></div>
+  </div>
+  <div style="padding:0 16px;">
+    <div class="type-toggle" style="margin-bottom:16px;">
+      <button class="type-btn active" id="rel-btn-atual" onclick="setRelatorioPeriod('atual')">Atual</button>
+      <button class="type-btn" id="rel-btn-anterior" onclick="setRelatorioPeriod('anterior')">Anterior</button>
+      <button class="type-btn" id="rel-btn-custom" onclick="setRelatorioPeriod('custom')">Intervalo</button>
+    </div>
+    <div id="rel-custom-range" style="display:none;margin-bottom:12px;gap:8px;display:none;">
+      <input type="date" id="rel-date-from" class="form-input" style="margin-bottom:6px;" onchange="renderRelatorios()">
+      <input type="date" id="rel-date-to" class="form-input" onchange="renderRelatorios()">
+    </div>
+    <div class="summary" style="margin-bottom:16px;">
+      <div class="summary-card expenses">
+        <div class="label">Despesas</div>
+        <div class="amount" id="rel-total-expense">€0</div>
+        <div class="sub" id="rel-vs-expense"></div>
+      </div>
+      <div class="summary-card income">
+        <div class="label">Receitas</div>
+        <div class="amount" id="rel-total-income">€0</div>
+        <div class="sub" id="rel-vs-income"></div>
+      </div>
+      <div class="summary-card balance">
+        <div class="label">Saldo</div>
+        <div class="amount" id="rel-saldo">€0</div>
+        <div class="sub">período</div>
+      </div>
+    </div>
+    <div class="chart-wrap" id="rel-chart-wrap" style="margin-bottom:16px;">
+      <div class="chart-title" id="rel-chart-title">Por categoria</div>
+      <div id="rel-chart-container"></div>
+    </div>
+    <div id="rel-categories-list"></div>
+  </div>
+</div>
+
+<!-- ===== VIEW: DEFINIÇÕES ===== -->
+<div class="view" id="view-definicoes">
+  <div class="header">
+    <div class="header-left"><h1>⚙️ Definições</h1></div>
+  </div>
+  <div style="padding:0 16px 80px;" id="definicoes-content">
+
+    <!-- Gemini API Key -->
+    <div class="breakdown-wrap" style="margin-bottom:16px;">
+      <div class="breakdown-title">🤖 Gemini API Key</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Necessária para importar extratos com IA. Obtém a tua chave gratuita em <a href="https://aistudio.google.com" target="_blank" style="color:var(--accent);">aistudio.google.com</a></p>
+      <div class="form-row" style="margin-bottom:8px;">
+        <input type="password" class="form-input" id="gemini-key-input" placeholder="AIza...">
+      </div>
+      <button style="background:var(--accent);color:#0d0d0d;border:none;border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="saveGeminiKey()">Guardar chave</button>
+    </div>
+
+    <!-- Partilha -->
+    <div class="breakdown-wrap" style="margin-bottom:16px;">
+      <div class="breakdown-title">👥 Partilha</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Partilha os teus dados com outro utilizador. Cola o ID do ficheiro do Google Drive.</p>
+      <div class="form-row" style="margin-bottom:8px;">
+        <input type="text" class="form-input" id="share-id-input" placeholder="ID do ficheiro Drive">
+      </div>
+      <button style="background:var(--accent-income);color:#0d0d0d;border:none;border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="connectSharedFile()">Ligar ficheiro partilhado</button>
+      <p style="font-size:12px;color:var(--muted);margin-top:8px;">O teu ID: <span id="def-drive-id" style="color:var(--accent);font-size:11px;word-break:break-all;"></span></p>
+    </div>
+
+    <!-- Ciclo -->
+    <div class="breakdown-wrap" style="margin-bottom:16px;">
+      <div class="breakdown-title">📅 Ciclo financeiro</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Dia do mês em que começa o teu ciclo financeiro.</p>
+      <div class="form-row" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;">
+        <input type="number" class="form-input" id="ciclo-dia-input" min="1" max="28" style="width:80px;" placeholder="25">
+        <span style="font-size:13px;color:var(--muted);" id="ciclo-preview"></span>
+      </div>
+      <button style="background:var(--accent);color:#0d0d0d;border:none;border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="saveCiclo()">Guardar</button>
+    </div>
+
+    <!-- Cofres toggle -->
+    <div class="breakdown-wrap" style="margin-bottom:16px;">
+      <div class="breakdown-title">🏦 Cofres</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <p style="font-size:13px;color:var(--muted);margin:0;">Ativar funcionalidade de cofres de poupança</p>
+        <label class="toggle-switch">
+          <input type="checkbox" id="cofres-toggle" onchange="toggleCofres(this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Categorias -->
+    <div class="breakdown-wrap" style="margin-bottom:16px;">
+      <div class="breakdown-title">🗂️ Categorias</div>
+      <button style="background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="openCatModal()">Gerir categorias</button>
+    </div>
+
+    <!-- Suporte -->
+    <div class="breakdown-wrap" style="margin-bottom:16px;">
+      <div class="breakdown-title">💬 Suporte</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Tens alguma dúvida ou problema? Envia-nos um email e respondemos o mais rápido possível.</p>
+      <div class="form-row" style="margin-bottom:8px;">
+        <label class="form-label">Assunto</label>
+        <input type="text" class="form-input" id="support-subject" placeholder="Ex: Problema ao importar extrato">
+      </div>
+      <div class="form-row" style="margin-bottom:8px;">
+        <label class="form-label">Mensagem</label>
+        <textarea class="form-input" id="support-message" placeholder="Descreve o teu problema ou dúvida..." style="min-height:90px;resize:vertical;font-family:'DM Sans',sans-serif;font-size:14px;"></textarea>
+      </div>
+      <button style="background:#a78bfa;color:#0d0d0d;border:none;border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="openSupportEmail()">📧 Enviar email de suporte</button>
+    </div>
+
+    <!-- Sessão -->
+    <div class="breakdown-wrap">
+      <div class="breakdown-title">👤 Sessão</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;" id="def-user-email"></p>
+      <button style="background:var(--card2);color:var(--red);border:1px solid var(--border);border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="logoutApp()">Terminar sessão</button>
+    </div>
+
+  </div>
+</div>
+
 <!-- SIDE MENU -->
 <div class="menu-overlay" id="menu-overlay" onclick="handleMenuOverlayClick(event)">
   <div class="side-menu">
