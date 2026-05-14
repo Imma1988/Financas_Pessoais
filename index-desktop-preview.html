@@ -950,18 +950,28 @@
     #view-registos {
       max-width: 100% !important;
       width: 100% !important;
+      height: calc(100vh - 0px);
       display: grid !important;
       grid-template-columns: 380px 1fr;
+      grid-template-rows: auto auto 1fr;
       gap: 0 28px;
-      padding: 16px 28px 48px !important;
-      align-items: start;
+      padding: 16px 28px 16px !important;
       box-sizing: border-box;
+      overflow: hidden;
     }
-    #view-registos > .header         { grid-column: 1 / -1; padding: 0 0 12px !important; }
-    #view-registos > .summary        { grid-column: 1 / -1; margin-bottom: 20px; }
-    #view-registos > .quick-add      { grid-column: 1; position: sticky; top: 16px; width: 100%; }
-    #view-registos > .entries-header { grid-column: 2; }
-    #view-registos > #entries-list   { grid-column: 2; min-height: 400px; }
+    #view-registos > .header         { grid-column: 1 / -1; grid-row: 1; padding: 0 0 12px !important; }
+    #view-registos > .summary        { grid-column: 1 / -1; grid-row: 2; margin-bottom: 16px; }
+    #view-registos > .quick-add      { grid-column: 1; grid-row: 3; overflow-y: auto; height: 100%; }
+    #view-registos > .entries-header { grid-column: 2; grid-row: 3; align-self: start; margin-bottom: 8px; }
+    #view-registos > #entries-list   { 
+      grid-column: 2;
+      grid-row: 3;
+      align-self: start;
+      margin-top: 44px;
+      overflow-y: auto;
+      height: calc(100vh - 260px);
+      padding-right: 4px;
+    }
 
     /* Quick-add fields full width */
     #view-registos .quick-add .amount-row,
@@ -970,16 +980,17 @@
     #view-registos .quick-add .date-row,
     #view-registos .quick-add .add-btn { width: 100% !important; box-sizing: border-box; }
 
-    /* Sync indicator position */
-    .sync-indicator, #sync-dot, #sync-label {
+    /* Sync indicator — top right corner */
+    .header-right.sync-indicator {
       position: fixed !important;
       top: 14px !important;
-      left: 230px !important;
-      right: auto !important;
+      right: 24px !important;
+      left: auto !important;
     }
 
     /* Sidebar logo bigger */
-    .sb-logo img { width: 180px !important; }
+    .sb-logo img { width: 160px !important; }
+    .sb-logo { overflow: hidden; }
 
     /* Bottom sheets → centered modals */
     .bottom-sheet-overlay { align-items: center !important; justify-content: center !important; }
