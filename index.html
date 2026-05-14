@@ -3726,7 +3726,8 @@ function showToast(msg) {
 
 // ===== INIT =====
 window.addEventListener('load', () => {
-  document.getElementById('date-input').max = todayStr();
+  const dateInput = document.getElementById('date-input');
+  if (dateInput) dateInput.max = todayStr();
   if (typeof google !== 'undefined') {
     initAuth();
   } else {
