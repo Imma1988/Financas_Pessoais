@@ -1607,10 +1607,10 @@ async function onAuthorised() {
   renderAll();
   renderCats();
   resetDatePicker();
-  renderDefinicoes();
   // Apply cofres visibility
   const menuCofres = document.getElementById('menu-cofres');
   if (menuCofres) menuCofres.style.display = cofresEnabled ? '' : 'none';
+  renderDefinicoes();
   // Ensure Cofres sub-category exists if cofresEnabled
   if (cofresEnabled) {
     const poupanca = expenseCats.find(g => g.cat === '🏦 Poupança');
