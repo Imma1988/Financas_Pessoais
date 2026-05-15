@@ -1574,6 +1574,11 @@ function openSupportEmail() {
 }
 
 function logoutAndReset() {
+  // Clear local cache
+  if (currentUserEmail) {
+    localStorage.removeItem('mh_data_' + currentUserEmail);
+    localStorage.removeItem('mh_fileId_' + currentUserEmail);
+  }
   localStorage.removeItem('gToken');
   accessToken = null;
   currentUserEmail = '';
@@ -1654,6 +1659,10 @@ async function findOrCreateDriveFile() {
   const savedShared = localStorage.getItem('sharedFileId_' + currentUserEmail);
   if (savedShared) { sharedFileId = savedShared; driveFileId = savedShared; return savedShared; }
 
+  // Use cached file ID if available — skip folder/file search
+  const cachedFileId = localStorage.getItem('mh_fileId_' + currentUserEmail);
+  if (cachedFileId) { driveFileId = cachedFileId; return cachedFileId; }
+
   // Search for folder "Finanças Pessoais" — only in user's own Drive
   const folderSearch = await fetch(
     "https://www.googleapis.com/drive/v3/files?q=name%3D%22" + encodeURIComponent(DRIVE_FOLDER) + "%22+and+mimeType%3D%22application%2Fvnd.google-apps.folder%22+and+trashed%3Dfalse+and+%27me%27+in+owners&fields=files(id)",
@@ -1700,33 +1709,49 @@ async function findOrCreateDriveFile() {
     });
   }
   driveFileId = fileId;
+  // Cache file ID to skip search next time
+  localStorage.setItem('mh_fileId_' + currentUserEmail, fileId);
   return fileId;
+}
+
+function applyData(data) {
+  entries         = data.entries         || [];
+  expenseCats     = data.expenseCats     || JSON.parse(JSON.stringify(DEFAULT_EXPENSE_CATS));
+  incomeCats      = data.incomeCats      || [...DEFAULT_INCOME_CATS];
+  cofres          = data.cofres          || [];
+  ativos          = data.ativos          || [];
+  tiposCustom     = data.tiposCustom     || {};
+  importMemory    = data.importMemory    || { matches: {}, skipped: [] };
+  geminiKey       = data.geminiKey       || '';
+  cofresEnabled   = data.cofresEnabled   || false;
+  cicloInicio     = data.cicloInicio     || 25;
+  deletedAtivoIds = new Set(data.deletedAtivoIds || []);
+  deletedIds      = new Set(data.deletedIds      || []);
+  deletedCofreIds = new Set(data.deletedCofreIds || []);
+  deletedMovIds   = new Set(data.deletedMovIds   || []);
+  deletedCatKeys  = new Set(data.deletedCatKeys  || []);
 }
 
 async function loadFromDrive() {
   setSyncStatus('saving', 'A carregar...');
   try {
+    // Show cached data immediately for instant render
+    const cached = localStorage.getItem('mh_data_' + currentUserEmail);
+    if (cached) {
+      applyData(JSON.parse(cached));
+      renderAll();
+      renderCats();
+    }
+    // Load from Drive in background
     await findOrCreateDriveFile();
     const fileRes = await fetch(
       'https://www.googleapis.com/drive/v3/files/' + driveFileId + '?alt=media',
       { headers: { Authorization: 'Bearer ' + accessToken } }
     );
     const data = await fileRes.json();
-    entries         = data.entries         || [];
-    expenseCats     = data.expenseCats     || JSON.parse(JSON.stringify(DEFAULT_EXPENSE_CATS));
-    incomeCats      = data.incomeCats      || [...DEFAULT_INCOME_CATS];
-    cofres          = data.cofres          || [];
-    ativos          = data.ativos          || [];
-    tiposCustom     = data.tiposCustom     || {};
-    importMemory    = data.importMemory    || { matches: {}, skipped: [] };
-    geminiKey       = data.geminiKey       || '';
-    cofresEnabled   = data.cofresEnabled   || false;
-    cicloInicio     = data.cicloInicio     || 25;
-    deletedAtivoIds = new Set(data.deletedAtivoIds || []);
-    deletedIds      = new Set(data.deletedIds      || []);
-    deletedCofreIds = new Set(data.deletedCofreIds || []);
-    deletedMovIds   = new Set(data.deletedMovIds   || []);
-    deletedCatKeys  = new Set(data.deletedCatKeys  || []);
+    applyData(data);
+    // Update cache
+    localStorage.setItem('mh_data_' + currentUserEmail, JSON.stringify(data));
     setSyncStatus('saved', 'Guardado');
   } catch(e) {
     console.error('loadFromDrive error:', e);
@@ -1847,6 +1872,13 @@ async function saveToDrive() {
       body: payload
     });
 
+    // Update local cache
+    const cacheData = { entries, expenseCats, incomeCats, cofres, ativos, tiposCustom,
+      importMemory, geminiKey, cofresEnabled, cicloInicio,
+      deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds],
+      deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys],
+      deletedAtivoIds: [...deletedAtivoIds] };
+    localStorage.setItem('mh_data_' + currentUserEmail, JSON.stringify(cacheData));
     setSyncStatus('saved', 'Guardado');
     renderAll();
     if (document.getElementById('view-cofres').classList.contains('active')) renderCofres();
