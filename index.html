@@ -213,6 +213,7 @@
   .date-row-label { font-size: 13px; color: var(--text); flex: 1; }
   .date-row-label.is-today { color: var(--muted); }
   #date-input {
+    color-scheme: dark;
     position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none;
   }
 
@@ -927,11 +928,11 @@
       <span class="note-icon">✏️</span>
       <input type="text" class="note-input" id="note-input" placeholder="Nota opcional (ex: almoço com colega)">
     </div>
-    <div class="date-row" id="date-row" style="position:relative;">
+    <div class="date-row" id="date-row">
       <span class="date-icon">📅</span>
       <span id="date-display" class="date-row-label is-today">Hoje</span>
-      <input type="date" class="date-input" id="date-input" onchange="onDateChange(this.value)"
-        style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;">
+      <input type="date" id="date-input" onchange="onDateChange(this.value)"
+        style="position:absolute;right:16px;border:none;background:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;outline:none;">
     </div>
     <button class="add-btn" id="add-btn" onclick="addEntry()">+ Registar despesa</button>
   </div>
