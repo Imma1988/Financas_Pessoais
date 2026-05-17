@@ -930,9 +930,8 @@
     </div>
     <div class="date-row" id="date-row">
       <span class="date-icon">📅</span>
-      <span id="date-display" class="date-row-label is-today">Hoje</span>
       <input type="date" id="date-input" onchange="onDateChange(this.value)"
-        style="position:absolute;right:16px;border:none;background:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;outline:none;">
+        style="flex:1;background:none;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;color-scheme:dark;cursor:pointer;">
     </div>
     <button class="add-btn" id="add-btn" onclick="addEntry()">+ Registar despesa</button>
   </div>
@@ -1995,14 +1994,10 @@ function resetDatePicker() {
   // Use date of last entry, or today if none
   const lastDate = entries.length > 0 ? entries[0].date : todayStr();
   const isToday  = lastDate === todayStr();
-  document.getElementById('date-input').value = isToday ? '' : lastDate;
+  document.getElementById('date-input').value = lastDate;
   if (isToday) {
-    document.getElementById('date-display').textContent = 'Hoje';
-    document.getElementById('date-display').className = 'date-row-label is-today';
-  } else {
-    const d = new Date(lastDate + 'T12:00:00');
-    document.getElementById('date-display').textContent = d.toLocaleDateString('pt-PT', { weekday:'short', day:'numeric', month:'short' });
-    document.getElementById('date-display').className = 'date-row-label';
+    // keep empty to show placeholder
+    document.getElementById('date-input').value = todayStr();
   }
 }
 function monthStr()  { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; }
