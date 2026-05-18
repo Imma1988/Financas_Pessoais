@@ -897,8 +897,8 @@
 
     /* Main content */
     #main-content { flex: 1; height: 100vh; min-width: 0; position: relative; overflow: hidden; }
-    #main-content > .view { position: absolute; inset: 0; overflow-y: auto; display: none; }
-    #main-content > .view.active { display: block; }
+    #main-content > .view { position: absolute; inset: 0; overflow-y: auto; display: none !important; }
+    #main-content > .view.active { display: block !important; }
     #main-content > #view-registos.active { display: grid !important; overflow: hidden; }
 
     /* Views */
