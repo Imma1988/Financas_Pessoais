@@ -213,7 +213,7 @@
   .date-row-label { font-size: 13px; color: var(--text); flex: 1; }
   .date-row-label.is-today { color: var(--muted); }
   #date-input {
-    position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none;
+    color-scheme: dark;
   }
 
   /* ENTRIES */
@@ -927,10 +927,11 @@
       <span class="note-icon">✏️</span>
       <input type="text" class="note-input" id="note-input" placeholder="Nota opcional (ex: almoço com colega)">
     </div>
-    <div class="date-row" id="date-row">
+    <div class="date-row" id="date-row" style="position:relative;cursor:pointer;">
       <span class="date-icon">📅</span>
-      <span id="date-display" class="date-display" onclick="toggleDatePicker()"></span>
-      <input type="date" class="date-input" id="date-input" onchange="onDateChange()" style="display:none;">
+      <span id="date-display" class="date-row-label is-today" style="flex:1;">Hoje</span>
+      <input type="date" id="date-input" onchange="onDateChange(this.value)"
+        style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;color-scheme:dark;">
     </div>
     <button class="add-btn" id="add-btn" onclick="addEntry()">+ Registar despesa</button>
   </div>
@@ -1944,12 +1945,13 @@ function getEntryDate() {
 }
 function onDateChange(val) {
   const display = document.getElementById('date-display');
-  if (!val || val === todayStr()) {
+  if (!val) return;
+  if (val === todayStr()) {
     display.textContent = 'Hoje';
     display.className = 'date-row-label is-today';
   } else {
-    const d = new Date(val + 'T12:00:00');
-    display.textContent = d.toLocaleDateString('pt-PT', { weekday:'short', day:'numeric', month:'short' });
+    const [y,m,d] = val.split('-');
+    display.textContent = d + '/' + m + '/' + y;
     display.className = 'date-row-label';
   }
 }
@@ -1957,7 +1959,7 @@ function resetDatePicker() {
   // Use date of last entry, or today if none
   const lastDate = entries.length > 0 ? entries[0].date : todayStr();
   const isToday  = lastDate === todayStr();
-  document.getElementById('date-input').value = isToday ? '' : lastDate;
+  document.getElementById('date-input').value = lastDate;
   if (isToday) {
     document.getElementById('date-display').textContent = 'Hoje';
     document.getElementById('date-display').className = 'date-row-label is-today';
