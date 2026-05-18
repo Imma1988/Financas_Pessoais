@@ -1759,8 +1759,8 @@ function logoutAndReset() {
   driveFileId = null; sharedFileId = '';
   // Go back to registos view
   switchView('registos');
-  document.getElementById('license-screen').classList.remove('show');
-  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('license-screen')?.classList.remove('show');
+  document.getElementById('login-screen')?.classList.remove('hidden');
 }
 
 async function logoutApp() {
