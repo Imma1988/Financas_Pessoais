@@ -878,20 +878,20 @@
       display: flex !important; flex-direction: column;
       width: 210px; min-width: 210px;
       background: #111; border-right: 1px solid var(--border);
-      height: 100vh; overflow-y: auto; flex-shrink: 0;
+      height: 100vh; max-height: 100vh; overflow: hidden; flex-shrink: 0;
     }
-    .sb-logo { padding: 20px 16px 16px; border-bottom: 1px solid var(--border); margin-bottom: 8px; overflow: hidden; }
+    .sb-logo { padding: 16px 16px 14px; border-bottom: 1px solid var(--border); margin-bottom: 4px; overflow: hidden; flex-shrink: 0; }
     .sb-logo img { width: 160px !important; height: auto; display: block; }
     .sb-btn {
       display: flex; align-items: center; gap: 10px;
-      padding: 12px 16px; background: none; border: none;
+      padding: 14px 16px; background: none; border: none;
       color: var(--muted); font-family: 'DM Sans', sans-serif;
       font-size: 13px; cursor: pointer; width: 100%; text-align: left; transition: all 0.15s;
     }
     .sb-btn:hover { background: var(--card2); color: var(--text); }
     .sb-btn.active { background: var(--card2); color: var(--accent); font-weight: 700; }
     .sb-btn .sb-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
-    .sb-bottom { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border); }
+    .sb-bottom { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border); flex-shrink: 0; }
     .sb-user { font-size: 11px; color: var(--muted); padding: 8px 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     /* Main content */
@@ -914,22 +914,52 @@
       height: 100vh;
       display: grid !important;
       grid-template-columns: 380px 1fr;
-      grid-template-rows: auto auto 1fr;
-      gap: 0 28px;
-      padding: 12px 28px 16px !important;
+      grid-template-rows: auto 1fr;
+      gap: 0 24px;
+      padding: 16px 24px !important;
       box-sizing: border-box; overflow: hidden;
     }
-    #view-registos > .header         { grid-column: 1 / -1; grid-row: 1; display: none !important; }
-    #view-registos > .summary        { grid-column: 1 / -1; grid-row: 2; margin-bottom: 16px; }
-    #view-registos > .quick-add      { grid-column: 1; grid-row: 3; overflow-y: auto; height: 100%; padding: 16px !important; }
-    #view-registos > .quick-add .add-btn { position: sticky; bottom: 0; }
-    #view-registos > .entries-header { grid-column: 2; grid-row: 3; align-self: start; margin-bottom: 8px; }
-    #view-registos > #entries-list   {
-      grid-column: 2; grid-row: 3;
-      align-self: start; margin-top: 44px;
-      overflow-y: auto; height: calc(100vh - 240px);
+
+    /* Summary — first card aligns with left column, rest with right */
+    #view-registos > .summary {
+      grid-column: 1 / -1; grid-row: 1;
+      display: grid !important;
+      grid-template-columns: 380px 1fr 1fr;
+      gap: 0 24px;
+      margin-bottom: 16px;
+    }
+    #view-registos > .summary > .summary-card { margin: 0 !important; }
+
+    /* Left column — form */
+    #view-registos > .quick-add {
+      grid-column: 1; grid-row: 2;
+      display: flex; flex-direction: column;
+      height: 100%; overflow: hidden;
+      padding: 16px !important;
+    }
+    #view-registos > .quick-add > *:not(.add-btn) { flex-shrink: 0; }
+    #view-registos > .quick-add > .add-btn {
+      margin-top: auto !important;
+      flex-shrink: 0;
+    }
+
+    /* Right column — entries */
+    #view-registos > .entries-header {
+      grid-column: 2; grid-row: 2;
+      align-self: start; margin-bottom: 8px;
+      position: sticky; top: 0; z-index: 1;
+      background: var(--bg); padding: 4px 0;
+    }
+    #view-registos > #entries-list {
+      grid-column: 2; grid-row: 2;
+      margin-top: 44px;
+      overflow-y: auto;
+      height: 100%;
       padding-right: 4px;
     }
+
+    /* Hide mobile header */
+    #view-registos > .header { display: none !important; }
 
     /* Quick-add fields full width */
     #view-registos .quick-add .amount-row,
