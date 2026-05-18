@@ -905,7 +905,11 @@
     .header-right.sync-indicator {
       position: fixed !important; top: 10px !important;
       right: 24px !important; left: auto !important;
-      z-index: 100 !important; font-size: 11px !important; display: flex !important;
+      z-index: 200 !important; font-size: 11px !important;
+      display: flex !important; align-items: center !important;
+      gap: 5px !important; color: var(--muted) !important;
+      background: #111 !important; padding: 4px 8px !important;
+      border-radius: 8px !important;
     }
 
     /* Registos two-column */
@@ -934,8 +938,9 @@
     #view-registos > .quick-add {
       grid-column: 1; grid-row: 2;
       display: flex; flex-direction: column;
-      height: 100%; overflow: hidden;
+      overflow: hidden;
       padding: 16px !important;
+      align-self: stretch;
     }
     #view-registos > .quick-add > *:not(.add-btn) { flex-shrink: 0; }
     #view-registos > .quick-add > .add-btn {
@@ -943,7 +948,7 @@
       flex-shrink: 0;
     }
 
-    /* Right column — entries */
+    /* Right column wrapper */
     #view-registos > .entries-header {
       grid-column: 2; grid-row: 2;
       align-self: start; margin-bottom: 8px;
@@ -954,8 +959,9 @@
       grid-column: 2; grid-row: 2;
       margin-top: 44px;
       overflow-y: auto;
-      height: 100%;
+      height: calc(100vh - 180px);
       padding-right: 4px;
+      padding-bottom: 16px;
     }
 
     /* Hide mobile header */
