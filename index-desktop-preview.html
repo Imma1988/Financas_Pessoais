@@ -1003,16 +1003,16 @@
   <button class="sb-btn"        id="sb-btn-patrimonio" onclick="menuNav('patrimonio')"><span class="sb-icon">📊</span>Património</button>
   <button class="sb-btn"        id="sb-btn-definicoes" onclick="menuNav('definicoes')"><span class="sb-icon">⚙️</span>Definições</button>
   <div class="sb-bottom">
-    <div class="sb-user" id="sb-user"></div>
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;">
+      <div class="sync-dot" id="sync-dot"></div>
+      <div class="sb-user" id="sb-user" style="padding:0;flex:1;"></div>
+    </div>
     <button class="sb-btn" style="color:var(--red);" onclick="logoutApp()"><span class="sb-icon">🚪</span>Sair</button>
   </div>
 </div>
 <div id="main-content" style="flex:1;overflow-y:auto;min-width:0;">
-  <!-- Sync indicator for desktop — dot only -->
-  <div style="position:fixed;top:14px;right:24px;z-index:200;">
-    <div class="sync-dot" id="sync-dot"></div>
-    <span class="sync-label" id="sync-label" style="display:none;"></span>
-  </div>
+  <!-- sync-label hidden, dot is in sidebar -->
+  <span id="sync-label" style="display:none;"></span>
 
 
 <!-- ===== VIEW: REGISTOS ===== -->
@@ -1274,6 +1274,18 @@
       <button style="background:var(--card2);color:var(--red);border:1px solid var(--border);border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="logoutApp()">Terminar sessão</button>
     </div>
 
+  </div>
+</div>
+
+<!-- ===== MODAL: Confirmar ===== -->
+<div class="confirm-modal-overlay" id="confirm-modal-overlay">
+  <div class="confirm-modal">
+    <div class="confirm-modal-title" id="confirm-modal-title">Confirmar</div>
+    <div class="confirm-modal-msg" id="confirm-modal-msg"></div>
+    <div class="confirm-modal-btns">
+      <button class="confirm-modal-cancel" onclick="confirmModalResolve(false)">Cancelar</button>
+      <button class="confirm-modal-ok" id="confirm-modal-ok" onclick="confirmModalResolve(true)">Confirmar</button>
+    </div>
   </div>
 </div>
 
