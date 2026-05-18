@@ -897,12 +897,12 @@
 
     /* Main content */
     #main-content { flex: 1; height: 100vh; min-width: 0; position: relative; overflow: hidden; }
-    #main-content > .view { position: absolute; inset: 0; overflow-y: auto; display: none !important; }
+    #main-content > .view { position: absolute; inset: 0; overflow-y: auto; display: none !important; padding: 16px 24px 48px !important; }
     #main-content > .view.active { display: block !important; }
-    #main-content > #view-registos.active { display: grid !important; overflow: hidden; }
+    #main-content > #view-registos.active { display: grid !important; overflow: hidden; padding: 16px 24px !important; }
 
     /* Views */
-    .view { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 24px 32px 48px !important; box-sizing: border-box !important; display: none; min-height: 100vh; }
+    .view { max-width: 100% !important; width: 100% !important; margin: 0 !important; box-sizing: border-box !important; display: none; }
     .view.active { display: block !important; }
     #view-registos.active { display: grid !important; }
     #view-registos.active { display: grid !important; }
@@ -1093,11 +1093,11 @@
       <span class="note-icon">✏️</span>
       <input type="text" class="note-input" id="note-input" placeholder="Nota opcional (ex: almoço com colega)">
     </div>
-    <div class="date-row" id="date-row">
+    <div class="date-row" id="date-row" style="position:relative;cursor:pointer;">
       <span class="date-icon">📅</span>
       <span id="date-display" class="date-row-label is-today" style="flex:1;">Hoje</span>
       <input type="date" id="date-input" onchange="onDateChange(this.value)"
-        style="color-scheme:dark;background:none;border:none;outline:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+        style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;color-scheme:dark;">
     </div>
     <button class="add-btn" id="add-btn" onclick="addEntry()">+ Registar despesa</button>
   </div>
