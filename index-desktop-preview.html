@@ -922,6 +922,7 @@
       gap: 0 24px;
       padding: 16px 24px !important;
       box-sizing: border-box; overflow: hidden;
+      align-items: stretch;
     }
 
     /* Summary — first card aligns with left column, rest with right */
@@ -941,6 +942,7 @@
       overflow: hidden;
       padding: 16px !important;
       align-self: stretch;
+      height: 100%;
     }
     #view-registos > .quick-add > *:not(.add-btn) { flex-shrink: 0; }
     #view-registos > .quick-add > .add-btn {
@@ -1006,10 +1008,10 @@
   </div>
 </div>
 <div id="main-content" style="flex:1;overflow-y:auto;min-width:0;">
-  <!-- Sync indicator for desktop -->
-  <div class="sync-indicator" id="desktop-sync" style="position:fixed;top:10px;right:24px;z-index:200;font-size:11px;display:flex;align-items:center;gap:5px;color:var(--muted);">
+  <!-- Sync indicator for desktop — dot only -->
+  <div style="position:fixed;top:14px;right:24px;z-index:200;">
     <div class="sync-dot" id="sync-dot"></div>
-    <span class="sync-label" id="sync-label">Guardado</span>
+    <span class="sync-label" id="sync-label" style="display:none;"></span>
   </div>
 
 
