@@ -1732,6 +1732,7 @@ function initAuth() {
     fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
       headers: { Authorization: 'Bearer ' + accessToken }
     }).then(r => r.json()).then(info => {
+      if (!accessToken) return; // user logged out while fetch was in flight
       if (info.email && !info.error) {
         currentUserEmail = info.email;
         localStorage.setItem('mh_email', info.email);
