@@ -861,7 +861,7 @@
   @media (min-width: 900px) {
 
     body {
-      overflow: hidden; height: 100vh; display: flex;
+      overflow: hidden; height: 100vh; height: 100dvh; display: flex;
       max-width: 100% !important; width: 100% !important;
       padding: 0 !important; margin: 0 !important;
       align-items: stretch !important; flex-direction: row !important;
@@ -875,14 +875,14 @@
     .header-left  { display: none !important; }
 
     /* App shell */
-    #app-shell { display: flex !important; width: 100%; height: 100vh; overflow: hidden; }
+    #app-shell { display: flex !important; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; }
 
     /* Sidebar */
     #desktop-sidebar {
       display: flex !important; flex-direction: column;
       width: 210px; min-width: 210px;
       background: #111; border-right: 1px solid var(--border);
-      height: 100vh; max-height: 100vh; overflow: hidden; flex-shrink: 0;
+      height: 100vh; height: 100dvh; max-height: 100vh; max-height: 100dvh; overflow-y: auto; flex-shrink: 0;
     }
     .sb-logo { padding: 16px 16px 14px; border-bottom: 1px solid var(--border); margin-bottom: 4px; overflow: hidden; flex-shrink: 0; }
     .sb-logo img { width: 160px !important; height: auto; display: block; }
@@ -899,7 +899,7 @@
     .sb-user { font-size: 11px; color: var(--muted); padding: 8px 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     /* Main content */
-    #main-content { flex: 1; height: 100vh; min-width: 0; position: relative; overflow: hidden; }
+    #main-content { flex: 1; height: 100vh; height: 100dvh; min-width: 0; position: relative; overflow: hidden; }
     #main-content > .view { position: absolute; inset: 0; overflow-y: auto; display: none !important; padding: 16px 24px 48px !important; }
     #main-content > .view.active { display: block !important; }
     #main-content > #view-registos.active { display: grid !important; overflow: hidden; padding: 16px 24px !important; }
