@@ -1073,7 +1073,7 @@
       <button onclick="openImport()" style="background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;padding:6px 12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;" onmouseover="this.style.color='#a78bfa';this.style.borderColor='#a78bfa'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border)'">📥 Importar extrato</button>
     </div>
     <div class="type-toggle">
-      <button class="type-btn active" id="btn-expense" onclick="setMode('expense')">📤 Despesa</button>
+      <button class="type-btn active-expense" id="btn-expense" onclick="setMode('expense')">📤 Despesa</button>
       <button class="type-btn" id="btn-income" onclick="setMode('income')">📥 Receita</button>
     </div>
     <div class="amount-row">
@@ -1918,6 +1918,12 @@ async function loadFromDrive() {
       applyData(JSON.parse(cached));
       renderAll();
       renderCats();
+      setMode('expense');
+      resetDatePicker();
+      const _mce = document.getElementById('menu-cofres');
+      if (_mce) _mce.style.display = cofresEnabled ? '' : 'none';
+      const _sce = document.getElementById('sb-btn-cofres');
+      if (_sce) _sce.style.display = cofresEnabled ? '' : 'none';
     }
     // Load from Drive in background
     await findOrCreateDriveFile();
