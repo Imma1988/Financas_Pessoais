@@ -1697,6 +1697,7 @@ function initAuth() {
         const info = await r.json();
         if (!info.email) { showLoginError(); return; }
         currentUserEmail = info.email;
+        localStorage.setItem('mh_email', info.email);
         onAuthorised();
       } catch(e) { showLoginError(); }
     }
@@ -1706,12 +1707,34 @@ function initAuth() {
   const saved = localStorage.getItem('gToken');
   if (saved) {
     accessToken = saved;
+    // Render from cache immediately, before network confirms token
+    const cachedEmail = localStorage.getItem('mh_email');
+    if (cachedEmail) {
+      currentUserEmail = cachedEmail;
+      const cachedData = localStorage.getItem('mh_data_' + cachedEmail);
+      if (cachedData) {
+        try {
+          applyData(JSON.parse(cachedData));
+          const sbEl = document.getElementById('desktop-sidebar');
+          if (sbEl) sbEl.style.display = '';
+          const sbUserEl = document.getElementById('sb-user');
+          if (sbUserEl) sbUserEl.textContent = cachedEmail;
+          renderAll(); renderCats(); setMode('expense'); resetDatePicker();
+          const mce = document.getElementById('menu-cofres');
+          if (mce) mce.style.display = cofresEnabled ? '' : 'none';
+          const sce = document.getElementById('sb-btn-cofres');
+          if (sce) sce.style.display = cofresEnabled ? '' : 'none';
+          document.getElementById('login-screen').classList.add('hidden');
+        } catch(e) {}
+      }
+    }
     // Verify it's still valid
     fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
       headers: { Authorization: 'Bearer ' + accessToken }
     }).then(r => r.json()).then(info => {
       if (info.email && !info.error) {
         currentUserEmail = info.email;
+        localStorage.setItem('mh_email', info.email);
         onAuthorised();
       } else if (info.error) {
         // Token expired — try silent refresh before giving up
@@ -1750,6 +1773,7 @@ function logoutAndReset() {
     localStorage.removeItem('mh_fileId_' + currentUserEmail);
   }
   localStorage.removeItem('gToken');
+  localStorage.removeItem('mh_email');
   accessToken = null;
   currentUserEmail = '';
   // Reset all state
@@ -1796,12 +1820,12 @@ async function onAuthorised() {
   }
 
   document.getElementById('login-screen').classList.add('hidden');
-  await loadFromDrive();
-  // Desktop sidebar
+  // Show sidebar and email immediately — don't wait for Drive load
   const sbEl = document.getElementById('desktop-sidebar');
   if (sbEl) sbEl.style.display = '';
   const sbUserEl = document.getElementById('sb-user');
   if (sbUserEl) sbUserEl.textContent = currentUserEmail || '';
+  await loadFromDrive();
   const sbCofresEl = document.getElementById('sb-btn-cofres');
   if (sbCofresEl) sbCofresEl.style.display = cofresEnabled ? '' : 'none';
   // Apply cofres visibility after data loaded
