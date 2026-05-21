@@ -1107,17 +1107,19 @@
   </div>
 
   <!-- Entries list -->
-  <div class="entries-header">
-    <h2 id="entries-h2">📋</h2>
-    <div style="display:flex;gap:6px;align-items:center;">
-      <button class="clear-btn" id="ciclo-prev-btn" onclick="navigateCiclo(-1)" style="font-size:16px;padding:4px 8px;">‹</button>
-      <button class="clear-btn" id="ciclo-next-btn" onclick="navigateCiclo(1)" style="font-size:16px;padding:4px 8px;">›</button>
-      <button class="clear-btn" onclick="clearToday()">Limpar</button>
+  <div id="entries-col" style="display:contents;">
+    <div class="entries-header">
+      <h2 id="entries-h2">📋</h2>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button class="clear-btn" id="ciclo-prev-btn" onclick="navigateCiclo(-1)" style="font-size:16px;padding:4px 8px;">‹</button>
+        <button class="clear-btn" id="ciclo-next-btn" onclick="navigateCiclo(1)" style="font-size:16px;padding:4px 8px;">›</button>
+        <button class="clear-btn" onclick="clearToday()">Limpar</button>
+      </div>
     </div>
+    <div class="entries" id="entries-list"
+      ontouchstart="handleSwipeStart(event)"
+      ontouchend="handleSwipeEnd(event)"></div>
   </div>
-  <div class="entries" id="entries-list"
-    ontouchstart="handleSwipeStart(event)"
-    ontouchend="handleSwipeEnd(event)"></div>
 </div>
 
 
