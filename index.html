@@ -2078,10 +2078,9 @@ function scheduleSave() {
 }
 
 function setSyncStatus(state, label) {
-  const dot = document.getElementById('sync-dot');
+  document.querySelectorAll('.sync-dot').forEach(d => d.className = 'sync-dot ' + state);
   const lbl = document.getElementById('sync-label');
-  dot.className = 'sync-dot ' + state;
-  lbl.textContent = label;
+  if (lbl) lbl.textContent = label;
 }
 
 // ===== STORAGE WRAPPERS =====
