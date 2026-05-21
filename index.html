@@ -953,14 +953,12 @@
     #view-registos > .quick-add {
       grid-column: 1; grid-row: 2;
       display: flex; flex-direction: column;
-      overflow: hidden;
+      overflow-y: auto;
       padding: 16px !important;
       align-self: stretch;
-      height: 100%;
     }
-    #view-registos > .quick-add > *:not(.add-btn) { flex-shrink: 0; }
     #view-registos > .quick-add > .add-btn {
-      margin-top: auto !important;
+      margin-top: 14px !important;
       flex-shrink: 0;
     }
 
