@@ -1619,6 +1619,16 @@
   </div>
 </div>
 
+<div class="confirm-modal-overlay" id="confirm-modal-overlay">
+  <div class="confirm-modal">
+    <div class="confirm-modal-title" id="confirm-modal-title">Confirmar</div>
+    <div class="confirm-modal-msg" id="confirm-modal-msg"></div>
+    <div class="confirm-modal-btns">
+      <button class="confirm-modal-cancel" onclick="confirmModalResolve(false)">Cancelar</button>
+      <button class="confirm-modal-ok" id="confirm-modal-ok" onclick="confirmModalResolve(true)">Confirmar</button>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
