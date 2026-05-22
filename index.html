@@ -1778,24 +1778,13 @@ function openSupportEmail() {
 }
 
 function logoutAndReset() {
-  // Clear local cache
   if (currentUserEmail) {
     localStorage.removeItem('mh_data_' + currentUserEmail);
     localStorage.removeItem('mh_fileId_' + currentUserEmail);
   }
   localStorage.removeItem('gToken');
   localStorage.removeItem('mh_email');
-  accessToken = null;
-  currentUserEmail = '';
-  // Reset all state
-  entries = []; expenseCats = JSON.parse(JSON.stringify(DEFAULT_EXPENSE_CATS));
-  incomeCats = [...DEFAULT_INCOME_CATS]; cofres = []; ativos = [];
-  geminiKey = ''; cofresEnabled = false; cicloOffset = 0;
-  driveFileId = null; sharedFileId = '';
-  // Go back to registos view
-  switchView('registos');
-  document.getElementById('license-screen').classList.remove('show');
-  document.getElementById('login-screen').classList.remove('hidden');
+  window.location.reload();
 }
 
 async function logoutApp() {
