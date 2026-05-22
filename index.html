@@ -1820,6 +1820,7 @@ async function onAuthorised() {
       body: JSON.stringify({ email: currentUserEmail })
     });
     const verifyData = await verifyRes.json();
+    if (!accessToken) return;
     if (!verifyData.licensed) {
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('license-screen').classList.add('show');
@@ -1830,6 +1831,7 @@ async function onAuthorised() {
     console.warn('License check failed, allowing access:', e);
   }
 
+  if (!accessToken) return;
   document.getElementById('login-screen').classList.add('hidden');
   // Show sidebar and email immediately — don't wait for Drive load
   const sbEl = document.getElementById('desktop-sidebar');
@@ -1837,6 +1839,7 @@ async function onAuthorised() {
   const sbUserEl = document.getElementById('sb-user');
   if (sbUserEl) sbUserEl.textContent = currentUserEmail || '';
   await loadFromDrive();
+  if (!accessToken) return;
   const sbCofresEl = document.getElementById('sb-btn-cofres');
   if (sbCofresEl) sbCofresEl.style.display = cofresEnabled ? '' : 'none';
   // Apply cofres visibility after data loaded
