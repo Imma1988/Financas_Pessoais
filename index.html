@@ -2681,12 +2681,19 @@ function confirmUseCofre(cofreId) {
   if (!pendingEntry) return;
   const cofre = cofres.find(c => c.id === cofreId);
   if (cofre) {
-    const valor = pendingEntry.amount;
-    const mov   = { id: Date.now().toString(), tipo:'levantar', valor, nota: pendingEntry.note || pendingEntry.category, ts: new Date().toISOString() };
-    if (!cofre.movimentos) cofre.movimentos = [];
-    cofre.movimentos.push(mov);
-    cofre.saldoAtual = Math.max(0, +(cofre.saldoAtual - valor).toFixed(2));
-    saveCofres(cofres);
+    const deducted = Math.min(pendingEntry.amount, cofre.saldoAtual);
+    if (deducted > 0) {
+      const mov = { id: Date.now().toString(), tipo:'levantar', valor: deducted, nota: pendingEntry.note || pendingEntry.category, ts: new Date().toISOString() };
+      if (!cofre.movimentos) cofre.movimentos = [];
+      cofre.movimentos.push(mov);
+      cofre.saldoAtual = +(cofre.saldoAtual - deducted).toFixed(2);
+      saveCofres(cofres);
+      // Income entry to offset the expense (money came from the cofre, not current income)
+      const incEntry = { id: Date.now() + 1, type: 'income', amount: deducted,
+        category: (cofre.emoji || '🏦') + ' ' + cofre.nome,
+        date: pendingEntry.date, note: 'Saída de cofre', ts: new Date().toISOString() };
+      entries.unshift(incEntry);
+    }
   }
   commitEntry(pendingEntry);
   pendingEntry = null;
