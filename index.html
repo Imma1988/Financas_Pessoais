@@ -3246,6 +3246,18 @@ async function applySugestao() {
   btn.textContent = '⏳';
   chip.style.display = 'none';
 
+  // If the category matches an active cofre, use its monthly amount
+  const matchingCofre = cofres.find(c => !cofreCompleto(c) && c.nome.toLowerCase() === orcCatSelected.catKey.toLowerCase());
+  if (matchingCofre) {
+    const valorCofre = cofreMensal(matchingCofre);
+    document.getElementById('orc-amount-input').value = Math.round(valorCofre * 100) / 100;
+    chip.textContent = '💡 Baseado no teu cofre "' + matchingCofre.nome + '" — ' + formatCurrency(valorCofre) + '/mês';
+    chip.style.display = 'block';
+    btn.disabled = false;
+    btn.innerHTML = '💡 Sugerir';
+    return;
+  }
+
   const res = calcSugestaoLocal(orcCatSelected.catType, orcCatSelected.catKey);
   if (!res) {
     btn.disabled = false;
