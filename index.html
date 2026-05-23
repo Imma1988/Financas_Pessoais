@@ -853,6 +853,43 @@
   .tipo-color-4 { background: #ff5e5e; }
   .tipo-color-5 { background: #f135c8; }
 
+  /* ===== ORÇAMENTOS ===== */
+  .orc-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+  .orc-card.pai { border-left: 3px solid var(--accent); }
+  .orc-card.sub { margin-left: 16px; border-left: 3px solid var(--muted); font-size: 13px; }
+  .orc-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .orc-cat-name { font-weight: 700; font-size: 14px; flex: 1; }
+  .orc-card.sub .orc-cat-name { font-size: 13px; }
+  .orc-valores { font-size: 12px; color: var(--muted); white-space: nowrap; margin-left: 8px; }
+  .orc-valores .gasto { color: var(--text); font-weight: 700; }
+  .orc-edit-btn { background: none; border: none; color: var(--muted); font-size: 16px; cursor: pointer; padding: 2px 6px; border-radius: 6px; }
+  .orc-edit-btn:hover { background: var(--card2); color: var(--text); }
+  .orc-progress-wrap { margin-top: 4px; }
+  .orc-progress-pct { font-size: 10px; color: var(--muted); text-align: right; margin-bottom: 3px; }
+  .orc-progress-pct.aviso { color: #f0a500; }
+  .orc-progress-pct.ultrapassado { color: var(--red); font-weight: 700; }
+  .orc-progress-bar { width: 100%; height: 5px; background: var(--card2); border-radius: 99px; overflow: hidden; }
+  .orc-progress-fill { height: 100%; border-radius: 99px; background: var(--accent); transition: width 0.4s ease; }
+  .orc-progress-fill.aviso { background: #f0a500; }
+  .orc-progress-fill.ultrapassado { background: var(--red); }
+  .orc-total-banner { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; }
+  .orc-total-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .orc-total-row .orc-total-val { color: var(--text); font-weight: 700; font-size: 14px; }
+  /* Budget banner in registos view */
+  .orc-banner { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; }
+  .orc-banner-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .orc-banner-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .orc-banner-link { color: var(--accent); font-weight: 700; font-size: 11px; cursor: pointer; }
+  .orc-banner-text { font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+  /* Budget indicator in category picker */
+  .bs-cat-budget { font-size: 10px; color: var(--muted); display: block; margin-top: 1px; }
+  .bs-cat-budget.aviso { color: #f0a500; }
+  .bs-cat-budget.ultrapassado { color: var(--red); font-weight: 700; }
+  /* Orc modal type toggle */
+  .orc-type-toggle { display: flex; gap: 6px; margin-bottom: 14px; }
+  .orc-type-btn { flex: 1; background: var(--card2); border: 1.5px solid var(--border); border-radius: 9px; padding: 9px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+  .orc-type-btn.active { background: var(--accent); color: #0d0d0d; border-color: var(--accent); }
+
   /* App shell — mobile defaults */
   #app-shell { width: 100%; }
   #desktop-sidebar { display: none; }
@@ -1015,6 +1052,7 @@
   <button class="sb-btn"        id="sb-btn-relatorios" onclick="menuNav('relatorios')"><span class="sb-icon">📈</span>Relatórios</button>
   <button class="sb-btn"        id="sb-btn-cofres"     onclick="menuNav('cofres')" style="display:none;"><span class="sb-icon">🏦</span>Cofres</button>
   <button class="sb-btn"        id="sb-btn-patrimonio" onclick="menuNav('patrimonio')"><span class="sb-icon">📊</span>Património</button>
+  <button class="sb-btn"        id="sb-btn-orcamentos" onclick="menuNav('orcamentos')"><span class="sb-icon">💰</span>Orçamentos</button>
   <button class="sb-btn"        id="sb-btn-definicoes" onclick="menuNav('definicoes')"><span class="sb-icon">⚙️</span>Definições</button>
   <div class="sb-bottom">
     <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;">
@@ -1067,6 +1105,16 @@
       <div class="amount" id="today-balance">€0</div>
       <div class="sub">ciclo</div>
     </div>
+  </div>
+
+  <!-- Budget banner -->
+  <div class="orc-banner" id="orc-banner" style="display:none;">
+    <div class="orc-banner-row">
+      <span class="orc-banner-label">💰 Orçamentos do ciclo</span>
+      <span class="orc-banner-link" onclick="switchView('orcamentos')">Ver tudo →</span>
+    </div>
+    <div class="orc-banner-text" id="orc-banner-text"></div>
+    <div class="progress-bar"><div class="progress-fill" id="orc-banner-fill" style="width:0%;background:var(--accent);transition:width 0.4s;"></div></div>
   </div>
 
   <!-- Quick add form -->
@@ -1290,6 +1338,28 @@
   </div>
 </div>
 
+<!-- ===== VIEW: ORÇAMENTOS ===== -->
+<div class="view" id="view-orcamentos">
+  <div class="header">
+    <div class="header-left"><h1>💰 Orçamentos</h1></div>
+    <div class="header-right" style="display:flex;align-items:center;gap:6px;">
+      <button class="icon-btn" id="orc-nav-prev" onclick="navigateCiclo(-1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:4px 8px;">‹</button>
+      <span id="orc-ciclo-label" style="font-size:12px;color:var(--muted);white-space:nowrap;"></span>
+      <button class="icon-btn" id="orc-nav-next" onclick="navigateCiclo(1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:4px 8px;">›</button>
+    </div>
+  </div>
+  <div style="padding-bottom:80px;" id="orcamentos-content">
+    <div id="orc-total-banner" class="orc-total-banner" style="display:none;"></div>
+    <div id="orc-list"></div>
+    <div id="orc-empty" style="display:none;text-align:center;padding:48px 20px;color:var(--muted);">
+      <div style="font-size:40px;margin-bottom:12px;">💰</div>
+      <div style="font-weight:700;font-size:16px;margin-bottom:8px;">Sem orçamentos</div>
+      <div style="font-size:13px;">Toca em + para definir limites por categoria</div>
+    </div>
+  </div>
+  <button class="fab" onclick="openAddOrcamento()" title="Novo orçamento" style="position:fixed;bottom:80px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--accent);color:#0d0d0d;border:none;font-size:26px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.3);display:none;" id="fab-orc">+</button>
+</div>
+
 <!-- SIDE MENU -->
 <div class="menu-overlay" id="menu-overlay" onclick="handleMenuOverlayClick(event)">
   <div class="side-menu">
@@ -1297,6 +1367,10 @@
     <button class="menu-item" id="menu-cofres" onclick="menuNav('cofres')" style="display:none;">
       <span class="mi-icon">🏦</span>
       <div><div class="mi-label">Cofres</div><div class="mi-sub">Fundos de reserva</div></div>
+    </button>
+    <button class="menu-item" id="menu-orcamentos" onclick="menuNav('orcamentos')">
+      <span class="mi-icon">💰</span>
+      <div><div class="mi-label">Orçamentos</div><div class="mi-sub">Limites por categoria</div></div>
     </button>
     <button class="menu-item" id="menu-patrimonio" onclick="menuNav('patrimonio')">
       <span class="mi-icon">📈</span>
@@ -1620,6 +1694,61 @@
   </div>
 </div>
 
+<div class="confirm-modal-overlay" id="confirm-modal-overlay">
+  <div class="confirm-modal">
+    <div class="confirm-modal-title" id="confirm-modal-title">Confirmar</div>
+    <div class="confirm-modal-msg" id="confirm-modal-msg"></div>
+    <div class="confirm-modal-btns">
+      <button class="confirm-modal-cancel" onclick="confirmModalResolve(false)">Cancelar</button>
+      <button class="confirm-modal-ok" id="confirm-modal-ok" onclick="confirmModalResolve(true)">Confirmar</button>
+    </div>
+  </div>
+</div>
+<!-- ORÇAMENTO MODAL -->
+<div class="modal-overlay" id="orc-modal-overlay" onclick="handleOrcModalClick(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" id="orc-modal-title">💰 Novo Orçamento <button class="modal-close" onclick="closeOrcModal()">✕</button></div>
+
+    <div style="margin-bottom:14px;">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Tipo de categoria</div>
+      <div class="orc-type-toggle">
+        <button class="orc-type-btn active" id="orc-type-parent" onclick="setOrcModalType('parent')">Categoria</button>
+        <button class="orc-type-btn" id="orc-type-sub" onclick="setOrcModalType('sub')">Sub-categoria</button>
+      </div>
+    </div>
+
+    <button class="cat-picker-btn" id="orc-cat-btn" onclick="openOrcCatPicker()" style="margin-bottom:14px;">
+      <span id="orc-cat-icon">📂</span>
+      <span id="orc-cat-label" style="flex:1;">Escolher categoria</span>
+      <span style="color:var(--muted);font-size:12px;">›</span>
+    </button>
+
+    <div class="form-row" style="margin-bottom:14px;">
+      <label class="form-label">Montante base (recorrente)</label>
+      <input type="number" inputmode="decimal" class="form-input" id="orc-amount-input" placeholder="ex: 300" min="0" step="0.01">
+    </div>
+
+    <div class="form-row" style="margin-bottom:18px;">
+      <label class="form-label">Montante para este ciclo <span style="color:var(--muted);font-weight:400;">(opcional)</span></label>
+      <input type="number" inputmode="decimal" class="form-input" id="orc-override-input" placeholder="Deixa em branco para usar o base" min="0" step="0.01">
+    </div>
+
+    <button class="modal-submit-btn" onclick="saveOrcamento()">Guardar</button>
+    <button id="orc-delete-btn" class="modal-submit-btn danger" style="margin-top:8px;display:none;" onclick="deleteOrcamentoFromModal()">Eliminar orçamento</button>
+    <input type="hidden" id="orc-editing-id" value="">
+  </div>
+</div>
+
+<!-- ORÇAMENTO CAT PICKER (bottom sheet) -->
+<div class="bottom-sheet-overlay" id="orc-cat-picker-overlay" onclick="handleOrcCatPickerOverlayClick(event)">
+  <div class="bottom-sheet" onclick="event.stopPropagation()">
+    <div class="bottom-sheet-handle"></div>
+    <div class="bottom-sheet-title" id="orc-cat-picker-title">Escolher categoria</div>
+    <input type="text" class="bottom-sheet-search" id="orc-cat-picker-search" placeholder="🔍 Pesquisar..." oninput="renderOrcCatPickerList(this.value)">
+    <div class="bottom-sheet-list" id="orc-cat-picker-list"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1671,6 +1800,8 @@ let deletedMovIds   = new Set(); // cofreId:movId
 let deletedCatKeys  = new Set(); // type:name
 let deletedAtivoIds = new Set();
 let ativos          = [];
+let orcamentos      = [];
+let deletedOrcIds   = new Set();
 let tiposCustom     = {};
 let cicloInicio     = 25; // day of month cycle starts
 let cicloOffset     = 0;  // 0 = current, -1 = previous, etc.
@@ -1908,6 +2039,8 @@ function applyData(data) {
   deletedCofreIds = new Set(data.deletedCofreIds || []);
   deletedMovIds   = new Set(data.deletedMovIds   || []);
   deletedCatKeys  = new Set(data.deletedCatKeys  || []);
+  orcamentos      = data.orcamentos      || [];
+  deletedOrcIds   = new Set(data.deletedOrcIds   || []);
 }
 
 async function loadFromDrive() {
@@ -2042,7 +2175,7 @@ async function saveToDrive() {
       }
     }
 
-    const payload = JSON.stringify({ entries, expenseCats, incomeCats, cofres, ativos, cicloInicio, importMemory, tiposCustom, geminiKey, cofresEnabled, deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds], deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys], deletedAtivoIds: [...deletedAtivoIds] });
+    const payload = JSON.stringify({ entries, expenseCats, incomeCats, cofres, ativos, orcamentos, cicloInicio, importMemory, tiposCustom, geminiKey, cofresEnabled, deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds], deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys], deletedAtivoIds: [...deletedAtivoIds], deletedOrcIds: [...deletedOrcIds] });
 
     await fetch('https://www.googleapis.com/upload/drive/v3/files/' + driveFileId + '?uploadType=media', {
       method: 'PATCH',
@@ -2051,15 +2184,16 @@ async function saveToDrive() {
     });
 
     // Update local cache
-    const cacheData = { entries, expenseCats, incomeCats, cofres, ativos, tiposCustom,
+    const cacheData = { entries, expenseCats, incomeCats, cofres, ativos, orcamentos, tiposCustom,
       importMemory, geminiKey, cofresEnabled, cicloInicio,
       deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds],
       deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys],
-      deletedAtivoIds: [...deletedAtivoIds] };
+      deletedAtivoIds: [...deletedAtivoIds], deletedOrcIds: [...deletedOrcIds] };
     localStorage.setItem('mh_data_' + currentUserEmail, JSON.stringify(cacheData));
     setSyncStatus('saved', 'Guardado');
     renderAll();
     if (document.getElementById('view-cofres').classList.contains('active')) renderCofres();
+    if (document.getElementById('view-orcamentos').classList.contains('active')) renderOrcamentos();
   } catch(e) {
     console.error('saveToDrive error:', e);
     setSyncStatus('error', 'Erro ao guardar');
@@ -2106,6 +2240,7 @@ function switchView(view) {
   if (view === 'patrimonio') renderPatrimonio();
   if (view === 'relatorios') renderRelatorios();
   if (view === 'definicoes') renderDefinicoes();
+  if (view === 'orcamentos') renderOrcamentos();
 }
 
 function openMenu() { document.getElementById('menu-overlay').classList.add('open'); }
@@ -2151,6 +2286,7 @@ function navigateCiclo(delta) {
   if (cicloOffset > 0) cicloOffset = 0;
   renderAll();
   resetDatePicker();
+  if (document.getElementById('view-orcamentos').classList.contains('active')) renderOrcamentos();
 }
 function getEntryDate() {
   const val = document.getElementById('date-input').value;
@@ -2307,7 +2443,21 @@ function renderCatPickerList(query) {
         const icon = group.cat.split(' ')[0];
         const btn  = document.createElement('button');
         btn.className = 'bs-cat-btn' + (sub === selectedCatValue ? ' active' : '');
-        btn.innerHTML = '<span class="bs-icon">' + icon + '</span><span>' + sub + '</span>';
+        // Budget indicator
+        const orc = orcamentos.find(o => o.catType === 'sub' && o.catKey === sub);
+        let budgetHtml = '';
+        if (orc) {
+          const cicloKey = getCicloKey();
+          const valor = getOrcamentoValor(orc, cicloKey);
+          const gasto = getGastoOrcamentoCiclo('sub', sub);
+          const restante = valor - gasto;
+          const cls = gasto > valor ? 'ultrapassado' : (gasto / valor >= 0.8 ? 'aviso' : '');
+          budgetHtml = '<span class="bs-cat-budget ' + cls + '">' +
+            (gasto > valor ? '⚠️ Ultrapassado: ' + formatCurrency(gasto) + ' / ' + formatCurrency(valor)
+              : formatCurrency(restante) + ' restantes de ' + formatCurrency(valor)) +
+            '</span>';
+        }
+        btn.innerHTML = '<span class="bs-icon">' + icon + '</span><span style="flex:1"><span>' + sub + '</span>' + budgetHtml + '</span>';
         btn.onclick = () => {
           selectedCatValue  = sub;
           selectedCatParent = group.cat;
@@ -2369,6 +2519,20 @@ function commitEntry(entry) {
   resetDatePicker();
   document.getElementById('amount-input').focus();
   renderAll();
+  if (entry.type === 'expense') {
+    const orcSub    = orcamentos.find(o => o.catType === 'sub' && o.catKey === entry.category);
+    const orcParent = orcamentos.find(o => o.catType === 'parent' && o.catKey === entry.parentCategory);
+    const cicloKey  = getCicloKey();
+    if (orcSub) {
+      const val   = getOrcamentoValor(orcSub, cicloKey);
+      const gasto = getGastoOrcamentoCiclo('sub', entry.category);
+      if (gasto > val) { showToast('⚠️ Orçamento de ' + entry.category + ' ultrapassado!'); return; }
+    } else if (orcParent) {
+      const val   = getOrcamentoValor(orcParent, cicloKey);
+      const gasto = getGastoOrcamentoCiclo('parent', entry.parentCategory);
+      if (gasto > val) { showToast('⚠️ Orçamento de ' + entry.parentCategory + ' ultrapassado!'); return; }
+    }
+  }
   showToast(getMotivationToast(entries.filter(e=>e.date===todayStr()).length, entry.type));
 }
 
@@ -2499,6 +2663,312 @@ function handleSwipeEnd(e) {
   else if (cicloOffset < 0) navigateCiclo(1); // swipe left = next
 }
 
+// ===== ORÇAMENTOS HELPERS =====
+function getCicloKey(offset) {
+  const { start } = getCicloRange(offset !== undefined ? offset : cicloOffset);
+  return start.slice(0, 7);
+}
+function getOrcamentoValor(orc, cicloKey) {
+  return (orc.overrides && orc.overrides[cicloKey] !== undefined) ? orc.overrides[cicloKey] : orc.valorBase;
+}
+function getGastoOrcamentoCiclo(catType, catKey, offset) {
+  const { start, end } = getCicloRange(offset !== undefined ? offset : cicloOffset);
+  return entries
+    .filter(e => e.type === 'expense' && e.date >= start && e.date <= end)
+    .filter(e => catType === 'parent' ? e.parentCategory === catKey : e.category === catKey)
+    .reduce((sum, e) => sum + e.amount, 0);
+}
+
+// ===== ORÇAMENTOS RENDER =====
+function renderOrcBanner() {
+  const banner = document.getElementById('orc-banner');
+  if (!banner) return;
+  const activeOrcs = orcamentos.filter(o => !deletedOrcIds.has(o.id));
+  if (!activeOrcs.length) { banner.style.display = 'none'; return; }
+  const cicloKey = getCicloKey();
+  let totalOrc = 0, totalGasto = 0, ultrapassados = 0;
+  activeOrcs.forEach(o => {
+    const val   = getOrcamentoValor(o, cicloKey);
+    const gasto = getGastoOrcamentoCiclo(o.catType, o.catKey);
+    totalOrc   += val;
+    totalGasto += gasto;
+    if (gasto > val) ultrapassados++;
+  });
+  if (totalOrc === 0) { banner.style.display = 'none'; return; }
+  banner.style.display = '';
+  const pct = Math.min(100, Math.round(totalGasto / totalOrc * 100));
+  const fillEl = document.getElementById('orc-banner-fill');
+  const textEl = document.getElementById('orc-banner-text');
+  if (fillEl) {
+    fillEl.style.width = pct + '%';
+    fillEl.style.background = pct >= 100 ? 'var(--red)' : pct >= 80 ? '#f0a500' : 'var(--accent)';
+  }
+  if (textEl) {
+    const alertText = ultrapassados > 0 ? ' · ⚠️ ' + ultrapassados + ' ultrapassado' + (ultrapassados > 1 ? 's' : '') : '';
+    textEl.textContent = formatCurrency(totalGasto) + ' gastos de ' + formatCurrency(totalOrc) + ' orçados (' + pct + '%)' + alertText;
+    textEl.style.color = ultrapassados > 0 ? 'var(--red)' : 'var(--muted)';
+  }
+}
+
+function renderOrcamentos() {
+  const activeOrcs = orcamentos.filter(o => !deletedOrcIds.has(o.id));
+  const cicloKey   = getCicloKey();
+  const labelEl    = document.getElementById('orc-ciclo-label');
+  const nextBtn    = document.getElementById('orc-nav-next');
+  const listEl     = document.getElementById('orc-list');
+  const emptyEl    = document.getElementById('orc-empty');
+  const bannerEl   = document.getElementById('orc-total-banner');
+  const fabEl      = document.getElementById('fab-orc');
+  if (labelEl) labelEl.textContent = cicloLabel();
+  if (nextBtn)  { nextBtn.style.opacity = cicloOffset >= 0 ? '0.3' : '1'; nextBtn.disabled = cicloOffset >= 0; }
+  if (fabEl)    fabEl.style.display = '';
+
+  if (!activeOrcs.length) {
+    if (listEl)   listEl.innerHTML = '';
+    if (emptyEl)  emptyEl.style.display = '';
+    if (bannerEl) bannerEl.style.display = 'none';
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+
+  // Compute totals
+  let totalOrc = 0, totalGasto = 0;
+  activeOrcs.forEach(o => {
+    totalOrc   += getOrcamentoValor(o, cicloKey);
+    totalGasto += getGastoOrcamentoCiclo(o.catType, o.catKey);
+  });
+  if (bannerEl) {
+    bannerEl.style.display = '';
+    const bPct = totalOrc > 0 ? Math.min(100, Math.round(totalGasto / totalOrc * 100)) : 0;
+    const bCls = bPct >= 100 ? 'ultrapassado' : bPct >= 80 ? 'aviso' : '';
+    bannerEl.innerHTML = `
+      <div class="orc-total-row">
+        <span>Total orçado</span>
+        <span class="orc-total-val">${formatCurrency(totalOrc)}</span>
+      </div>
+      <div class="orc-total-row" style="margin-bottom:8px;">
+        <span>Gasto no ciclo</span>
+        <span class="orc-total-val" style="color:${bPct>=100?'var(--red)':bPct>=80?'#f0a500':'var(--text)'}">${formatCurrency(totalGasto)}</span>
+      </div>
+      <div class="orc-progress-bar">
+        <div class="orc-progress-fill ${bCls}" style="width:${bPct}%"></div>
+      </div>
+      <div class="orc-progress-pct ${bCls}" style="margin-top:3px;">${bPct}% utilizado</div>`;
+  }
+
+  // Group: parents first, then subs under their parent
+  const parentOrcs = activeOrcs.filter(o => o.catType === 'parent');
+  const subOrcs    = activeOrcs.filter(o => o.catType === 'sub');
+  // Collect all parent keys (from parent budgets + implicit from subs)
+  const parentKeys = [...new Set([
+    ...parentOrcs.map(o => o.catKey),
+    ...subOrcs.map(o => o.parentCat)
+  ])];
+
+  let html = '';
+  parentKeys.forEach(pk => {
+    const pOrc = parentOrcs.find(o => o.catKey === pk);
+    if (pOrc) {
+      html += buildOrcCard(pOrc, cicloKey, 'pai');
+    } else {
+      // Label only (no budget for parent, but subs exist)
+      const catGroup = expenseCats.find(g => g.cat === pk);
+      const icon = catGroup ? catGroup.cat.split(' ')[0] : '📦';
+      html += `<div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:8px 2px 4px;">${icon} ${pk}</div>`;
+    }
+    subOrcs.filter(o => o.parentCat === pk).forEach(o => {
+      html += buildOrcCard(o, cicloKey, 'sub');
+    });
+  });
+  // Subs without a grouped parent (shouldn't happen but safety)
+  subOrcs.filter(o => !parentKeys.includes(o.parentCat)).forEach(o => {
+    html += buildOrcCard(o, cicloKey, 'sub');
+  });
+  if (listEl) listEl.innerHTML = html;
+}
+
+function buildOrcCard(orc, cicloKey, cls) {
+  const valor  = getOrcamentoValor(orc, cicloKey);
+  const gasto  = getGastoOrcamentoCiclo(orc.catType, orc.catKey);
+  const pct    = valor > 0 ? Math.min(100, Math.round(gasto / valor * 100)) : 0;
+  const fillCls = gasto > valor ? 'ultrapassado' : gasto / valor >= 0.8 ? 'aviso' : '';
+  const catGroup = expenseCats.find(g => cls === 'pai' ? g.cat === orc.catKey : g.subs.includes(orc.catKey));
+  const icon = catGroup ? catGroup.cat.split(' ')[0] : '📦';
+  const name = cls === 'pai' ? orc.catKey : orc.catKey;
+  const override = orc.overrides && orc.overrides[cicloKey] !== undefined;
+  return `<div class="orc-card ${cls}">
+    <div class="orc-card-header">
+      <span class="orc-cat-name">${icon} ${name}${override ? ' <span style="font-size:10px;color:var(--accent);font-weight:400;">(este ciclo)</span>' : ''}</span>
+      <span class="orc-valores"><span class="gasto">${formatCurrency(gasto)}</span> / ${formatCurrency(valor)}</span>
+      <button class="orc-edit-btn" onclick="openEditOrcamento(${orc.id})" title="Editar">⋯</button>
+    </div>
+    <div class="orc-progress-wrap">
+      <div class="orc-progress-pct ${fillCls}">${pct}%</div>
+      <div class="orc-progress-bar"><div class="orc-progress-fill ${fillCls}" style="width:${pct}%"></div></div>
+    </div>
+  </div>`;
+}
+
+// ===== ORÇAMENTOS CRUD =====
+let orcModalType = 'parent';
+let orcCatSelected = null;
+
+function openAddOrcamento() {
+  orcModalType   = 'parent';
+  orcCatSelected = null;
+  document.getElementById('orc-editing-id').value = '';
+  document.getElementById('orc-modal-title').innerHTML = '💰 Novo Orçamento <button class="modal-close" onclick="closeOrcModal()">✕</button>';
+  document.getElementById('orc-amount-input').value  = '';
+  document.getElementById('orc-override-input').value = '';
+  document.getElementById('orc-cat-icon').textContent  = '📂';
+  document.getElementById('orc-cat-label').textContent = 'Escolher categoria';
+  document.getElementById('orc-delete-btn').style.display = 'none';
+  setOrcModalTypeUI('parent');
+  document.getElementById('orc-modal-overlay').classList.add('open');
+}
+
+function openEditOrcamento(id) {
+  const orc = orcamentos.find(o => o.id === id);
+  if (!orc) return;
+  orcModalType   = orc.catType;
+  orcCatSelected = { catType: orc.catType, catKey: orc.catKey, parentCat: orc.parentCat };
+  document.getElementById('orc-editing-id').value = id;
+  document.getElementById('orc-modal-title').innerHTML = '✏️ Editar Orçamento <button class="modal-close" onclick="closeOrcModal()">✕</button>';
+  document.getElementById('orc-amount-input').value    = orc.valorBase;
+  const cicloKey = getCicloKey();
+  document.getElementById('orc-override-input').value  = (orc.overrides && orc.overrides[cicloKey] !== undefined) ? orc.overrides[cicloKey] : '';
+  const catGroup = expenseCats.find(g => orc.catType === 'parent' ? g.cat === orc.catKey : g.subs.includes(orc.catKey));
+  const icon = catGroup ? catGroup.cat.split(' ')[0] : '📦';
+  document.getElementById('orc-cat-icon').textContent  = icon;
+  document.getElementById('orc-cat-label').textContent = orc.catKey;
+  document.getElementById('orc-delete-btn').style.display = '';
+  setOrcModalTypeUI(orc.catType);
+  document.getElementById('orc-modal-overlay').classList.add('open');
+}
+
+function closeOrcModal() {
+  document.getElementById('orc-modal-overlay').classList.remove('open');
+  orcCatSelected = null;
+}
+function handleOrcModalClick(e) { if (e.target === document.getElementById('orc-modal-overlay')) closeOrcModal(); }
+
+function setOrcModalType(type) {
+  orcModalType   = type;
+  orcCatSelected = null;
+  document.getElementById('orc-cat-icon').textContent  = '📂';
+  document.getElementById('orc-cat-label').textContent = 'Escolher categoria';
+  setOrcModalTypeUI(type);
+}
+function setOrcModalTypeUI(type) {
+  document.getElementById('orc-type-parent').className = 'orc-type-btn' + (type === 'parent' ? ' active' : '');
+  document.getElementById('orc-type-sub').className    = 'orc-type-btn' + (type === 'sub'    ? ' active' : '');
+}
+
+function openOrcCatPicker() {
+  document.getElementById('orc-cat-picker-search').value = '';
+  renderOrcCatPickerList('');
+  document.getElementById('orc-cat-picker-overlay').classList.add('open');
+}
+function closeOrcCatPicker() { document.getElementById('orc-cat-picker-overlay').classList.remove('open'); }
+function handleOrcCatPickerOverlayClick(e) { if (e.target === document.getElementById('orc-cat-picker-overlay')) closeOrcCatPicker(); }
+
+function renderOrcCatPickerList(query) {
+  query = (query || '').toLowerCase().trim();
+  const list  = document.getElementById('orc-cat-picker-list');
+  list.innerHTML = '';
+  if (orcModalType === 'parent') {
+    expenseCats
+      .filter(g => !query || g.cat.toLowerCase().includes(query))
+      .forEach(g => {
+        const icon = g.cat.split(' ')[0];
+        const btn  = document.createElement('button');
+        btn.className = 'bs-cat-btn' + (orcCatSelected && orcCatSelected.catKey === g.cat ? ' active' : '');
+        btn.innerHTML = '<span class="bs-icon">' + icon + '</span><span>' + g.cat + '</span>';
+        btn.onclick = () => {
+          orcCatSelected = { catType: 'parent', catKey: g.cat, parentCat: g.cat };
+          document.getElementById('orc-cat-icon').textContent  = icon;
+          document.getElementById('orc-cat-label').textContent = g.cat;
+          closeOrcCatPicker();
+        };
+        list.appendChild(btn);
+      });
+  } else {
+    expenseCats.forEach(g => {
+      const filteredSubs = g.subs.filter(s => !query || s.toLowerCase().includes(query) || g.cat.toLowerCase().includes(query));
+      if (!filteredSubs.length) return;
+      if (!query) {
+        const lbl = document.createElement('div');
+        lbl.className = 'bs-group-label';
+        lbl.textContent = g.cat;
+        list.appendChild(lbl);
+      }
+      const icon = g.cat.split(' ')[0];
+      filteredSubs.forEach(sub => {
+        const btn = document.createElement('button');
+        btn.className = 'bs-cat-btn' + (orcCatSelected && orcCatSelected.catKey === sub ? ' active' : '');
+        btn.innerHTML = '<span class="bs-icon">' + icon + '</span><span>' + sub + '</span>';
+        btn.onclick = () => {
+          orcCatSelected = { catType: 'sub', catKey: sub, parentCat: g.cat };
+          document.getElementById('orc-cat-icon').textContent  = icon;
+          document.getElementById('orc-cat-label').textContent = sub;
+          closeOrcCatPicker();
+        };
+        list.appendChild(btn);
+      });
+    });
+  }
+  if (!list.children.length) list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:32px;font-size:13px;">Sem resultados</div>';
+}
+
+function saveOrcamento() {
+  if (!orcCatSelected) { showToast('⚠️ Escolhe uma categoria'); return; }
+  const amountVal = parseFloat(document.getElementById('orc-amount-input').value);
+  if (!amountVal || amountVal <= 0) { showToast('⚠️ Insere um montante válido'); return; }
+  const overrideVal = document.getElementById('orc-override-input').value.trim();
+  const overrideNum = overrideVal !== '' ? parseFloat(overrideVal) : null;
+  const cicloKey    = getCicloKey();
+  const editingId   = parseInt(document.getElementById('orc-editing-id').value) || null;
+
+  if (editingId) {
+    const orc = orcamentos.find(o => o.id === editingId);
+    if (orc) {
+      orc.valorBase = amountVal;
+      if (overrideNum !== null && overrideNum > 0) { if (!orc.overrides) orc.overrides = {}; orc.overrides[cicloKey] = overrideNum; }
+      else if (orc.overrides) { delete orc.overrides[cicloKey]; }
+    }
+  } else {
+    // Check for duplicate
+    const dup = orcamentos.find(o => !deletedOrcIds.has(o.id) && o.catType === orcCatSelected.catType && o.catKey === orcCatSelected.catKey);
+    if (dup) { showToast('⚠️ Já existe orçamento para esta categoria'); return; }
+    const newOrc = { id: Date.now(), catType: orcCatSelected.catType, catKey: orcCatSelected.catKey, parentCat: orcCatSelected.parentCat, valorBase: amountVal, overrides: {} };
+    if (overrideNum !== null && overrideNum > 0) newOrc.overrides[cicloKey] = overrideNum;
+    orcamentos.push(newOrc);
+  }
+  scheduleSave();
+  closeOrcModal();
+  renderOrcamentos();
+  renderOrcBanner();
+  showToast('✅ Orçamento guardado!');
+}
+
+async function deleteOrcamento(id) {
+  const ok = await appConfirm('Tens a certeza que queres eliminar este orçamento?', 'Eliminar orçamento', 'Eliminar', true);
+  if (!ok) return;
+  deletedOrcIds.add(id);
+  orcamentos = orcamentos.filter(o => o.id !== id);
+  scheduleSave();
+  renderOrcamentos();
+  renderOrcBanner();
+  showToast('Orçamento eliminado');
+}
+
+async function deleteOrcamentoFromModal() {
+  const id = parseInt(document.getElementById('orc-editing-id').value);
+  if (!id) return;
+  closeOrcModal();
+  await deleteOrcamento(id);
+}
+
 // ===== RENDER REGISTOS =====
 function renderAll() { renderSummary(); renderEntries(); renderDate(); }
 
@@ -2524,6 +2994,7 @@ function renderSummary() {
   if (incCntEl) incCntEl.textContent = cE.filter(e=>e.type==='income').length + ' registos';
   if (balEl) { balEl.textContent = (bal>=0?'+':'')+formatCurrency(Math.abs(bal)); balEl.style.color = bal>=0 ? 'var(--accent)' : 'var(--red)'; }
   if (balSubEl) balSubEl.textContent = cicloLabel();
+  renderOrcBanner();
 }
 
 function renderEntries() {
