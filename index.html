@@ -4822,7 +4822,7 @@ function getRelatorioDates() {
 }
 
 function getEntriesForPeriod(start, end) {
-  return [...entries.filter(e => e.date >= start && e.date <= end), ...getCofreVirtualEntries(start, end)];
+  return entries.filter(e => e.date >= start && e.date <= end);
 }
 
 function renderRelatorios() {
