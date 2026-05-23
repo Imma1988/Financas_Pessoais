@@ -886,6 +886,35 @@
   .orc-type-toggle { display: flex; gap: 6px; margin-bottom: 14px; }
   .orc-type-btn { flex: 1; background: var(--card2); border: 1.5px solid var(--border); border-radius: 9px; padding: 9px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all 0.2s; }
   .orc-type-btn.active { background: var(--accent); color: #0d0d0d; border-color: var(--accent); }
+  /* Annual view */
+  .orc-tab-toggle { display: flex; gap: 6px; margin-bottom: 14px; }
+  .orc-tab-btn { flex: 1; padding: 9px; border-radius: 9px; border: 1.5px solid var(--border); background: var(--card2); color: var(--muted); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .orc-tab-btn.active { background: var(--accent); color: #0d0d0d; border-color: var(--accent); }
+  .orc-year-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+  .orc-year-card.pai { border-left: 3px solid var(--accent); }
+  .orc-year-card.sub { margin-left: 16px; border-left: 3px solid var(--muted); }
+  .orc-year-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .orc-year-cat-name { font-weight: 700; font-size: 14px; }
+  .orc-year-base { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+  .orc-months-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-bottom: 4px; }
+  .orc-month-cell { display: flex; flex-direction: column; align-items: center; padding: 6px 2px; border-radius: 8px; cursor: pointer; border: 1.5px solid transparent; transition: all 0.15s; background: var(--card2); min-width: 0; }
+  .orc-month-cell:hover { border-color: var(--accent); }
+  .orc-month-cell.current { border-color: var(--accent); background: rgba(200,241,53,0.08); }
+  .orc-month-cell.past-over { background: rgba(255,80,80,0.1); }
+  .orc-month-cell .mc-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .orc-month-cell .mc-val { font-size: 11px; font-weight: 700; margin: 2px 0 1px; white-space: nowrap; }
+  .orc-month-cell .mc-spent { font-size: 9px; color: var(--muted); }
+  .orc-month-cell.past-over .mc-spent { color: var(--red); }
+  .orc-month-cell .mc-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--card); margin-top: 2px; }
+  .orc-month-cell.past-ok .mc-dot { background: var(--accent); }
+  .orc-month-cell.past-over .mc-dot { background: var(--red); }
+  .orc-month-cell.current .mc-dot { background: var(--accent); }
+  .orc-month-cell .mc-override { font-size: 8px; color: var(--accent); line-height: 1; }
+  .orc-year-totals { display: flex; gap: 8px; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 8px; }
+  .orc-year-totals .tot-item { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .orc-year-totals .tot-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .orc-year-totals .tot-val { font-size: 13px; font-weight: 700; color: var(--text); }
+  .orc-year-totals .tot-over { color: var(--red); }
 
   /* App shell — mobile defaults */
   #app-shell { width: 100%; }
@@ -1341,14 +1370,30 @@
   <div class="header">
     <div class="header-left"><h1>💰 Orçamentos</h1></div>
     <div class="header-right" style="display:flex;align-items:center;gap:6px;">
-      <button onclick="navigateCiclo(-1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:4px 8px;">‹</button>
-      <span id="orc-ciclo-label" style="font-size:12px;color:var(--muted);white-space:nowrap;"></span>
-      <button id="orc-nav-next" onclick="navigateCiclo(1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:4px 8px;">›</button>
+      <div id="orc-ciclo-nav" style="display:flex;align-items:center;gap:6px;">
+        <button onclick="navigateCiclo(-1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:4px 8px;">‹</button>
+        <span id="orc-ciclo-label" style="font-size:12px;color:var(--muted);white-space:nowrap;"></span>
+        <button id="orc-nav-next" onclick="navigateCiclo(1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:4px 8px;">›</button>
+      </div>
+      <div id="orc-ano-nav" style="display:none;align-items:center;gap:6px;">
+        <button onclick="navigateOrcAno(-1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:4px 8px;">‹</button>
+        <span id="orc-ano-label" style="font-size:12px;color:var(--muted);white-space:nowrap;font-weight:700;"></span>
+        <button id="orc-ano-next" onclick="navigateOrcAno(1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:4px 8px;">›</button>
+      </div>
     </div>
   </div>
   <div style="padding-bottom:80px;" id="orcamentos-content">
-    <div id="orc-total-banner" class="orc-total-banner" style="display:none;"></div>
-    <div id="orc-list"></div>
+    <div class="orc-tab-toggle">
+      <button class="orc-tab-btn active" id="orc-tab-ciclo" onclick="switchOrcViewMode('ciclo')">📅 Ciclo</button>
+      <button class="orc-tab-btn"        id="orc-tab-ano"   onclick="switchOrcViewMode('ano')">📆 Ano</button>
+    </div>
+    <div id="orc-ciclo-content">
+      <div id="orc-total-banner" class="orc-total-banner" style="display:none;"></div>
+      <div id="orc-list"></div>
+    </div>
+    <div id="orc-ano-content" style="display:none;">
+      <div id="orc-ano-list"></div>
+    </div>
     <div id="orc-empty" style="display:none;text-align:center;padding:48px 20px;color:var(--muted);">
       <div style="font-size:40px;margin-bottom:12px;">💰</div>
       <div style="font-weight:700;font-size:16px;margin-bottom:8px;">Sem orçamentos</div>
@@ -1739,6 +1784,22 @@
     <div class="bottom-sheet-title">Escolher categoria</div>
     <input type="text" class="bottom-sheet-search" id="orc-cat-picker-search" placeholder="🔍 Pesquisar..." oninput="renderOrcCatPickerList(this.value)">
     <div class="bottom-sheet-list" id="orc-cat-picker-list"></div>
+  </div>
+</div>
+
+<!-- EDITAR MÊS MODAL -->
+<div class="modal-overlay" id="orc-mes-modal-overlay" onclick="handleOrcMesModalClick(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" id="orc-mes-modal-title">Janeiro 2026 <button class="modal-close" onclick="closeOrcMesModal()">✕</button></div>
+    <div id="orc-mes-cat-name" style="font-size:15px;font-weight:700;margin-bottom:4px;"></div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Base recorrente: <span id="orc-mes-base" style="font-weight:700;color:var(--text);"></span></div>
+    <div class="form-row" style="margin-bottom:18px;">
+      <label class="form-label">Montante para este mês <span style="color:var(--muted);font-weight:400;">(deixa em branco para usar o base)</span></label>
+      <input type="number" inputmode="decimal" class="form-input" id="orc-mes-input" placeholder="ex: 450" min="0" step="0.01">
+    </div>
+    <button class="modal-submit-btn" onclick="saveOrcMes()">Guardar</button>
+    <input type="hidden" id="orc-mes-orc-id">
+    <input type="hidden" id="orc-mes-ciclo-key">
   </div>
 </div>
 
@@ -2722,6 +2783,17 @@ function renderOrcBanner() {
 }
 
 function renderOrcamentos() {
+  // Keep tab state in sync
+  const cicloContent = document.getElementById('orc-ciclo-content');
+  const anoContent   = document.getElementById('orc-ano-content');
+  const cicloNav     = document.getElementById('orc-ciclo-nav');
+  const anoNav       = document.getElementById('orc-ano-nav');
+  if (cicloContent) cicloContent.style.display = orcViewMode === 'ciclo' ? '' : 'none';
+  if (anoContent)   anoContent.style.display   = orcViewMode === 'ano'   ? '' : 'none';
+  if (cicloNav)     cicloNav.style.display     = orcViewMode === 'ciclo' ? 'flex' : 'none';
+  if (anoNav)       anoNav.style.display       = orcViewMode === 'ano'   ? 'flex' : 'none';
+  if (orcViewMode === 'ano') { renderOrcamentosAnual(); return; }
+
   const activeOrcs = orcamentos.filter(o => !deletedOrcIds.has(o.id));
   const cicloKey   = getCicloKey();
   const labelEl    = document.getElementById('orc-ciclo-label');
@@ -2799,6 +2871,165 @@ function buildOrcCard(orc, cicloKey, cls) {
       '<div class="orc-progress-bar"><div class="orc-progress-fill ' + fillCls + '" style="width:' + pct + '%"></div></div>' +
     '</div>' +
   '</div>';
+}
+
+// ===== ORÇAMENTOS ANUAL =====
+let orcViewMode  = 'ciclo';
+let orcAnoOffset = 0;
+
+const MESES_SHORT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+function getCicloRangeFromKey(cicloKey) {
+  const [y, m] = cicloKey.split('-').map(Number);
+  const pad = n => String(n).padStart(2,'0');
+  const startDate = new Date(y, m - 1, cicloInicio);
+  const endDate   = new Date(y, m,     cicloInicio - 1);
+  const fmt = d => d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+  return { start: fmt(startDate), end: fmt(endDate) };
+}
+
+function getGastoForCicloKey(catType, catKey, cicloKey) {
+  const { start, end } = getCicloRangeFromKey(cicloKey);
+  return entries
+    .filter(e => e.type === 'expense' && e.date >= start && e.date <= end)
+    .filter(e => catType === 'parent' ? e.parentCategory === catKey : e.category === catKey)
+    .reduce((sum, e) => sum + e.amount, 0);
+}
+
+function switchOrcViewMode(mode) {
+  orcViewMode = mode;
+  document.getElementById('orc-tab-ciclo').className = 'orc-tab-btn' + (mode === 'ciclo' ? ' active' : '');
+  document.getElementById('orc-tab-ano').className   = 'orc-tab-btn' + (mode === 'ano'   ? ' active' : '');
+  document.getElementById('orc-ciclo-content').style.display = mode === 'ciclo' ? '' : 'none';
+  document.getElementById('orc-ano-content').style.display   = mode === 'ano'   ? '' : 'none';
+  document.getElementById('orc-ciclo-nav').style.display = mode === 'ciclo' ? 'flex' : 'none';
+  document.getElementById('orc-ano-nav').style.display   = mode === 'ano'   ? 'flex' : 'none';
+  if (mode === 'ano') renderOrcamentosAnual();
+}
+
+function navigateOrcAno(delta) {
+  orcAnoOffset += delta;
+  if (orcAnoOffset > 0) orcAnoOffset = 0;
+  renderOrcamentosAnual();
+}
+
+function renderOrcamentosAnual() {
+  const year       = new Date().getFullYear() + orcAnoOffset;
+  const curKey     = getCicloKey(0);
+  const cicloKeys  = Array.from({length:12}, (_, i) => year + '-' + String(i+1).padStart(2,'0'));
+  const activeOrcs = orcamentos.filter(o => !deletedOrcIds.has(o.id));
+  const labelEl    = document.getElementById('orc-ano-label');
+  const nextBtn    = document.getElementById('orc-ano-next');
+  const listEl     = document.getElementById('orc-ano-list');
+  const emptyEl    = document.getElementById('orc-empty');
+  if (labelEl) labelEl.textContent = year;
+  if (nextBtn) { nextBtn.style.opacity = orcAnoOffset >= 0 ? '0.3' : '1'; nextBtn.disabled = orcAnoOffset >= 0; }
+  if (!activeOrcs.length) { if (listEl) listEl.innerHTML = ''; if (emptyEl) emptyEl.style.display = ''; return; }
+  if (emptyEl) emptyEl.style.display = 'none';
+  const parentOrcs = activeOrcs.filter(o => o.catType === 'parent');
+  const subOrcs    = activeOrcs.filter(o => o.catType === 'sub');
+  const parentKeys = [...new Set([...parentOrcs.map(o => o.catKey), ...subOrcs.map(o => o.parentCat)])];
+  let html = '';
+  parentKeys.forEach(pk => {
+    const pOrc = parentOrcs.find(o => o.catKey === pk);
+    if (pOrc) {
+      html += buildOrcCardAnual(pOrc, cicloKeys, curKey, 'pai');
+    } else {
+      const grp = expenseCats.find(g => g.cat === pk);
+      const icon = grp ? grp.cat.split(' ')[0] : '📦';
+      html += '<div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:8px 2px 4px;">' + icon + ' ' + pk + '</div>';
+    }
+    subOrcs.filter(o => o.parentCat === pk).forEach(o => { html += buildOrcCardAnual(o, cicloKeys, curKey, 'sub'); });
+  });
+  subOrcs.filter(o => !parentKeys.includes(o.parentCat)).forEach(o => { html += buildOrcCardAnual(o, cicloKeys, curKey, 'sub'); });
+  if (listEl) listEl.innerHTML = html;
+}
+
+function buildOrcCardAnual(orc, cicloKeys, curKey, cls) {
+  const grp  = expenseCats.find(g => cls === 'pai' ? g.cat === orc.catKey : g.subs && g.subs.includes(orc.catKey));
+  const icon = grp ? grp.cat.split(' ')[0] : '📦';
+  let totalOrc = 0, totalGasto = 0;
+  let monthsHtml = '';
+  [cicloKeys.slice(0,6), cicloKeys.slice(6,12)].forEach(row => {
+    monthsHtml += '<div class="orc-months-grid">';
+    row.forEach(ck => {
+      const valor      = getOrcamentoValor(orc, ck);
+      const isPast     = ck < curKey;
+      const isCurrent  = ck === curKey;
+      const gasto      = (isPast || isCurrent) ? getGastoForCicloKey(orc.catType, orc.catKey, ck) : 0;
+      const hasOverride = orc.overrides && orc.overrides[ck] !== undefined;
+      const monthIdx   = parseInt(ck.split('-')[1]) - 1;
+      totalOrc   += valor;
+      if (isPast || isCurrent) totalGasto += gasto;
+      let cellCls = 'orc-month-cell';
+      if (isCurrent) cellCls += ' current';
+      else if (isPast && gasto > valor) cellCls += ' past-over';
+      else if (isPast) cellCls += ' past-ok';
+      const valFmt   = valor >= 1000 ? (valor/1000).toFixed(1)+'k' : valor;
+      const gastFmt  = gasto >= 1000 ? (gasto/1000).toFixed(1)+'k' : Math.round(gasto);
+      const spentEl  = (isPast || isCurrent) ? '<div class="mc-spent">' + gastFmt + '</div>' : '';
+      const ovEl     = hasOverride ? '<div class="mc-override">*</div>' : '';
+      monthsHtml +=
+        '<div class="' + cellCls + '" onclick="openEditMes(' + orc.id + ',\'' + ck + '\')">' +
+          '<div class="mc-label">' + MESES_SHORT[monthIdx] + '</div>' +
+          '<div class="mc-val">' + valFmt + '</div>' +
+          spentEl + ovEl +
+          '<div class="mc-dot"></div>' +
+        '</div>';
+    });
+    monthsHtml += '</div>';
+  });
+  const desvio = totalOrc - totalGasto;
+  const totHtml =
+    '<div class="orc-year-totals">' +
+      '<div class="tot-item"><div class="tot-label">Orçado</div><div class="tot-val">' + formatCurrency(totalOrc) + '</div></div>' +
+      '<div class="tot-item"><div class="tot-label">Gasto</div><div class="tot-val">' + formatCurrency(totalGasto) + '</div></div>' +
+      '<div class="tot-item"><div class="tot-label">Saldo</div><div class="tot-val' + (desvio < 0 ? ' tot-over' : '') + '">' + (desvio >= 0 ? '+' : '') + formatCurrency(Math.abs(desvio)) + '</div></div>' +
+    '</div>';
+  return '<div class="orc-year-card ' + cls + '">' +
+    '<div class="orc-year-header"><span class="orc-year-cat-name">' + icon + ' ' + orc.catKey + '</span>' +
+      '<button class="orc-edit-btn" onclick="openEditOrcamento(' + orc.id + ')" title="Editar base">⋯</button></div>' +
+    '<div class="orc-year-base">Base recorrente: <strong>' + formatCurrency(orc.valorBase) + '/mês</strong></div>' +
+    monthsHtml + totHtml +
+  '</div>';
+}
+
+function openEditMes(orcId, cicloKey) {
+  const orc = orcamentos.find(o => o.id === orcId);
+  if (!orc) return;
+  const grp  = expenseCats.find(g => orc.catType === 'parent' ? g.cat === orc.catKey : g.subs && g.subs.includes(orc.catKey));
+  const icon = grp ? grp.cat.split(' ')[0] : '📦';
+  const monthIdx = parseInt(cicloKey.split('-')[1]) - 1;
+  const year     = cicloKey.split('-')[0];
+  document.getElementById('orc-mes-modal-title').innerHTML = MESES_SHORT[monthIdx] + ' ' + year + ' <button class="modal-close" onclick="closeOrcMesModal()">✕</button>';
+  document.getElementById('orc-mes-cat-name').textContent  = icon + ' ' + orc.catKey;
+  document.getElementById('orc-mes-base').textContent      = formatCurrency(orc.valorBase);
+  document.getElementById('orc-mes-orc-id').value          = orcId;
+  document.getElementById('orc-mes-ciclo-key').value       = cicloKey;
+  document.getElementById('orc-mes-input').value = (orc.overrides && orc.overrides[cicloKey] !== undefined) ? orc.overrides[cicloKey] : '';
+  document.getElementById('orc-mes-modal-overlay').classList.add('open');
+}
+function closeOrcMesModal() { document.getElementById('orc-mes-modal-overlay').classList.remove('open'); }
+function handleOrcMesModalClick(e) { if (e.target === document.getElementById('orc-mes-modal-overlay')) closeOrcMesModal(); }
+
+function saveOrcMes() {
+  const orcId    = parseInt(document.getElementById('orc-mes-orc-id').value);
+  const cicloKey = document.getElementById('orc-mes-ciclo-key').value;
+  const val      = document.getElementById('orc-mes-input').value.trim();
+  const orc      = orcamentos.find(o => o.id === orcId);
+  if (!orc) return;
+  if (!orc.overrides) orc.overrides = {};
+  if (val === '') {
+    delete orc.overrides[cicloKey];
+  } else {
+    const num = parseFloat(val);
+    if (isNaN(num) || num < 0) { showToast('⚠️ Valor inválido'); return; }
+    orc.overrides[cicloKey] = num;
+  }
+  scheduleSave();
+  closeOrcMesModal();
+  renderOrcamentosAnual();
+  showToast('✅ Guardado!');
 }
 
 // ===== ORÇAMENTOS CRUD =====
