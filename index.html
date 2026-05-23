@@ -918,6 +918,15 @@
   .orc-year-totals .tot-item { flex: 1; display: flex; flex-direction: column; gap: 2px; }
   .orc-year-totals .tot-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
   .orc-year-totals .tot-val { font-size: 13px; font-weight: 700; color: var(--text); }
+  /* Income budget cards */
+  .orc-card.income { border-left: 3px solid var(--accent-income); }
+  .orc-progress-fill.income-ok   { background: var(--accent-income); }
+  .orc-progress-fill.income-low  { background: var(--red); }
+  .orc-section-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; padding: 10px 2px 4px; }
+  /* Savings estimate banner */
+  .orc-savings-banner { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-top: 14px; }
+  .orc-savings-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .orc-savings-row .val { font-weight: 700; color: var(--text); }
   .orc-year-totals .tot-over { color: var(--red); }
   /* AI suggest */
   .orc-suggest-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
@@ -1409,6 +1418,8 @@
     <div id="orc-ciclo-content">
       <div id="orc-total-banner" class="orc-total-banner" style="display:none;"></div>
       <div id="orc-list"></div>
+      <div id="orc-income-list"></div>
+      <div id="orc-savings-banner" class="orc-savings-banner" style="display:none;"></div>
     </div>
     <div id="orc-ano-content" style="display:none;">
       <div id="orc-ano-list"></div>
@@ -1771,6 +1782,13 @@
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title" id="orc-modal-title">💰 Novo Orçamento <button class="modal-close" onclick="closeOrcModal()">✕</button></div>
     <div style="margin-bottom:14px;">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Lado</div>
+      <div class="orc-type-toggle">
+        <button class="orc-type-btn active" id="orc-side-expense" onclick="setOrcModalSide('expense')">💸 Despesa</button>
+        <button class="orc-type-btn"        id="orc-side-income"  onclick="setOrcModalSide('income')">💰 Receita</button>
+      </div>
+    </div>
+    <div id="orc-cattype-row" style="margin-bottom:14px;">
       <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Tipo de categoria</div>
       <div class="orc-type-toggle">
         <button class="orc-type-btn active" id="orc-type-parent" onclick="setOrcModalType('parent')">Categoria</button>
@@ -2765,6 +2783,13 @@ function handleSwipeEnd(e) {
 }
 
 // ===== ORÇAMENTOS =====
+function getReceitaOrcamentoCiclo(catKey, offset) {
+  const { start, end } = getCicloRange(offset !== undefined ? offset : cicloOffset);
+  return entries
+    .filter(e => e.type === 'income' && e.date >= start && e.date <= end && e.category === catKey)
+    .reduce((s, e) => s + e.amount, 0);
+}
+
 function getCicloKey(offset) {
   const { start } = getCicloRange(offset !== undefined ? offset : cicloOffset);
   return start.slice(0, 7);
@@ -2868,7 +2893,7 @@ function renderOrcamentos() {
   if (emptyEl) emptyEl.style.display = 'none';
 
   let totalOrc = 0, totalGasto = 0;
-  activeOrcs.forEach(o => {
+  activeOrcs.filter(o => o.catType !== 'income').forEach(o => {
     totalOrc   += getOrcamentoValor(o, cicloKey);
     totalGasto += getGastoOrcamentoCiclo(o.catType, o.catKey);
   });
@@ -2884,8 +2909,10 @@ function renderOrcamentos() {
       '<div class="orc-progress-pct ' + bCls + '" style="margin-top:3px;">' + bPct + '% utilizado</div>';
   }
 
-  const parentOrcs = activeOrcs.filter(o => o.catType === 'parent');
-  const subOrcs    = activeOrcs.filter(o => o.catType === 'sub');
+  const expOrcs    = activeOrcs.filter(o => o.catType !== 'income');
+  const incOrcs    = activeOrcs.filter(o => o.catType === 'income');
+  const parentOrcs = expOrcs.filter(o => o.catType === 'parent');
+  const subOrcs    = expOrcs.filter(o => o.catType === 'sub');
   const parentKeys = [...new Set([...parentOrcs.map(o => o.catKey), ...subOrcs.map(o => o.parentCat)])];
 
   let html = '';
@@ -2894,14 +2921,46 @@ function renderOrcamentos() {
     if (pOrc) {
       html += buildOrcCard(pOrc, cicloKey, 'pai');
     } else {
-      const grp  = expenseCats.find(g => g.cat === pk);
-      const icon = grp ? grp.cat.split(' ')[0] : '📦';
       html += '<div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:8px 2px 4px;">' + pk + '</div>';
     }
     subOrcs.filter(o => o.parentCat === pk).forEach(o => { html += buildOrcCard(o, cicloKey, 'sub'); });
   });
   subOrcs.filter(o => !parentKeys.includes(o.parentCat)).forEach(o => { html += buildOrcCard(o, cicloKey, 'sub'); });
   if (listEl) listEl.innerHTML = html;
+
+  // Income budgets
+  const incomeListEl = document.getElementById('orc-income-list');
+  if (incomeListEl) {
+    let ihtml = '';
+    if (incOrcs.length) {
+      ihtml += '<div class="orc-section-label">💰 Receitas esperadas</div>';
+      incOrcs.forEach(o => { ihtml += buildOrcCardIncome(o, cicloKey); });
+    }
+    incomeListEl.innerHTML = ihtml;
+  }
+
+  // Savings estimate banner
+  const savBanner = document.getElementById('orc-savings-banner');
+  if (savBanner && (expOrcs.length || incOrcs.length)) {
+    const totalIncOrc = incOrcs.reduce((s, o) => s + getOrcamentoValor(o, cicloKey), 0);
+    const totalExpOrc = expOrcs.reduce((s, o) => s + getOrcamentoValor(o, cicloKey), 0);
+    const estSavings  = totalIncOrc - totalExpOrc;
+    const estPct      = totalIncOrc > 0 ? Math.round(estSavings / totalIncOrc * 100) : null;
+    const realInc     = incOrcs.reduce((s, o) => s + getReceitaOrcamentoCiclo(o.catKey), 0);
+    const realExp     = expOrcs.reduce((s, o) => s + getGastoOrcamentoCiclo(o.catType, o.catKey), 0);
+    const realSavings = realInc - realExp;
+    const realPct     = realInc > 0 ? Math.round(realSavings / realInc * 100) : null;
+    const pctColor    = p => p === null ? 'var(--muted)' : p >= 20 ? 'var(--accent)' : p >= 0 ? '#f0a500' : 'var(--red)';
+    savBanner.style.display = '';
+    savBanner.innerHTML =
+      '<div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;font-weight:700;">🎯 Estimativa de poupança</div>' +
+      (totalIncOrc > 0 ? '<div class="orc-savings-row"><span>Receita esperada</span><span class="val">' + formatCurrency(totalIncOrc) + '</span></div>' : '') +
+      (totalExpOrc > 0 ? '<div class="orc-savings-row"><span>Despesas orçadas</span><span class="val">' + formatCurrency(totalExpOrc) + '</span></div>' : '') +
+      (totalIncOrc > 0 && totalExpOrc > 0 ? '<div class="orc-savings-row" style="border-top:1px solid var(--border);padding-top:6px;margin-top:4px;"><span>Poupança estimada</span><span class="val" style="color:' + pctColor(estPct) + ';">' + formatCurrency(estSavings) + (estPct !== null ? ' (' + estPct + '%)' : '') + '</span></div>' : '') +
+      (realInc > 0 ? '<div class="orc-savings-row" style="margin-top:2px;"><span style="color:var(--muted);font-size:11px;">Real (até agora)</span><span style="font-size:11px;font-weight:700;color:' + pctColor(realPct) + ';">' + formatCurrency(realSavings) + (realPct !== null ? ' (' + realPct + '%)' : '') + '</span></div>' : '');
+  } else if (savBanner) {
+    savBanner.style.display = 'none';
+  }
 }
 
 function buildOrcCard(orc, cicloKey, cls) {
@@ -2921,6 +2980,27 @@ function buildOrcCard(orc, cicloKey, cls) {
     '</div>' +
     '<div class="orc-progress-wrap">' +
       '<div class="orc-progress-pct ' + fillCls + '">' + pct + '%</div>' +
+      '<div class="orc-progress-bar"><div class="orc-progress-fill ' + fillCls + '" style="width:' + pct + '%"></div></div>' +
+    '</div>' +
+  '</div>';
+}
+
+function buildOrcCardIncome(orc, cicloKey) {
+  const esperado = getOrcamentoValor(orc, cicloKey);
+  const recebido = getReceitaOrcamentoCiclo(orc.catKey, cicloOffset);
+  const pct      = esperado > 0 ? Math.min(100, Math.round(recebido / esperado * 100)) : 0;
+  const fillCls  = recebido >= esperado ? 'income-ok' : recebido / Math.max(esperado, 1) >= 0.5 ? 'aviso' : 'income-low';
+  const icon     = orc.catKey.split(' ')[0] || '💰';
+  const override = orc.overrides && orc.overrides[cicloKey] !== undefined;
+  const cycleTag = override ? ' <span style="font-size:10px;color:var(--accent);font-weight:400;">(este ciclo)</span>' : '';
+  return '<div class="orc-card income">' +
+    '<div class="orc-card-header">' +
+      '<span class="orc-cat-name">' + icon + ' ' + orc.catKey + cycleTag + '</span>' +
+      '<span class="orc-valores"><span class="gasto">' + formatCurrency(recebido) + '</span> / ' + formatCurrency(esperado) + '</span>' +
+      '<button class="orc-edit-btn" onclick="openEditOrcamento(' + orc.id + ')" title="Editar">✏️</button>' +
+    '</div>' +
+    '<div class="orc-progress-wrap">' +
+      '<div class="orc-progress-pct ' + (recebido >= esperado ? '' : fillCls) + '">' + pct + '%</div>' +
       '<div class="orc-progress-bar"><div class="orc-progress-fill ' + fillCls + '" style="width:' + pct + '%"></div></div>' +
     '</div>' +
   '</div>';
@@ -3087,6 +3167,7 @@ function saveOrcMes() {
 
 // ===== ORÇAMENTOS CRUD =====
 let orcModalType   = 'parent';
+let orcModalSide   = 'expense';
 let orcCatSelected = null;
 
 function resetOrcSuggestChip() {
@@ -3098,6 +3179,7 @@ function resetOrcSuggestChip() {
 
 function openAddOrcamento() {
   orcModalType   = 'parent';
+  orcModalSide   = 'expense';
   orcCatSelected = null;
   document.getElementById('orc-editing-id').value   = '';
   document.getElementById('orc-modal-title').innerHTML = '💰 Novo Orçamento <button class="modal-close" onclick="closeOrcModal()">✕</button>';
@@ -3106,6 +3188,11 @@ function openAddOrcamento() {
   document.getElementById('orc-cat-icon').textContent  = '📂';
   document.getElementById('orc-cat-label').textContent = 'Escolher categoria';
   document.getElementById('orc-delete-btn').style.display = 'none';
+  document.getElementById('orc-side-expense').className = 'orc-type-btn active';
+  document.getElementById('orc-side-income').className  = 'orc-type-btn';
+  document.getElementById('orc-cattype-row').style.display = '';
+  const suggestBtn = document.getElementById('orc-suggest-btn');
+  if (suggestBtn) suggestBtn.style.display = '';
   setOrcModalTypeUI('parent');
   resetOrcSuggestChip();
   document.getElementById('orc-modal-overlay').classList.add('open');
@@ -3114,19 +3201,31 @@ function openAddOrcamento() {
 function openEditOrcamento(id) {
   const orc = orcamentos.find(o => o.id === id);
   if (!orc) return;
-  orcModalType   = orc.catType;
-  orcCatSelected = { catType: orc.catType, catKey: orc.catKey, parentCat: orc.parentCat };
+  const isIncome  = orc.catType === 'income';
+  orcModalSide    = isIncome ? 'income' : 'expense';
+  orcModalType    = isIncome ? 'parent' : orc.catType;
+  orcCatSelected  = { catType: orc.catType, catKey: orc.catKey, parentCat: orc.parentCat };
   document.getElementById('orc-editing-id').value   = id;
   document.getElementById('orc-modal-title').innerHTML = '✏️ Editar Orçamento <button class="modal-close" onclick="closeOrcModal()">✕</button>';
   document.getElementById('orc-amount-input').value  = orc.valorBase;
   const cicloKey = getCicloKey();
   document.getElementById('orc-override-input').value = (orc.overrides && orc.overrides[cicloKey] !== undefined) ? orc.overrides[cicloKey] : '';
-  const grp  = expenseCats.find(g => orc.catType === 'parent' ? g.cat === orc.catKey : g.subs && g.subs.includes(orc.catKey));
-  const icon = grp ? grp.cat.split(' ')[0] : '📦';
+  let icon = '📂';
+  if (isIncome) {
+    icon = orc.catKey.split(' ')[0] || '💰';
+  } else {
+    const grp = expenseCats.find(g => orc.catType === 'parent' ? g.cat === orc.catKey : g.subs && g.subs.includes(orc.catKey));
+    icon = grp ? grp.cat.split(' ')[0] : '📦';
+  }
   document.getElementById('orc-cat-icon').textContent  = icon;
   document.getElementById('orc-cat-label').textContent = orc.catKey;
   document.getElementById('orc-delete-btn').style.display = '';
-  setOrcModalTypeUI(orc.catType);
+  document.getElementById('orc-side-expense').className = 'orc-type-btn' + (!isIncome ? ' active' : '');
+  document.getElementById('orc-side-income').className  = 'orc-type-btn' + (isIncome  ? ' active' : '');
+  document.getElementById('orc-cattype-row').style.display = isIncome ? 'none' : '';
+  const suggestBtn = document.getElementById('orc-suggest-btn');
+  if (suggestBtn) suggestBtn.style.display = isIncome ? 'none' : '';
+  if (!isIncome) setOrcModalTypeUI(orc.catType);
   resetOrcSuggestChip();
   document.getElementById('orc-modal-overlay').classList.add('open');
 }
@@ -3147,6 +3246,21 @@ function setOrcModalTypeUI(type) {
   document.getElementById('orc-type-sub').className    = 'orc-type-btn' + (type === 'sub'    ? ' active' : '');
 }
 
+function setOrcModalSide(side) {
+  orcModalSide   = side;
+  orcCatSelected = null;
+  document.getElementById('orc-cat-icon').textContent  = '📂';
+  document.getElementById('orc-cat-label').textContent = 'Escolher categoria';
+  document.getElementById('orc-side-expense').className = 'orc-type-btn' + (side === 'expense' ? ' active' : '');
+  document.getElementById('orc-side-income').className  = 'orc-type-btn' + (side === 'income'  ? ' active' : '');
+  // For income there is no parent/sub distinction — hide that row
+  document.getElementById('orc-cattype-row').style.display = side === 'income' ? 'none' : '';
+  // Hide suggest button for income (no historical suggestion logic for income yet)
+  const suggestRow = document.getElementById('orc-suggest-btn');
+  if (suggestRow) suggestRow.style.display = side === 'income' ? 'none' : '';
+  resetOrcSuggestChip();
+}
+
 function openOrcCatPicker() {
   document.getElementById('orc-cat-picker-search').value = '';
   renderOrcCatPickerList('');
@@ -3159,7 +3273,23 @@ function renderOrcCatPickerList(query) {
   query = (query || '').toLowerCase().trim();
   const list = document.getElementById('orc-cat-picker-list');
   list.innerHTML = '';
-  if (orcModalType === 'parent') {
+  if (orcModalSide === 'income') {
+    incomeCats
+      .filter(c => !query || c.toLowerCase().includes(query))
+      .forEach(c => {
+        const icon = c.split(' ')[0] || '💰';
+        const btn  = document.createElement('button');
+        btn.className = 'bs-cat-btn' + (orcCatSelected && orcCatSelected.catKey === c ? ' active' : '');
+        btn.innerHTML = '<span class="bs-icon">' + icon + '</span><span>' + c + '</span>';
+        btn.onclick = () => {
+          orcCatSelected = { catType: 'income', catKey: c, parentCat: c };
+          document.getElementById('orc-cat-icon').textContent  = icon;
+          document.getElementById('orc-cat-label').textContent = c;
+          closeOrcCatPicker();
+        };
+        list.appendChild(btn);
+      });
+  } else if (orcModalType === 'parent') {
     expenseCats
       .filter(g => !query || g.cat.toLowerCase().includes(query))
       .forEach(g => {
