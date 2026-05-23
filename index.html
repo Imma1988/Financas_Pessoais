@@ -860,7 +860,7 @@
   /* ===== ORÇAMENTOS ===== */
   .orc-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
   .orc-card.pai { border-left: 3px solid var(--accent); }
-  .orc-card.sub { margin-left: 16px; border-left: 3px solid var(--muted); }
+  .orc-card.sub { margin-left: 0; border-left: 3px solid var(--muted); }
   .orc-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   .orc-cat-name { font-weight: 700; font-size: 14px; flex: 1; }
   .orc-card.sub .orc-cat-name { font-size: 13px; }
@@ -2892,7 +2892,7 @@ function renderOrcamentos() {
     } else {
       const grp  = expenseCats.find(g => g.cat === pk);
       const icon = grp ? grp.cat.split(' ')[0] : '📦';
-      html += '<div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:8px 2px 4px;">' + icon + ' ' + pk + '</div>';
+      html += '<div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:8px 2px 4px;">' + pk + '</div>';
     }
     subOrcs.filter(o => o.parentCat === pk).forEach(o => { html += buildOrcCard(o, cicloKey, 'sub'); });
   });
@@ -2911,7 +2911,7 @@ function buildOrcCard(orc, cicloKey, cls) {
   const cycleTag = override ? ' <span style="font-size:10px;color:var(--accent);font-weight:400;">(este ciclo)</span>' : '';
   return '<div class="orc-card ' + cls + '">' +
     '<div class="orc-card-header">' +
-      '<span class="orc-cat-name">' + icon + ' ' + orc.catKey + cycleTag + '</span>' +
+      '<span class="orc-cat-name">' + (cls === 'pai' ? icon + ' ' : '') + orc.catKey + cycleTag + '</span>' +
       '<span class="orc-valores"><span class="gasto">' + formatCurrency(gasto) + '</span> / ' + formatCurrency(valor) + '</span>' +
       '<button class="orc-edit-btn" onclick="openEditOrcamento(' + orc.id + ')" title="Editar">✏️</button>' +
     '</div>' +
@@ -2987,7 +2987,7 @@ function renderOrcamentosAnual() {
     } else {
       const grp = expenseCats.find(g => g.cat === pk);
       const icon = grp ? grp.cat.split(' ')[0] : '📦';
-      html += '<div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:8px 2px 4px;">' + icon + ' ' + pk + '</div>';
+      html += '<div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:8px 2px 4px;">' + pk + '</div>';
     }
     subOrcs.filter(o => o.parentCat === pk).forEach(o => { html += buildOrcCardAnual(o, cicloKeys, curKey, 'sub'); });
   });
