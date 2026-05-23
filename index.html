@@ -2843,7 +2843,7 @@ function getGastoOrcamentoCiclo(catType, catKey, offset) {
 function renderOrcBanner() {
   const banner = document.getElementById('orc-banner');
   if (!banner) return;
-  const activeOrcs = orcamentos.filter(o => !deletedOrcIds.has(o.id));
+  const activeOrcs = orcamentos.filter(o => !deletedOrcIds.has(o.id) && o.catType !== 'income');
   if (!activeOrcs.length) { banner.style.display = 'none'; return; }
   const cicloKey = getCicloKey();
   let totalOrc = 0, totalGasto = 0, ultrapassados = 0;
