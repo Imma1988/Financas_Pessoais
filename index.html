@@ -1383,17 +1383,17 @@
 <div class="view" id="view-orcamentos">
   <div class="header">
     <div class="header-left"><h1>💰 Orçamentos</h1></div>
-    <div class="header-right" style="display:flex;align-items:center;">
-      <div id="orc-ciclo-nav" style="display:flex;align-items:center;gap:2px;">
-        <button onclick="navigateCiclo(-1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:4px 6px;">‹</button>
-        <span id="orc-ciclo-label" style="font-size:12px;color:var(--muted);white-space:nowrap;"></span>
-        <button id="orc-nav-next" onclick="navigateCiclo(1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:4px 6px;">›</button>
-      </div>
-      <div id="orc-ano-nav" style="display:none;align-items:center;gap:2px;">
-        <button onclick="navigateOrcAno(-1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:4px 6px;">‹</button>
-        <span id="orc-ano-label" style="font-size:12px;color:var(--muted);white-space:nowrap;font-weight:700;"></span>
-        <button id="orc-ano-next" onclick="navigateOrcAno(1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:4px 6px;">›</button>
-      </div>
+  </div>
+  <div style="display:flex;justify-content:flex-end;align-items:center;margin-top:-18px;margin-bottom:10px;">
+    <div id="orc-ciclo-nav" style="display:flex;align-items:center;gap:2px;">
+      <button onclick="navigateCiclo(-1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:2px 6px;">‹</button>
+      <span id="orc-ciclo-label" style="font-size:12px;color:var(--muted);white-space:nowrap;"></span>
+      <button id="orc-nav-next" onclick="navigateCiclo(1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:2px 6px;">›</button>
+    </div>
+    <div id="orc-ano-nav" style="display:none;align-items:center;gap:2px;">
+      <button onclick="navigateOrcAno(-1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:2px 6px;">‹</button>
+      <span id="orc-ano-label" style="font-size:12px;color:var(--muted);white-space:nowrap;font-weight:700;"></span>
+      <button id="orc-ano-next" onclick="navigateOrcAno(1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:2px 6px;">›</button>
     </div>
   </div>
   <div style="padding-bottom:80px;" id="orcamentos-content">
@@ -2852,7 +2852,7 @@ function renderOrcamentos() {
   const bannerEl   = document.getElementById('orc-total-banner');
   const fabEl      = document.getElementById('fab-orc');
   if (labelEl) labelEl.textContent = cicloLabel();
-  if (nextBtn) { nextBtn.style.opacity = cicloOffset >= 0 ? '0.3' : '1'; nextBtn.disabled = cicloOffset >= 0; }
+  if (nextBtn) { nextBtn.style.opacity = '1'; nextBtn.disabled = false; }
   if (fabEl)   fabEl.style.display = '';
 
   if (!activeOrcs.length) {
@@ -2973,7 +2973,7 @@ function renderOrcamentosAnual() {
   const listEl     = document.getElementById('orc-ano-list');
   const emptyEl    = document.getElementById('orc-empty');
   if (labelEl) labelEl.textContent = year;
-  if (nextBtn) { nextBtn.style.opacity = orcAnoOffset >= 0 ? '0.3' : '1'; nextBtn.disabled = orcAnoOffset >= 0; }
+  if (nextBtn) { nextBtn.style.opacity = '1'; nextBtn.disabled = false; }
   if (!activeOrcs.length) { if (listEl) listEl.innerHTML = ''; if (emptyEl) emptyEl.style.display = ''; return; }
   if (emptyEl) emptyEl.style.display = 'none';
   const parentOrcs = activeOrcs.filter(o => o.catType === 'parent');
