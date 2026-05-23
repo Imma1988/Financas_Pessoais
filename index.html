@@ -3395,11 +3395,12 @@ async function deleteOrcamentoFromModal() {
 
 // ===== BULK ADD ALL SUBCATEGORIES =====
 async function addAllSubcatOrcamentos() {
-  const toAdd = [];
+  const toAdd    = [];
+  const toUpdate = [];
+
+  // Expense subcategories
   expenseCats.forEach((g, gi) => {
     (g.subs || []).forEach((sub, si) => {
-      const exists = orcamentos.find(o => !deletedOrcIds.has(o.id) && o.catType === 'sub' && o.catKey === sub);
-      if (exists) return;
       let valor = 0;
       const res = calcSugestaoLocal('sub', sub);
       if (res) {
@@ -3408,24 +3409,42 @@ async function addAllSubcatOrcamentos() {
         const linked = cofres.filter(c => !cofreCompleto(c) && c.subcategoria === sub);
         if (linked.length) valor = Math.ceil(linked.reduce((s, c) => s + cofreMensal(c), 0) / 5) * 5;
       }
-      if (valor > 0) toAdd.push({ sub, parentCat: g.cat, valor, _idx: gi * 1000 + si });
+      if (valor <= 0) return;
+      const existing = orcamentos.find(o => !deletedOrcIds.has(o.id) && o.catType === 'sub' && o.catKey === sub);
+      if (existing) { if (existing.valorBase !== valor) toUpdate.push({ orc: existing, valor }); }
+      else toAdd.push({ catType: 'sub', catKey: sub, parentCat: g.cat, valor, _idx: gi * 1000 + si });
     });
   });
-  if (!toAdd.length) { showToast('Sem sub-categorias novas com dados suficientes'); return; }
+
+  // Income categories
+  incomeCats.forEach((cat, ci) => {
+    const res = calcSugestaoLocalIncome(cat);
+    if (!res || res.valor <= 0) return;
+    const existing = orcamentos.find(o => !deletedOrcIds.has(o.id) && o.catType === 'income' && o.catKey === cat);
+    if (existing) { if (existing.valorBase !== res.valor) toUpdate.push({ orc: existing, valor: res.valor }); }
+    else toAdd.push({ catType: 'income', catKey: cat, parentCat: cat, valor: res.valor, _idx: 100000 + ci });
+  });
+
+  if (!toAdd.length && !toUpdate.length) { showToast('Sem categorias com dados suficientes'); return; }
+  const parts = [];
+  if (toAdd.length)    parts.push(toAdd.length    + ' novo'        + (toAdd.length    > 1 ? 's' : ''));
+  if (toUpdate.length) parts.push(toUpdate.length + ' actualizado' + (toUpdate.length > 1 ? 's' : ''));
   const ok = await appConfirm(
-    'Serão criados ' + toAdd.length + ' orçamento' + (toAdd.length > 1 ? 's' : '') +
-    ' com valores sugeridos.\nPodes editar cada um depois.',
-    'Adicionar automaticamente', 'Adicionar'
+    parts.join(' e ') + ' orçamento' + (toAdd.length + toUpdate.length > 1 ? 's' : '') + ' com valores sugeridos.\nPodes editar cada um depois.',
+    'Actualizar automaticamente', 'Confirmar'
   );
   if (!ok) return;
   const base = Date.now();
-  toAdd.forEach(({ sub, parentCat, valor, _idx }) => {
-    orcamentos.push({ id: base + _idx, catType: 'sub', catKey: sub, parentCat, valorBase: valor, overrides: {} });
+  toAdd.forEach(({ catType, catKey, parentCat, valor, _idx }) => {
+    orcamentos.push({ id: base + _idx, catType, catKey, parentCat, valorBase: valor, overrides: {} });
   });
+  toUpdate.forEach(({ orc, valor }) => { orc.valorBase = valor; });
   scheduleSave();
   renderOrcamentos();
   renderOrcBanner();
-  showToast('✅ ' + toAdd.length + ' orçamento' + (toAdd.length > 1 ? 's adicionados' : ' adicionado') + '!');
+  const total = toAdd.length + toUpdate.length;
+  showToast('✅ ' + total + ' orçamento' + (total > 1 ? 's' : '') + ' ' +
+    (toAdd.length && toUpdate.length ? 'criados/actualizados' : toAdd.length ? (total > 1 ? 'criados' : 'criado') : (total > 1 ? 'actualizados' : 'actualizado')) + '!');
 }
 
 // ===== AI SUGGEST BUDGET =====
@@ -3442,6 +3461,21 @@ function calcSugestaoLocal(catType, catKey) {
   // Round to nearest 5
   const valor = Math.ceil(avg / 5) * 5;
   return { valor, nMeses: gastos.length, gastos };
+}
+
+function calcSugestaoLocalIncome(catKey) {
+  const receitas = [];
+  for (let i = 0; i <= 6; i++) {
+    const ck = getCicloKey(-i);
+    const { start, end } = getCicloRangeFromKey(ck);
+    const val = entries
+      .filter(e => e.type === 'income' && e.date >= start && e.date <= end && e.category === catKey)
+      .reduce((s, e) => s + e.amount, 0);
+    if (val > 0) receitas.push(val);
+  }
+  if (!receitas.length) return null;
+  const avg = receitas.reduce((s, v) => s + v, 0) / receitas.length;
+  return { valor: Math.ceil(avg / 5) * 5, nMeses: receitas.length };
 }
 
 async function applySugestao() {
