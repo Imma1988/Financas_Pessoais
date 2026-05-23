@@ -915,6 +915,12 @@
   .orc-year-totals .tot-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
   .orc-year-totals .tot-val { font-size: 13px; font-weight: 700; color: var(--text); }
   .orc-year-totals .tot-over { color: var(--red); }
+  /* AI suggest */
+  .orc-suggest-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .orc-suggest-btn { background: none; border: 1px solid var(--border); border-radius: 8px; color: var(--accent); font-size: 11px; font-weight: 700; padding: 3px 9px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
+  .orc-suggest-btn:hover { background: rgba(200,241,53,0.1); border-color: var(--accent); }
+  .orc-suggest-btn:disabled { opacity: 0.5; cursor: default; }
+  .orc-suggest-chip { font-size: 11px; color: var(--muted); background: var(--card2); border-radius: 8px; padding: 7px 10px; margin-top: 6px; border-left: 2px solid var(--accent); display: none; line-height: 1.5; }
 
   /* App shell — mobile defaults */
   #app-shell { width: 100%; }
@@ -1764,8 +1770,12 @@
       <span style="color:var(--muted);font-size:12px;">›</span>
     </button>
     <div class="form-row" style="margin-bottom:14px;">
-      <label class="form-label">Montante base (recorrente)</label>
-      <input type="number" inputmode="decimal" class="form-input" id="orc-amount-input" placeholder="ex: 300" min="0" step="0.01">
+      <div class="orc-suggest-row">
+        <label class="form-label" style="margin-bottom:0;">Montante base (recorrente)</label>
+        <button class="orc-suggest-btn" id="orc-suggest-btn" onclick="applySugestao()" type="button">💡 Sugerir</button>
+      </div>
+      <input type="number" inputmode="decimal" class="form-input" id="orc-amount-input" placeholder="ex: 300" min="0" step="0.01" style="margin-top:6px;">
+      <div class="orc-suggest-chip" id="orc-suggest-chip"></div>
     </div>
     <div class="form-row" style="margin-bottom:18px;">
       <label class="form-label">Montante para este ciclo <span style="color:var(--muted);font-weight:400;">(opcional)</span></label>
@@ -3036,6 +3046,13 @@ function saveOrcMes() {
 let orcModalType   = 'parent';
 let orcCatSelected = null;
 
+function resetOrcSuggestChip() {
+  const chip = document.getElementById('orc-suggest-chip');
+  const btn  = document.getElementById('orc-suggest-btn');
+  if (chip) { chip.style.display = 'none'; chip.textContent = ''; }
+  if (btn)  { btn.disabled = false; btn.innerHTML = '💡 Sugerir'; }
+}
+
 function openAddOrcamento() {
   orcModalType   = 'parent';
   orcCatSelected = null;
@@ -3047,6 +3064,7 @@ function openAddOrcamento() {
   document.getElementById('orc-cat-label').textContent = 'Escolher categoria';
   document.getElementById('orc-delete-btn').style.display = 'none';
   setOrcModalTypeUI('parent');
+  resetOrcSuggestChip();
   document.getElementById('orc-modal-overlay').classList.add('open');
 }
 
@@ -3066,6 +3084,7 @@ function openEditOrcamento(id) {
   document.getElementById('orc-cat-label').textContent = orc.catKey;
   document.getElementById('orc-delete-btn').style.display = '';
   setOrcModalTypeUI(orc.catType);
+  resetOrcSuggestChip();
   document.getElementById('orc-modal-overlay').classList.add('open');
 }
 
@@ -3078,6 +3097,7 @@ function setOrcModalType(type) {
   document.getElementById('orc-cat-icon').textContent  = '📂';
   document.getElementById('orc-cat-label').textContent = 'Escolher categoria';
   setOrcModalTypeUI(type);
+  resetOrcSuggestChip();
 }
 function setOrcModalTypeUI(type) {
   document.getElementById('orc-type-parent').className = 'orc-type-btn' + (type === 'parent' ? ' active' : '');
@@ -3187,6 +3207,74 @@ async function deleteOrcamentoFromModal() {
   if (!id) return;
   closeOrcModal();
   await deleteOrcamento(id);
+}
+
+// ===== AI SUGGEST BUDGET =====
+function calcSugestaoLocal(catType, catKey) {
+  // Collect spending for the last 6 cycles (excluding current)
+  const gastos = [];
+  for (let i = 1; i <= 6; i++) {
+    const ck   = getCicloKey(-i);
+    const val  = getGastoForCicloKey(catType, catKey, ck);
+    if (val > 0) gastos.push({ ck, val });
+  }
+  if (!gastos.length) return null;
+  const avg   = gastos.reduce((s, g) => s + g.val, 0) / gastos.length;
+  // Round to nearest 5
+  const valor = Math.ceil(avg / 5) * 5;
+  return { valor, nMeses: gastos.length, gastos };
+}
+
+async function applySugestao() {
+  if (!orcCatSelected) { showToast('⚠️ Escolhe primeiro uma categoria'); return; }
+  const btn  = document.getElementById('orc-suggest-btn');
+  const chip = document.getElementById('orc-suggest-chip');
+  btn.disabled = true;
+  btn.textContent = '⏳';
+  chip.style.display = 'none';
+
+  const res = calcSugestaoLocal(orcCatSelected.catType, orcCatSelected.catKey);
+  if (!res) {
+    btn.disabled = false;
+    btn.innerHTML = '💡 Sugerir';
+    chip.style.display = '';
+    chip.textContent = 'Sem histórico suficiente — insere o montante manualmente.';
+    return;
+  }
+
+  // Fill the input immediately with local calculation
+  document.getElementById('orc-amount-input').value = res.valor;
+
+  if (geminiKey) {
+    // Build a compact spending history string
+    const histStr = res.gastos.map(g => {
+      const [y, m] = g.ck.split('-');
+      return MESES_SHORT[parseInt(m) - 1] + ' ' + y + ': €' + g.val.toFixed(2);
+    }).join(', ');
+    const prompt = `Sou utilizador de uma app de finanças pessoais. Gastos em "${orcCatSelected.catKey}" (${orcCatSelected.catType === 'parent' ? 'categoria' : 'sub-categoria'}): ${histStr}. Sugere um orçamento mensal razoável (em EUR) e uma frase curta em português (máx 12 palavras) a explicar porquê. Responde APENAS em JSON: {"valor": 300, "mensagem": "..."}`;
+    try {
+      const body = { contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.2, maxOutputTokens: 120 } };
+      const resp = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, geminiApiKey: geminiKey }) });
+      const data = await resp.json();
+      const txt  = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      const match = txt.match(/\{[\s\S]*?\}/);
+      if (match) {
+        const parsed = JSON.parse(match[0]);
+        if (parsed.valor > 0) document.getElementById('orc-amount-input').value = parsed.valor;
+        chip.textContent = '💡 ' + (parsed.mensagem || 'Baseado em ' + res.nMeses + ' mês' + (res.nMeses > 1 ? 'es' : '') + ' de histórico');
+        chip.style.display = '';
+        btn.disabled = false;
+        btn.innerHTML = '💡 Sugerir';
+        return;
+      }
+    } catch (_) { /* fall through to local message */ }
+  }
+
+  // Local fallback chip
+  chip.textContent = '💡 Média de ' + res.nMeses + ' mês' + (res.nMeses > 1 ? 'es' : '') + ' de histórico → €' + res.valor;
+  chip.style.display = '';
+  btn.disabled = false;
+  btn.innerHTML = '💡 Sugerir';
 }
 
 // ===== RENDER REGISTOS =====
