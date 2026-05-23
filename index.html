@@ -2848,7 +2848,8 @@ function renderOrcBanner() {
   const cicloKey = getCicloKey();
   let totalOrc = 0, totalGasto = 0, ultrapassados = 0;
   activeOrcs.forEach(o => {
-    const val   = getOrcamentoValor(o, cicloKey);
+    const val = getOrcamentoValor(o, cicloKey);
+    if (val === 0) return;
     const gasto = getGastoOrcamentoCiclo(o.catType, o.catKey);
     totalOrc   += val;
     totalGasto += gasto;
@@ -3399,17 +3400,13 @@ async function addAllSubcatOrcamentos() {
   // Expense subcategories
   expenseCats.forEach((g, gi) => {
     (g.subs || []).forEach((sub, si) => {
-      let valor = 0;
-      const res = calcSugestaoLocal('sub', sub);
-      if (res) {
-        valor = res.valor;
-      } else {
-        const linked = cofres.filter(c => !cofreCompleto(c) && c.subcategoria === sub);
-        if (linked.length) valor = Math.ceil(linked.reduce((s, c) => s + cofreMensal(c), 0) / 5) * 5;
-      }
-      if (valor <= 0) return;
+      const res    = calcSugestaoLocal('sub', sub);
+      const valor  = res ? res.valor : 0;
+      const hasCofre = cofres.some(c => !cofreCompleto(c) && c.subcategoria === sub);
+      // Only include if has historical data OR is linked to a cofre (placeholder at €0)
+      if (!res && !hasCofre) return;
       const existing = orcamentos.find(o => !deletedOrcIds.has(o.id) && o.catType === 'sub' && o.catKey === sub);
-      if (existing) { if (existing.valorBase !== valor) toUpdate.push({ orc: existing, valor }); }
+      if (existing) { if (res && existing.valorBase !== valor) toUpdate.push({ orc: existing, valor }); }
       else toAdd.push({ catType: 'sub', catKey: sub, parentCat: g.cat, valor, _idx: gi * 1000 + si });
     });
   });
