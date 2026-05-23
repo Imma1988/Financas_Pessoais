@@ -2377,12 +2377,12 @@ function cicloLabel(offset) {
 }
 
 function navigateCiclo(delta) {
+  const isOrc = document.getElementById('view-orcamentos').classList.contains('active');
   cicloOffset += delta;
-  // Don't go into the future
-  if (cicloOffset > 0) cicloOffset = 0;
+  if (!isOrc && cicloOffset > 0) cicloOffset = 0;
   renderAll();
   resetDatePicker();
-  if (document.getElementById('view-orcamentos').classList.contains('active')) renderOrcamentos();
+  if (isOrc) renderOrcamentos();
 }
 function getEntryDate() {
   const val = document.getElementById('date-input').value;
@@ -2959,7 +2959,6 @@ function switchOrcViewMode(mode) {
 
 function navigateOrcAno(delta) {
   orcAnoOffset += delta;
-  if (orcAnoOffset > 0) orcAnoOffset = 0;
   renderOrcamentosAnual();
 }
 
