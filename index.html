@@ -223,6 +223,10 @@
     align-items: center; margin-bottom: 12px;
   }
   .entries-header h2 { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .entries-search-bar { width: 100%; margin-bottom: 10px; display: none; }
+  .entries-search-bar input { width: 100%; box-sizing: border-box; padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--card2); color: var(--text); font-size: 14px; font-family: 'DM Sans', sans-serif; outline: none; }
+  .entries-search-bar input:focus { border-color: var(--accent); }
+  .entries-search-bar.open { display: block; }
   .clear-btn {
     background: none; border: none; color: var(--muted); font-size: 11px;
     cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 4px 8px;
@@ -1192,8 +1196,12 @@
       <div style="display:flex;gap:6px;align-items:center;">
         <button class="clear-btn" id="ciclo-prev-btn" onclick="navigateCiclo(-1)" style="font-size:16px;padding:4px 8px;">‹</button>
         <button class="clear-btn" id="ciclo-next-btn" onclick="navigateCiclo(1)" style="font-size:16px;padding:4px 8px;">›</button>
+        <button class="clear-btn" id="search-toggle-btn" onclick="toggleEntriesSearch()" title="Pesquisar">🔍</button>
         <button class="clear-btn" onclick="clearToday()">Limpar</button>
       </div>
+    </div>
+    <div class="entries-search-bar" id="entries-search-bar">
+      <input type="text" id="entries-search-input" placeholder="🔍 Pesquisar categoria, nota, valor..." oninput="onEntriesSearch(this.value)" autocomplete="off">
     </div>
     <div class="entries" id="entries-list"
       ontouchstart="handleSwipeStart(event)"
@@ -1869,6 +1877,7 @@ let deletedOrcIds   = new Set();
 let tiposCustom     = {};
 let cicloInicio     = 25; // day of month cycle starts
 let cicloOffset     = 0;  // 0 = current, -1 = previous, etc.
+let entriesQuery    = '';
 let accessToken  = null;
 let driveFileId  = null;
 let syncTimeout  = null;
@@ -3305,20 +3314,56 @@ function renderSummary() {
   renderOrcBanner();
 }
 
+function toggleEntriesSearch() {
+  const bar = document.getElementById('entries-search-bar');
+  const inp = document.getElementById('entries-search-input');
+  const isOpen = bar.classList.toggle('open');
+  if (isOpen) {
+    inp.focus();
+  } else {
+    inp.value = '';
+    entriesQuery = '';
+    renderEntries();
+  }
+}
+function onEntriesSearch(val) {
+  entriesQuery = val.trim().toLowerCase();
+  renderEntries();
+}
+
 function renderEntries() {
   const list = document.getElementById('entries-list');
-  const cicloEntries = entries.filter(e=>isInCurrentCiclo(e.date))
-    .sort((a,b) => new Date(b.date)-new Date(a.date) || new Date(b.ts)-new Date(a.ts));
-  // Update header label
-  const h2El = document.getElementById('entries-h2');
+  const h2El   = document.getElementById('entries-h2');
   const nextBtn = document.getElementById('ciclo-next-btn');
-  if (h2El) h2El.textContent = '📋 ' + cicloLabel();
-  if (nextBtn) { nextBtn.style.opacity = cicloOffset >= 0 ? '0.3' : '1'; nextBtn.disabled = cicloOffset >= 0; }
-  if (!cicloEntries.length) {
-    list.innerHTML=`<div class="empty-state"><div class="emoji">📭</div><p>Nenhum registo neste ciclo.<br>Usa o formulário acima — é rápido!</p></div>`;
+
+  let visibleEntries;
+  if (entriesQuery) {
+    // Search across all entries
+    visibleEntries = entries
+      .filter(e => {
+        const q = entriesQuery;
+        return e.category.toLowerCase().includes(q)
+          || (e.parentCategory || '').toLowerCase().includes(q)
+          || (e.note || '').toLowerCase().includes(q)
+          || String(e.amount).includes(q);
+      })
+      .sort((a,b) => new Date(b.date)-new Date(a.date) || new Date(b.ts)-new Date(a.ts));
+    if (h2El) h2El.textContent = '🔍 ' + visibleEntries.length + ' resultado' + (visibleEntries.length !== 1 ? 's' : '');
+    if (nextBtn) { nextBtn.style.opacity = '0.3'; nextBtn.disabled = true; }
+  } else {
+    visibleEntries = entries.filter(e=>isInCurrentCiclo(e.date))
+      .sort((a,b) => new Date(b.date)-new Date(a.date) || new Date(b.ts)-new Date(a.ts));
+    if (h2El) h2El.textContent = '📋 ' + cicloLabel();
+    if (nextBtn) { nextBtn.style.opacity = cicloOffset >= 0 ? '0.3' : '1'; nextBtn.disabled = cicloOffset >= 0; }
+  }
+
+  if (!visibleEntries.length) {
+    list.innerHTML = entriesQuery
+      ? `<div class="empty-state"><div class="emoji">🔍</div><p>Sem resultados para "${entriesQuery}"</p></div>`
+      : `<div class="empty-state"><div class="emoji">📭</div><p>Nenhum registo neste ciclo.<br>Usa o formulário acima — é rápido!</p></div>`;
     return;
   }
-  list.innerHTML = cicloEntries.map(e=>{
+  list.innerHTML = visibleEntries.map(e=>{
     // Get icon from parent category
     const parentCat = e.parentCategory || e.category;
     const catGroup  = expenseCats.find(g => g.cat === parentCat);
