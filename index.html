@@ -2475,7 +2475,7 @@ function openEditEntry(id) {
   document.getElementById('edit-amount').value = e.amount;
   document.getElementById('edit-note').value   = e.note || '';
   document.getElementById('edit-date').value   = e.date;
-  document.getElementById('edit-date').max     = todayStr();
+  document.getElementById('edit-date').max     = '';
 
   populateEditCatSelect(e.type, e.category);
   document.getElementById('edit-entry-overlay').classList.add('open');
@@ -4085,7 +4085,7 @@ function showToast(msg) {
 // ===== INIT =====
 window.addEventListener('load', () => {
   const dateInput = document.getElementById('date-input');
-  if (dateInput) dateInput.max = todayStr();
+  if (dateInput) dateInput.max = '';
   if (typeof google !== 'undefined') {
     initAuth();
   } else {
