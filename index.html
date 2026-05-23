@@ -2767,19 +2767,28 @@ function getCicloKey(offset) {
 function getOrcamentoValor(orc, cicloKey) {
   return (orc.overrides && orc.overrides[cicloKey] !== undefined) ? orc.overrides[cicloKey] : orc.valorBase;
 }
+// Returns virtual expense entries from cofre contributions within [start,end]
+function getCofreVirtualEntries(start, end) {
+  const virtual = [];
+  cofres.forEach(c => {
+    if (!c.subcategoria) return;
+    const parent = getSubcatParent(c.subcategoria) || c.subcategoria;
+    (c.movimentos || []).forEach(m => {
+      if (m.tipo !== 'contribuir' || !m.ts) return;
+      const date = m.ts.slice(0, 10);
+      if (date < start || date > end) return;
+      virtual.push({ id: 'cofre-' + c.id + '-' + m.id, type: 'expense', amount: m.valor,
+        category: c.subcategoria, parentCategory: parent, date, note: c.nome, ts: m.ts, _cofre: true });
+    });
+  });
+  return virtual;
+}
+
 // Sum cofre contributions within [start,end] for categories linked to cofres
 function getCofreGasto(catType, catKey, start, end) {
-  const linked = cofres.filter(c => {
-    if (!c.subcategoria) return false;
-    if (catType === 'sub') return c.subcategoria === catKey;
-    const grp = expenseCats.find(g => g.cat === catKey);
-    return grp && grp.subs.includes(c.subcategoria);
-  });
-  return linked.reduce((total, c) =>
-    total + (c.movimentos || [])
-      .filter(m => m.tipo === 'contribuir' && m.ts && m.ts.slice(0, 10) >= start && m.ts.slice(0, 10) <= end)
-      .reduce((s, m) => s + m.valor, 0)
-  , 0);
+  return getCofreVirtualEntries(start, end)
+    .filter(e => catType === 'parent' ? e.parentCategory === catKey : e.category === catKey)
+    .reduce((s, e) => s + e.amount, 0);
 }
 
 function getGastoOrcamentoCiclo(catType, catKey, offset) {
@@ -4621,7 +4630,7 @@ function getRelatorioDates() {
 }
 
 function getEntriesForPeriod(start, end) {
-  return entries.filter(e => e.date >= start && e.date <= end);
+  return [...entries.filter(e => e.date >= start && e.date <= end), ...getCofreVirtualEntries(start, end)];
 }
 
 function renderRelatorios() {
