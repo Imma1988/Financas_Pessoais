@@ -2838,7 +2838,8 @@ function getGastoOrcamentoCiclo(catType, catKey, offset) {
     .filter(e => e.type === 'expense' && e.date >= start && e.date <= end)
     .filter(e => catType === 'parent' ? e.parentCategory === catKey : e.category === catKey)
     .reduce((sum, e) => sum + e.amount, 0);
-  return fromEntries + getCofreGasto(catType, catKey, start, end);
+  if (fromEntries > 0) return fromEntries;
+  return getCofreGasto(catType, catKey, start, end);
 }
 
 function renderOrcBanner() {
@@ -3038,7 +3039,8 @@ function getGastoForCicloKey(catType, catKey, cicloKey) {
     .filter(e => e.type === 'expense' && e.date >= start && e.date <= end)
     .filter(e => catType === 'parent' ? e.parentCategory === catKey : e.category === catKey)
     .reduce((sum, e) => sum + e.amount, 0);
-  return fromEntries + getCofreGasto(catType, catKey, start, end);
+  if (fromEntries > 0) return fromEntries;
+  return getCofreGasto(catType, catKey, start, end);
 }
 
 function switchOrcViewMode(mode) {
