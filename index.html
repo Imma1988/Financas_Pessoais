@@ -3213,7 +3213,7 @@ async function deleteOrcamentoFromModal() {
 function calcSugestaoLocal(catType, catKey) {
   // Collect spending for the last 6 cycles (excluding current)
   const gastos = [];
-  for (let i = 1; i <= 6; i++) {
+  for (let i = 0; i <= 6; i++) {
     const ck   = getCicloKey(-i);
     const val  = getGastoForCicloKey(catType, catKey, ck);
     if (val > 0) gastos.push({ ck, val });
