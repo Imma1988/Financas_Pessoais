@@ -1384,6 +1384,7 @@
   <div class="header">
     <div class="header-left"><h1>💰 Orçamentos</h1></div>
     <div class="header-right" style="display:flex;align-items:center;gap:6px;">
+      <button onclick="addAllSubcatOrcamentos()" title="Adicionar todas as sub-categorias com sugestão automática" style="background:none;border:1px solid var(--border);border-radius:8px;color:var(--accent);font-size:12px;font-weight:700;padding:5px 10px;cursor:pointer;white-space:nowrap;">✨ Auto</button>
       <div id="orc-ciclo-nav" style="display:flex;align-items:center;gap:6px;">
         <button onclick="navigateCiclo(-1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:4px 8px;">‹</button>
         <span id="orc-ciclo-label" style="font-size:12px;color:var(--muted);white-space:nowrap;"></span>
@@ -3246,6 +3247,41 @@ async function deleteOrcamentoFromModal() {
   if (!id) return;
   closeOrcModal();
   await deleteOrcamento(id);
+}
+
+// ===== BULK ADD ALL SUBCATEGORIES =====
+async function addAllSubcatOrcamentos() {
+  const toAdd = [];
+  expenseCats.forEach((g, gi) => {
+    (g.subs || []).forEach((sub, si) => {
+      const exists = orcamentos.find(o => !deletedOrcIds.has(o.id) && o.catType === 'sub' && o.catKey === sub);
+      if (exists) return;
+      let valor = 0;
+      const res = calcSugestaoLocal('sub', sub);
+      if (res) {
+        valor = res.valor;
+      } else {
+        const linked = cofres.filter(c => !cofreCompleto(c) && c.subcategoria === sub);
+        if (linked.length) valor = Math.ceil(linked.reduce((s, c) => s + cofreMensal(c), 0) / 5) * 5;
+      }
+      if (valor > 0) toAdd.push({ sub, parentCat: g.cat, valor, _idx: gi * 1000 + si });
+    });
+  });
+  if (!toAdd.length) { showToast('Sem sub-categorias novas com dados suficientes'); return; }
+  const ok = await appConfirm(
+    'Serão criados ' + toAdd.length + ' orçamento' + (toAdd.length > 1 ? 's' : '') +
+    ' com valores sugeridos.\nPodes editar cada um depois.',
+    'Adicionar automaticamente', 'Adicionar'
+  );
+  if (!ok) return;
+  const base = Date.now();
+  toAdd.forEach(({ sub, parentCat, valor, _idx }) => {
+    orcamentos.push({ id: base + _idx, catType: 'sub', catKey: sub, parentCat, valorBase: valor, overrides: {} });
+  });
+  scheduleSave();
+  renderOrcamentos();
+  renderOrcBanner();
+  showToast('✅ ' + toAdd.length + ' orçamento' + (toAdd.length > 1 ? 's adicionados' : ' adicionado') + '!');
 }
 
 // ===== AI SUGGEST BUDGET =====
