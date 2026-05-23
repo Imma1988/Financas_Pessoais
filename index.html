@@ -1384,7 +1384,6 @@
   <div class="header">
     <div class="header-left"><h1>💰 Orçamentos</h1></div>
     <div class="header-right" style="display:flex;align-items:center;gap:6px;">
-      <button onclick="addAllSubcatOrcamentos()" title="Adicionar todas as sub-categorias com sugestão automática" style="background:none;border:1px solid var(--border);border-radius:8px;color:var(--accent);font-size:12px;font-weight:700;padding:5px 10px;cursor:pointer;white-space:nowrap;">✨ Auto</button>
       <div id="orc-ciclo-nav" style="display:flex;align-items:center;gap:6px;">
         <button onclick="navigateCiclo(-1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:4px 8px;">‹</button>
         <span id="orc-ciclo-label" style="font-size:12px;color:var(--muted);white-space:nowrap;"></span>
@@ -1398,9 +1397,10 @@
     </div>
   </div>
   <div style="padding-bottom:80px;" id="orcamentos-content">
-    <div class="orc-tab-toggle">
-      <button class="orc-tab-btn active" id="orc-tab-ciclo" onclick="switchOrcViewMode('ciclo')">📅 Ciclo</button>
-      <button class="orc-tab-btn"        id="orc-tab-ano"   onclick="switchOrcViewMode('ano')">📆 Ano</button>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;">
+      <button class="orc-tab-btn active" id="orc-tab-ciclo" onclick="switchOrcViewMode('ciclo')" style="flex:1;margin-bottom:0;">📅 Ciclo</button>
+      <button class="orc-tab-btn"        id="orc-tab-ano"   onclick="switchOrcViewMode('ano')"   style="flex:1;margin-bottom:0;">📆 Ano</button>
+      <button onclick="addAllSubcatOrcamentos()" title="Adicionar todas as sub-categorias com sugestão automática" style="background:none;border:1.5px solid var(--border);border-radius:9px;color:var(--accent);font-size:12px;font-weight:700;padding:9px 12px;cursor:pointer;white-space:nowrap;font-family:'Syne',sans-serif;">✨ Auto</button>
     </div>
     <div id="orc-ciclo-content">
       <div id="orc-total-banner" class="orc-total-banner" style="display:none;"></div>
