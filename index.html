@@ -2834,12 +2834,10 @@ function getCofreGasto(catType, catKey, start, end) {
 
 function getGastoOrcamentoCiclo(catType, catKey, offset) {
   const { start, end } = getCicloRange(offset !== undefined ? offset : cicloOffset);
-  const fromEntries = entries
+  return entries
     .filter(e => e.type === 'expense' && e.date >= start && e.date <= end)
     .filter(e => catType === 'parent' ? e.parentCategory === catKey : e.category === catKey)
     .reduce((sum, e) => sum + e.amount, 0);
-  if (fromEntries > 0) return fromEntries;
-  return getCofreGasto(catType, catKey, start, end);
 }
 
 function renderOrcBanner() {
@@ -3035,12 +3033,10 @@ function getCicloRangeFromKey(cicloKey) {
 
 function getGastoForCicloKey(catType, catKey, cicloKey) {
   const { start, end } = getCicloRangeFromKey(cicloKey);
-  const fromEntries = entries
+  return entries
     .filter(e => e.type === 'expense' && e.date >= start && e.date <= end)
     .filter(e => catType === 'parent' ? e.parentCategory === catKey : e.category === catKey)
     .reduce((sum, e) => sum + e.amount, 0);
-  if (fromEntries > 0) return fromEntries;
-  return getCofreGasto(catType, catKey, start, end);
 }
 
 function switchOrcViewMode(mode) {
