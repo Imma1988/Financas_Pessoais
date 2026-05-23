@@ -1290,6 +1290,10 @@
       <div class="chart-title" id="rel-chart-title">Por categoria</div>
       <div id="rel-chart-container"></div>
     </div>
+    <div style="display:flex;gap:6px;margin-bottom:12px;">
+      <button class="orc-tab-btn active" id="rel-tab-exp" onclick="switchRelTab('exp')" style="flex:1;">💸 Despesas</button>
+      <button class="orc-tab-btn"        id="rel-tab-inc" onclick="switchRelTab('inc')" style="flex:1;">💰 Receitas</button>
+    </div>
     <div id="rel-categories-list"></div>
   </div>
 </div>
@@ -4609,6 +4613,14 @@ document.addEventListener('input', e => { if(e.target.id==='ciclo-dia-input') up
 
 // ===== RELATÓRIOS =====
 let relatorioPeriod = 'atual';
+let relatorioTab    = 'exp';
+
+function switchRelTab(tab) {
+  relatorioTab = tab;
+  document.getElementById('rel-tab-exp').className = 'orc-tab-btn' + (tab === 'exp' ? ' active' : '');
+  document.getElementById('rel-tab-inc').className = 'orc-tab-btn' + (tab === 'inc' ? ' active' : '');
+  renderRelatorios();
+}
 
 const CAT_COLORS = [
   '#a78bfa','#35c8f1','#c8f135','#f1a835','#ff5e5e',
@@ -4712,15 +4724,19 @@ function renderRelatorios() {
     document.getElementById('rel-vs-income').textContent  = '';
   }
 
-  // Chart
+  // Chart (always shows expenses)
   if (relatorioPeriod === 'atual') {
     renderPieChart(expenses, totalExp);
   } else {
     renderBarChart(expenses, prevEntries.filter(e=>e.type==='expense'), dates, prevDates);
   }
 
-  // Categories list
-  renderRelCategorias(expenses, prevEntries.filter(e=>e.type==='expense'), totalExp);
+  // Tab: despesas or receitas
+  if (relatorioTab === 'inc') {
+    renderRelReceitas(incomes, prevEntries.filter(e=>e.type==='income'), totalInc);
+  } else {
+    renderRelCategorias(expenses, prevEntries.filter(e=>e.type==='expense'), totalExp);
+  }
 }
 
 function getPrevPeriodDates(dates) {
@@ -4898,6 +4914,75 @@ function toggleRelCat(i) {
 function toggleRelSub(id) {
   event.stopPropagation();
   document.getElementById(id).classList.toggle('sub-open');
+}
+
+function renderRelReceitas(incomes, prevIncomes, totalInc) {
+  const list = document.getElementById('rel-categories-list');
+  if (!incomes.length) {
+    list.innerHTML = '<div class="empty-state"><div class="emoji">💰</div><p>Sem receitas neste período.</p></div>';
+    return;
+  }
+  // Group by category
+  const bycat = {};
+  incomes.forEach(e => {
+    if (!bycat[e.category]) bycat[e.category] = { total: 0, entries: [] };
+    bycat[e.category].total   += e.amount;
+    bycat[e.category].entries.push(e);
+  });
+  const prevBycat = {};
+  prevIncomes.forEach(e => {
+    if (!prevBycat[e.category]) prevBycat[e.category] = 0;
+    prevBycat[e.category] += e.amount;
+  });
+  const sorted = Object.entries(bycat).sort((a,b) => b[1].total - a[1].total);
+
+  list.innerHTML = sorted.map(([cat, data], i) => {
+    const pct     = totalInc > 0 ? Math.round(data.total / totalInc * 100) : 0;
+    const color   = CAT_COLORS[i % CAT_COLORS.length];
+    const prevTot = prevBycat[cat] || 0;
+    const diff    = prevTot > 0 ? data.total - prevTot : null;
+    const vsLabel = diff !== null
+      ? `<span style="font-size:11px;color:${diff>=0?'var(--accent)':'var(--red)'};margin-left:6px;">${diff>=0?'+':'-'}${formatCurrency(Math.abs(diff))}</span>`
+      : '';
+    const entryItems = data.entries
+      .sort((a,b) => new Date(b.date) - new Date(a.date))
+      .map(e => `
+        <div class="rel-entry-item" onclick="event.stopPropagation();openEditEntry(${e.id})" style="cursor:pointer;" onmouseover="this.style.background='#1a1a1a'" onmouseout="this.style.background=''">
+          <div class="rel-entry-left">
+            <div class="rel-entry-note">${e.note || '—'}</div>
+            <div class="rel-entry-date">${formatDate(e.date)}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+            <div class="rel-entry-amount" style="color:var(--accent-income);">+${formatCurrency(e.amount)}</div>
+            <span style="font-size:11px;color:#444;">✏️</span>
+          </div>
+        </div>`).join('');
+    const subId = 'rel-inc-' + i;
+    return `<div class="rel-cat-item" id="${subId}">
+      <div class="rel-cat-header" onclick="toggleRelCat('inc-${i}')">
+        <span class="rel-cat-icon">💰</span>
+        <span class="rel-cat-name">${cat}</span>
+        <span class="rel-cat-amount" style="color:var(--accent-income);">${formatCurrency(data.total)}${vsLabel}</span>
+        <span class="rel-cat-pct">${pct}%</span>
+        <span class="rel-cat-chevron">›</span>
+      </div>
+      <div class="rel-cat-bar"><div class="rel-cat-bar-fill" style="width:${pct}%;background:${color};"></div></div>
+      <div class="rel-cat-subs">
+        <div class="rel-sub-item sub-open" style="pointer-events:none;">
+          <div class="rel-sub-entries" style="display:block;">${entryItems}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Wire up toggle
+  sorted.forEach((_, i) => {
+    const el = document.getElementById('rel-cat-item-inc-' + i);
+    if (el) el.onclick = () => el.classList.toggle('open');
+  });
+  document.querySelectorAll('[id^="rel-inc-"] .rel-cat-header').forEach(h => {
+    h.onclick = () => h.closest('.rel-cat-item').classList.toggle('open');
+  });
 }
 
 // ===== ONBOARDING =====
