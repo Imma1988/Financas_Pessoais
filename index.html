@@ -1138,7 +1138,7 @@
     <div class="summary-card balance">
       <div class="label">Saldo</div>
       <div class="amount" id="today-balance">€0</div>
-      <div class="sub">ciclo</div>
+      <div class="sub" id="today-balance-sub">ciclo</div>
     </div>
   </div>
 
@@ -1283,7 +1283,7 @@
       <div class="summary-card balance">
         <div class="label">Saldo</div>
         <div class="amount" id="rel-saldo">€0</div>
-        <div class="sub">período</div>
+        <div class="sub" id="rel-saldo-sub">período</div>
       </div>
     </div>
     <div class="chart-wrap" id="rel-chart-wrap" style="margin-bottom:16px;">
@@ -3389,13 +3389,17 @@ function renderSummary() {
   const incEl = document.getElementById('today-income');
   const incCntEl = document.getElementById('today-income-count');
   const balEl = document.getElementById('today-balance');
-  const balSubEl = document.querySelector('.summary-card.balance .sub');
+  const balSubEl = document.getElementById('today-balance-sub');
   if (expEl) expEl.textContent = formatCurrency(cExp);
   if (expCntEl) expCntEl.textContent = cE.filter(e=>e.type==='expense').length + ' registos';
   if (incEl) incEl.textContent = formatCurrency(cInc);
   if (incCntEl) incCntEl.textContent = cE.filter(e=>e.type==='income').length + ' registos';
   if (balEl) { balEl.textContent = (bal>=0?'+':'')+formatCurrency(Math.abs(bal)); balEl.style.color = bal>=0 ? 'var(--accent)' : 'var(--red)'; }
-  if (balSubEl) balSubEl.textContent = cicloLabel();
+  if (balSubEl) {
+    const poupPct = cInc > 0 ? Math.round((cInc - cExp) / cInc * 100) : null;
+    balSubEl.textContent = poupPct !== null ? poupPct + '% poupado' : cicloLabel();
+    balSubEl.style.color = poupPct !== null ? (poupPct >= 20 ? 'var(--accent)' : poupPct >= 0 ? '#f0a500' : 'var(--red)') : '';
+  }
   renderOrcBanner();
 }
 
@@ -4707,9 +4711,15 @@ function renderRelatorios() {
   document.getElementById('rel-total-expense').textContent = formatCurrency(totalExp);
   document.getElementById('rel-total-income').textContent  = formatCurrency(totalInc);
   const saldo = totalInc - totalExp;
-  const sEl = document.getElementById('rel-saldo');
+  const sEl    = document.getElementById('rel-saldo');
+  const sSubEl = document.getElementById('rel-saldo-sub');
   sEl.textContent = (saldo>=0?'+':'')+formatCurrency(saldo).replace('€',saldo<0?'-€':'€');
   sEl.style.color = saldo >= 0 ? 'var(--accent)' : 'var(--red)';
+  if (sSubEl) {
+    const poupPct = totalInc > 0 ? Math.round((totalInc - totalExp) / totalInc * 100) : null;
+    sSubEl.textContent = poupPct !== null ? poupPct + '% poupado' : 'período';
+    sSubEl.style.color = poupPct !== null ? (poupPct >= 20 ? 'var(--accent)' : poupPct >= 0 ? '#f0a500' : 'var(--red)') : '';
+  }
 
   // VS labels
   if (prevDates) {
