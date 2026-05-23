@@ -3246,12 +3246,19 @@ async function applySugestao() {
   btn.textContent = '⏳';
   chip.style.display = 'none';
 
-  // If the category matches an active cofre, use its monthly amount
-  const matchingCofre = cofres.find(c => !cofreCompleto(c) && c.nome.toLowerCase() === orcCatSelected.catKey.toLowerCase());
-  if (matchingCofre) {
-    const valorCofre = cofreMensal(matchingCofre);
-    document.getElementById('orc-amount-input').value = Math.round(valorCofre * 100) / 100;
-    chip.textContent = '💡 Baseado no teu cofre "' + matchingCofre.nome + '" — ' + formatCurrency(valorCofre) + '/mês';
+  // If the category is linked to one or more active cofres, sum their monthly amounts
+  const linkedCofres = cofres.filter(c => {
+    if (cofreCompleto(c) || !c.subcategoria) return false;
+    if (orcCatSelected.catType === 'sub') return c.subcategoria === orcCatSelected.catKey;
+    // parent: match any cofre whose subcategoria belongs to this parent category
+    const grp = expenseCats.find(g => g.cat === orcCatSelected.catKey);
+    return grp && grp.subs.includes(c.subcategoria);
+  });
+  if (linkedCofres.length) {
+    const totalCofre = linkedCofres.reduce((s, c) => s + cofreMensal(c), 0);
+    document.getElementById('orc-amount-input').value = Math.round(totalCofre * 100) / 100;
+    const nomes = linkedCofres.map(c => '"' + c.nome + '"').join(', ');
+    chip.textContent = '💡 Baseado no' + (linkedCofres.length > 1 ? 's cofres ' : ' cofre ') + nomes + ' — ' + formatCurrency(totalCofre) + '/mês';
     chip.style.display = 'block';
     btn.disabled = false;
     btn.innerHTML = '💡 Sugerir';
