@@ -1740,6 +1740,10 @@
       <label class="form-label">Nota (opcional)</label>
       <input type="text" class="form-input" id="mov-nota" placeholder="Ex: contribuição de maio">
     </div>
+    <div class="form-row">
+      <label class="form-label">Data</label>
+      <input type="date" class="form-input" id="mov-data">
+    </div>
     <div>
       <label class="form-label">Movimentos recentes</label>
       <div class="movimentos-list" id="mov-historico-list"></div>
@@ -3805,6 +3809,7 @@ function openMovimento(id, tipo) {
     document.getElementById('mov-amount').value = '';
     document.getElementById('mov-nota').value   = '';
   }
+  document.getElementById('mov-data').value = new Date().toISOString().slice(0, 10);
   renderMovHistorico(cofre);
   document.getElementById('movimento-modal-overlay').classList.add('open');
   setTimeout(()=>{ const el=document.getElementById('mov-amount'); el.focus(); el.select(); },200);
@@ -3836,8 +3841,10 @@ function submitMovimento() {
   const cofre = cofres.find(c=>c.id===movCofreId);
   if (!cofre) return;
   if (movTipo==='levantar'&&valor>cofre.saldoAtual) { showToast('⚠️ Saldo insuficiente'); return; }
-  const nota = document.getElementById('mov-nota').value.trim();
-  const mov  = {id:Date.now().toString(), tipo:movTipo, valor, nota, ts:new Date().toISOString()};
+  const nota    = document.getElementById('mov-nota').value.trim();
+  const dataVal = document.getElementById('mov-data').value || new Date().toISOString().slice(0, 10);
+  const ts      = dataVal + 'T12:00:00.000Z';
+  const mov     = {id:Date.now().toString(), tipo:movTipo, valor, nota, ts};
   if (!cofre.movimentos) cofre.movimentos=[];
   cofre.movimentos.push(mov);
   cofre.saldoAtual = +(cofre.saldoAtual+(movTipo==='contribuir'?valor:-valor)).toFixed(2);
