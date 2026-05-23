@@ -2683,7 +2683,11 @@ function handleCofreConfirmClick(e) {
 document.getElementById('amount-input')?.addEventListener('keydown', e => { if(e.key==='Enter') addEntry(); });
 document.getElementById('note-input')?.addEventListener('keydown',   e => { if(e.key==='Enter') addEntry(); });
 
-function deleteEntry(id) { deletedIds.add(id); entries=entries.filter(e=>e.id!==id); saveData(entries); renderAll(); }
+async function deleteEntry(id) {
+  const ok = await appConfirm('Tens a certeza que queres eliminar este registo?', 'Eliminar registo', 'Eliminar', true);
+  if (!ok) return;
+  deletedIds.add(id); entries=entries.filter(e=>e.id!==id); saveData(entries); renderAll();
+}
 
 let editEntryId = null;
 let editEntryMode = 'expense';
