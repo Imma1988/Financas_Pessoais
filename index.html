@@ -2912,7 +2912,7 @@ function buildOrcCard(orc, cicloKey, cls) {
     '<div class="orc-card-header">' +
       '<span class="orc-cat-name">' + icon + ' ' + orc.catKey + cycleTag + '</span>' +
       '<span class="orc-valores"><span class="gasto">' + formatCurrency(gasto) + '</span> / ' + formatCurrency(valor) + '</span>' +
-      '<button class="orc-edit-btn" onclick="openEditOrcamento(' + orc.id + ')" title="Editar">⋯</button>' +
+      '<button class="orc-edit-btn" onclick="openEditOrcamento(' + orc.id + ')" title="Editar">✏️</button>' +
     '</div>' +
     '<div class="orc-progress-wrap">' +
       '<div class="orc-progress-pct ' + fillCls + '">' + pct + '%</div>' +
@@ -3037,7 +3037,7 @@ function buildOrcCardAnual(orc, cicloKeys, curKey, cls) {
     '</div>';
   return '<div class="orc-year-card ' + cls + '">' +
     '<div class="orc-year-header"><span class="orc-year-cat-name">' + icon + ' ' + orc.catKey + '</span>' +
-      '<button class="orc-edit-btn" onclick="openEditOrcamento(' + orc.id + ')" title="Editar base">⋯</button></div>' +
+      '<button class="orc-edit-btn" onclick="openEditOrcamento(' + orc.id + ')" title="Editar base">✏️</button></div>' +
     '<div class="orc-year-base">Base recorrente: <strong>' + formatCurrency(orc.valorBase) + '/mês</strong></div>' +
     monthsHtml + totHtml +
   '</div>';
