@@ -4532,12 +4532,13 @@ function normalizeDesc(desc) {
 }
 
 function isDuplicate(m) {
-  // Check if an entry with same date, amount and similar description already exists
-  return entries.some(e =>
-    e.date === m.data &&
-    Math.abs(e.amount - m.valor) < 0.01 &&
-    normalizeDesc(e.note || '') === normalizeDesc(m.descricao)
-  );
+  const mDate = new Date(m.data + 'T12:00:00Z').getTime();
+  return entries.some(e => {
+    if (Math.abs(e.amount - m.valor) >= 0.01) return false;
+    if (normalizeDesc(e.note || '') !== normalizeDesc(m.descricao)) return false;
+    const eDate = new Date(e.date + 'T12:00:00Z').getTime();
+    return Math.abs(mDate - eDate) <= 45 * 24 * 60 * 60 * 1000; // ±45 dias
+  });
 }
 
 function findMemoryMatch(m) {
