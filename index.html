@@ -3402,9 +3402,6 @@ async function addAllSubcatOrcamentos() {
     (g.subs || []).forEach((sub, si) => {
       const res    = calcSugestaoLocal('sub', sub);
       const valor  = res ? res.valor : 0;
-      const hasCofre = cofres.some(c => !cofreCompleto(c) && c.subcategoria === sub);
-      // Only include if has historical data OR is linked to a cofre (placeholder at €0)
-      if (!res && !hasCofre) return;
       const existing = orcamentos.find(o => !deletedOrcIds.has(o.id) && o.catType === 'sub' && o.catKey === sub);
       if (existing) { if (existing.valorBase !== valor) toUpdate.push({ orc: existing, valor }); }
       else toAdd.push({ catType: 'sub', catKey: sub, parentCat: g.cat, valor, _idx: gi * 1000 + si });
