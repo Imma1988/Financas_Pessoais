@@ -4537,7 +4537,7 @@ function isDuplicate(m) {
     if (Math.abs(e.amount - m.valor) >= 0.01) return false;
     if (normalizeDesc(e.note || '') !== normalizeDesc(m.descricao)) return false;
     const eDate = new Date(e.date + 'T12:00:00Z').getTime();
-    return Math.abs(mDate - eDate) <= 45 * 24 * 60 * 60 * 1000;
+    return Math.abs(mDate - eDate) <= 75 * 24 * 60 * 60 * 1000;
   }) || null;
 }
 
