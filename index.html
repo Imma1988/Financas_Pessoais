@@ -4460,7 +4460,8 @@ Para cada movimento, devolve um JSON com esta estrutura exata:
       "descricao": "descrição original",
       "valor": 12.50,
       "tipo": "expense" ou "income",
-      "subcategoria": "nome da sub-categoria mais adequada ou null se não souberes"
+      "subcategoria": "nome da sub-categoria mais adequada ou null se não souberes",
+      "cashback": true ou false
     }
   ]
 }
@@ -4471,6 +4472,7 @@ Regras:
 - valor sempre positivo
 - tipo "income" para entradas de dinheiro, "expense" para saídas
 - Ignora movimentos entre contas próprias e transferências internas
+- cashback: true se o movimento for claramente um cashback, reembolso de cashback, abono cashback, devolução de cashback ou similar — nesse caso tipo deve ser "income" e subcategoria "Cashback"
 - Devolve APENAS o JSON, sem texto adicional`;
 
     const filePart = fileContent.base64
@@ -4571,9 +4573,14 @@ function renderImportReview() {
   if (autoDups > 0) summary += ` ${autoDups} possíveis duplicados.`;
   document.getElementById('import-summary').textContent = summary;
 
+  const CASHBACK_KEYWORDS = /cashback|cash\s*back|reembolso cashback|abono cashback|devolução cashback/i;
+
   document.getElementById('import-movements-list').innerHTML = importedMovements.map((m, i) => {
+    const isCashback = m.cashback === true || CASHBACK_KEYWORDS.test(m.descricao);
+    if (isCashback) { m.tipo = 'income'; m.subcategoria = 'Cashback'; }
     const isExpense  = m.tipo === 'expense';
-    const subcats    = isExpense ? allSubcats : incomeSubcats;
+    let subcats      = isExpense ? allSubcats : incomeSubcats;
+    if (isCashback && !subcats.includes('Cashback')) subcats = ['Cashback', ...subcats];
     const bestSubcat = m._autoSubcat || m.subcategoria;
     const options    = subcats.map(s => `<option value="${s}" ${s===bestSubcat?'selected':''}>${s}</option>`).join('');
     const duplicate  = isDuplicate(m);
@@ -4583,11 +4590,12 @@ function renderImportReview() {
     const autoTag    = m._autoSkip ? '<span style="font-size:10px;color:var(--muted);margin-left:6px;">🧠 memória</span>'
                      : m._autoSubcat ? '<span style="font-size:10px;color:var(--accent);margin-left:6px;">🧠 memória</span>'
                      : '';
+    const cashbackTag = isCashback ? '<span style="font-size:10px;color:#2ecc71;margin-left:6px;font-weight:700;">💳 cashback</span>' : '';
     const dupTag     = duplicate ? '<span class="im-duplicate-badge">⚠️ duplicado</span>' : '';
     return `
       <div class="import-movement ${isSkipped?'skipped':''}" id="import-mov-${i}">
         <div class="im-top">
-          <div class="im-desc">${m.descricao}${autoTag}${dupTag}</div>
+          <div class="im-desc">${m.descricao}${autoTag}${cashbackTag}${dupTag}</div>
           <div class="im-amount ${isExpense?'expense':'income'}">${isExpense?'-':'+'}${formatCurrency(m.valor)}</div>
         </div>
         <div style="display:flex;gap:8px;margin-bottom:6px;">
@@ -4642,6 +4650,11 @@ function submitImport() {
       importMemory.matches[key] = subcat;
     }
 
+    // Auto-add Cashback to incomeCats if not present
+    if (m.tipo === 'income' && subcat === 'Cashback' && !incomeCats.includes('Cashback')) {
+      incomeCats.push('Cashback');
+      saveCats();
+    }
     const parentcat = m.tipo === 'expense' ? getSubcatParent(subcat) : '';
     entries.unshift({
       id: Date.now() + i,
