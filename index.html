@@ -4470,9 +4470,10 @@ Sub-categorias disponíveis para despesas: ${allSubcats.join(', ')}
 
 Regras importantes:
 - valor sempre positivo
-- tipo "expense" para saídas de dinheiro, "income" para entradas
-- Ignora transferências entre contas próprias
-- cashback: identifica de forma inteligente qualquer movimento que seja um benefício/recompensa do cartão — pode aparecer como "cashback", "abono", "reembolso", "desconto programa", "pontos convertidos", "rewards", "benefício cartão" ou qualquer variante. Se for cashback, define tipo "income", subcategoria "Cashback" e cashback true
+- tipo "expense" para saídas de dinheiro (débitos), "income" para entradas (créditos)
+- Ignora APENAS pagamentos do próprio cartão (ex: "PAGAMENTO DEBITO DIRETO", "PAGAMENTO CARTAO") — esses são liquidações internas
+- NÃO ignores créditos de programas de recompensa, reembolsos ou benefícios
+- cashback: identifica de forma inteligente qualquer crédito que seja um benefício/recompensa do cartão — pode aparecer como "PROGRAMA REEMBOLSO", "CASHBACK", "ABONO", "REEMBOLSO PROGRAMA", "DESCONTO PROGRAMA", "PONTOS CONVERTIDOS", "REWARDS", "BENEFICIO CARTAO" ou qualquer variante. Se for cashback/reembolso de programa, define tipo "income", subcategoria "Cashback" e cashback true
 - Devolve APENAS o JSON válido, sem texto adicional`;
 
     const filePart = fileContent.base64
