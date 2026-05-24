@@ -4451,29 +4451,29 @@ async function processImportFile(file) {
 
     // Build prompt for Gemini
     const allSubcats = expenseCats.flatMap(g => g.subs);
-    const promptText = `Analisa este extrato bancário (pode ser um ficheiro ou screenshot) e extrai os movimentos financeiros.
-Para cada movimento, devolve um JSON com esta estrutura exata:
+    const promptText = `Analisa este extrato bancário e extrai todos os movimentos financeiros.
+Para cada movimento devolve um JSON com esta estrutura exata:
 {
   "movimentos": [
     {
       "data": "YYYY-MM-DD",
-      "descricao": "descrição original",
+      "descricao": "descrição original do movimento",
       "valor": 12.50,
-      "tipo": "expense" ou "income",
-      "subcategoria": "nome da sub-categoria mais adequada ou null se não souberes",
-      "cashback": true ou false
+      "tipo": "expense",
+      "subcategoria": "Sub-categoria",
+      "cashback": false
     }
   ]
 }
 
 Sub-categorias disponíveis para despesas: ${allSubcats.join(', ')}
 
-Regras:
+Regras importantes:
 - valor sempre positivo
-- tipo "income" para entradas de dinheiro, "expense" para saídas
-- Ignora movimentos entre contas próprias e transferências internas
-- cashback: true se o movimento for claramente um cashback, reembolso de cashback, abono cashback, devolução de cashback ou similar — nesse caso tipo deve ser "income" e subcategoria "Cashback"
-- Devolve APENAS o JSON, sem texto adicional`;
+- tipo "expense" para saídas de dinheiro, "income" para entradas
+- Ignora transferências entre contas próprias
+- cashback: identifica de forma inteligente qualquer movimento que seja um benefício/recompensa do cartão — pode aparecer como "cashback", "abono", "reembolso", "desconto programa", "pontos convertidos", "rewards", "benefício cartão" ou qualquer variante. Se for cashback, define tipo "income", subcategoria "Cashback" e cashback true
+- Devolve APENAS o JSON válido, sem texto adicional`;
 
     const filePart = fileContent.base64
       ? { inline_data: { mime_type: fileContent.mimeType, data: fileContent.base64 } }
@@ -4573,10 +4573,8 @@ function renderImportReview() {
   if (autoDups > 0) summary += ` ${autoDups} possíveis duplicados.`;
   document.getElementById('import-summary').textContent = summary;
 
-  const CASHBACK_KEYWORDS = /cashback|cash\s*back|reembolso cashback|abono cashback|devolução cashback/i;
-
   document.getElementById('import-movements-list').innerHTML = importedMovements.map((m, i) => {
-    const isCashback = m.cashback === true || CASHBACK_KEYWORDS.test(m.descricao);
+    const isCashback = m.cashback === true;
     if (isCashback) { m.tipo = 'income'; m.subcategoria = 'Cashback'; }
     const isExpense  = m.tipo === 'expense';
     let subcats      = isExpense ? allSubcats : incomeSubcats;
