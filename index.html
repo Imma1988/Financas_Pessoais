@@ -4533,12 +4533,12 @@ function normalizeDesc(desc) {
 
 function isDuplicate(m) {
   const mDate = new Date(m.data + 'T12:00:00Z').getTime();
-  return entries.some(e => {
+  return entries.find(e => {
     if (Math.abs(e.amount - m.valor) >= 0.01) return false;
     if (normalizeDesc(e.note || '') !== normalizeDesc(m.descricao)) return false;
     const eDate = new Date(e.date + 'T12:00:00Z').getTime();
-    return Math.abs(mDate - eDate) <= 45 * 24 * 60 * 60 * 1000; // ±45 dias
-  });
+    return Math.abs(mDate - eDate) <= 45 * 24 * 60 * 60 * 1000;
+  }) || null;
 }
 
 function findMemoryMatch(m) {
@@ -4568,7 +4568,7 @@ function renderImportReview() {
     else if (mem?.subcat) { m._autoSubcat = mem.subcat; autoMatched++; }
   });
 
-  const autoDups = importedMovements.filter(m => isDuplicate(m)).length;
+  const autoDups = importedMovements.filter(m => !!isDuplicate(m)).length;
   let summary = `${importedMovements.length} movimentos encontrados.`;
   if (autoMatched > 0) summary += ` ${autoMatched} já categorizados.`;
   if (autoSkipped > 0) summary += ` ${autoSkipped} da memória.`;
@@ -4584,14 +4584,18 @@ function renderImportReview() {
     const bestSubcat = m._autoSubcat || m.subcategoria;
     const options    = subcats.map(s => `<option value="${s}" ${s===bestSubcat?'selected':''}>${s}</option>`).join('');
     const duplicate  = isDuplicate(m);
-    const isSkipped  = m._autoSkip || duplicate || false;
+    const isSkipped  = m._autoSkip || !!duplicate || false;
     const skipLabel  = isSkipped ? 'Incluir' : 'Saltar';
     const skipClass  = isSkipped ? 'im-skip-btn unskip' : 'im-skip-btn';
     const autoTag    = m._autoSkip ? '<span style="font-size:10px;color:var(--muted);margin-left:6px;">🧠 memória</span>'
                      : m._autoSubcat ? '<span style="font-size:10px;color:var(--accent);margin-left:6px;">🧠 memória</span>'
                      : '';
     const cashbackTag = isCashback ? '<span style="font-size:10px;color:#2ecc71;margin-left:6px;font-weight:700;">💳 cashback</span>' : '';
-    const dupTag     = duplicate ? '<span class="im-duplicate-badge">⚠️ duplicado</span>' : '';
+    const dupDate    = duplicate ? new Date(duplicate.date + 'T12:00:00Z').toLocaleDateString('pt-PT', {day:'numeric', month:'short'}) : '';
+    const exactDate  = duplicate && duplicate.date === m.data;
+    const dupTag     = duplicate
+      ? `<span class="im-duplicate-badge">⚠️ duplicado${exactDate ? '' : ' · registado em ' + dupDate}</span>`
+      : '';
     return `
       <div class="import-movement ${isSkipped?'skipped':''}" id="import-mov-${i}">
         <div class="im-top">
