@@ -3006,7 +3006,7 @@ function buildOrcCardIncome(orc, cicloKey) {
   const cycleTag = override ? ' <span style="font-size:10px;color:var(--accent);font-weight:400;">(este ciclo)</span>' : '';
   return '<div class="orc-card income">' +
     '<div class="orc-card-header">' +
-      '<span class="orc-cat-name">' + icon + ' ' + orc.catKey + cycleTag + '</span>' +
+      '<span class="orc-cat-name">' + orc.catKey + cycleTag + '</span>' +
       '<span class="orc-valores"><span class="gasto">' + formatCurrency(recebido) + '</span> / ' + formatCurrency(esperado) + '</span>' +
       '<button class="orc-edit-btn" onclick="openEditOrcamento(' + orc.id + ')" title="Editar">✏️</button>' +
     '</div>' +
@@ -3056,6 +3056,13 @@ function navigateOrcAno(delta) {
   renderOrcamentosAnual();
 }
 
+function getReceitaForCicloKey(catKey, cicloKey) {
+  const { start, end } = getCicloRangeFromKey(cicloKey);
+  return entries
+    .filter(e => e.type === 'income' && e.date >= start && e.date <= end && e.category === catKey)
+    .reduce((s, e) => s + e.amount, 0);
+}
+
 function renderOrcamentosAnual() {
   const year       = new Date().getFullYear() + orcAnoOffset;
   const curKey     = getCicloKey(0);
@@ -3069,8 +3076,10 @@ function renderOrcamentosAnual() {
   if (nextBtn) { nextBtn.style.opacity = '1'; nextBtn.disabled = false; }
   if (!activeOrcs.length) { if (listEl) listEl.innerHTML = ''; if (emptyEl) emptyEl.style.display = ''; return; }
   if (emptyEl) emptyEl.style.display = 'none';
-  const parentOrcs = activeOrcs.filter(o => o.catType === 'parent');
-  const subOrcs    = activeOrcs.filter(o => o.catType === 'sub');
+  const expOrcs    = activeOrcs.filter(o => o.catType !== 'income');
+  const incOrcs    = activeOrcs.filter(o => o.catType === 'income');
+  const parentOrcs = expOrcs.filter(o => o.catType === 'parent');
+  const subOrcs    = expOrcs.filter(o => o.catType === 'sub');
   const parentKeys = [...new Set([...parentOrcs.map(o => o.catKey), ...subOrcs.map(o => o.parentCat)])];
   let html = '';
   parentKeys.forEach(pk => {
@@ -3078,14 +3087,55 @@ function renderOrcamentosAnual() {
     if (pOrc) {
       html += buildOrcCardAnual(pOrc, cicloKeys, curKey, 'pai');
     } else {
-      const grp = expenseCats.find(g => g.cat === pk);
-      const icon = grp ? grp.cat.split(' ')[0] : '📦';
       html += '<div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:8px 2px 4px;">' + pk + '</div>';
     }
     subOrcs.filter(o => o.parentCat === pk).forEach(o => { html += buildOrcCardAnual(o, cicloKeys, curKey, 'sub'); });
   });
   subOrcs.filter(o => !parentKeys.includes(o.parentCat)).forEach(o => { html += buildOrcCardAnual(o, cicloKeys, curKey, 'sub'); });
+  if (incOrcs.length) {
+    html += '<div class="orc-section-label" style="margin-top:14px;">💰 Receitas esperadas</div>';
+    incOrcs.forEach(o => { html += buildOrcCardAnualIncome(o, cicloKeys, curKey); });
+  }
   if (listEl) listEl.innerHTML = html;
+}
+
+function buildOrcCardAnualIncome(orc, cicloKeys, curKey) {
+  let totalOrc = 0, totalRecebido = 0;
+  let monthsHtml = '';
+  [cicloKeys.slice(0,6), cicloKeys.slice(6,12)].forEach(row => {
+    monthsHtml += '<div class="orc-months-grid">';
+    row.forEach(ck => {
+      const valor     = getOrcamentoValor(orc, ck);
+      const isPast    = ck < curKey;
+      const isCurrent = ck === curKey;
+      const recebido  = (isPast || isCurrent) ? getReceitaForCicloKey(orc.catKey, ck) : 0;
+      const hasOverride = orc.overrides && orc.overrides[ck] !== undefined;
+      const monthIdx  = parseInt(ck.split('-')[1]) - 1;
+      totalOrc       += valor;
+      if (isPast || isCurrent) totalRecebido += recebido;
+      let cellCls = 'orc-month-cell';
+      if (isCurrent) cellCls += ' current';
+      if (hasOverride) cellCls += ' override';
+      const pct = valor > 0 ? Math.min(100, Math.round(recebido / valor * 100)) : (recebido > 0 ? 100 : 0);
+      const barCls = recebido >= valor ? 'income-ok' : recebido > 0 ? 'aviso' : '';
+      monthsHtml +=
+        '<div class="' + cellCls + '" onclick="openOrcMesModal(' + orc.id + ',\'' + ck + '\')">' +
+          '<div class="orc-month-name">' + MESES_SHORT[monthIdx] + '</div>' +
+          '<div class="orc-month-val">' + (valor > 0 ? formatCurrency(valor) : '—') + '</div>' +
+          (isPast || isCurrent ? '<div class="orc-month-bar"><div class="orc-month-fill ' + barCls + '" style="width:' + pct + '%"></div></div>' : '') +
+        '</div>';
+    });
+    monthsHtml += '</div>';
+  });
+  const totalPct = totalOrc > 0 ? Math.min(100, Math.round(totalRecebido / totalOrc * 100)) : 0;
+  return '<div class="orc-year-card income">' +
+    '<div class="orc-year-card-header">' +
+      '<span class="orc-cat-name">' + orc.catKey + '</span>' +
+      '<span class="orc-valores"><span class="gasto">' + formatCurrency(totalRecebido) + '</span> / ' + formatCurrency(totalOrc) + ' (' + totalPct + '%)</span>' +
+      '<button class="orc-edit-btn" onclick="openEditOrcamento(' + orc.id + ')" title="Editar">✏️</button>' +
+    '</div>' +
+    monthsHtml +
+  '</div>';
 }
 
 function buildOrcCardAnual(orc, cicloKeys, curKey, cls) {
