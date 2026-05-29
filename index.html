@@ -3500,10 +3500,20 @@ async function addAllSubcatOrcamentos() {
   );
   if (!ok) return;
   const base = Date.now();
+  const curKey = getCicloKey();
   toAdd.forEach(({ catType, catKey, parentCat, valor, _idx }) => {
     orcamentos.push({ id: base + _idx, catType, catKey, parentCat, valorBase: valor, overrides: {} });
   });
-  toUpdate.forEach(({ orc, valor }) => { orc.valorBase = valor; });
+  toUpdate.forEach(({ orc, valor }) => {
+    if (!orc.overrides) orc.overrides = {};
+    const oldBase = orc.valorBase;
+    for (let i = 1; i <= 12; i++) {
+      const ck = getCicloKey(-i);
+      if (ck >= curKey) continue;
+      if (orc.overrides[ck] === undefined) orc.overrides[ck] = oldBase;
+    }
+    orc.valorBase = valor;
+  });
   scheduleSave();
   renderOrcamentos();
   renderOrcBanner();
