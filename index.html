@@ -3066,7 +3066,13 @@ function getReceitaForCicloKey(catKey, cicloKey) {
 function renderOrcamentosAnual() {
   const year       = new Date().getFullYear() + orcAnoOffset;
   const curKey     = getCicloKey(0);
-  const cicloKeys  = Array.from({length:12}, (_, i) => year + '-' + String(i+1).padStart(2,'0'));
+  // For cicloInicio > 1: label "Jun" = cycle starting May 25–Jun 24, so cicloKey is month i (not i+1)
+  const cicloKeys  = Array.from({length:12}, (_, i) => {
+    if (cicloInicio <= 1) return year + '-' + String(i + 1).padStart(2, '0');
+    const ckM = i === 0 ? 12 : i;
+    const ckY = i === 0 ? year - 1 : year;
+    return ckY + '-' + String(ckM).padStart(2, '0');
+  });
   const activeOrcs = orcamentos.filter(o => !deletedOrcIds.has(o.id));
   const labelEl    = document.getElementById('orc-ano-label');
   const nextBtn    = document.getElementById('orc-ano-next');
@@ -3102,15 +3108,15 @@ function renderOrcamentosAnual() {
 function buildOrcCardAnualIncome(orc, cicloKeys, curKey) {
   let totalOrc = 0, totalRecebido = 0;
   let monthsHtml = '';
-  [cicloKeys.slice(0,6), cicloKeys.slice(6,12)].forEach(row => {
+  [cicloKeys.slice(0,6), cicloKeys.slice(6,12)].forEach((row, rowIdx) => {
     monthsHtml += '<div class="orc-months-grid">';
-    row.forEach(ck => {
+    row.forEach((ck, ri) => {
+      const labelIdx   = rowIdx * 6 + ri;
       const valor      = getOrcamentoValor(orc, ck);
       const isPast     = ck < curKey;
       const isCurrent  = ck === curKey;
       const recebido   = (isPast || isCurrent) ? getReceitaForCicloKey(orc.catKey, ck) : 0;
       const hasOverride = orc.overrides && orc.overrides[ck] !== undefined;
-      const monthIdx   = parseInt(ck.split('-')[1]) - 1;
       totalOrc        += valor;
       if (isPast || isCurrent) totalRecebido += recebido;
       let cellCls = 'orc-month-cell';
@@ -3122,8 +3128,8 @@ function buildOrcCardAnualIncome(orc, cicloKeys, curKey) {
       const spentEl = (isPast || isCurrent) ? '<div class="mc-spent" style="color:var(--accent-income)">' + recFmt + '</div>' : '';
       const ovEl    = hasOverride ? '<div class="mc-override">*</div>' : '';
       monthsHtml +=
-        '<div class="' + cellCls + '" onclick="openEditMes(' + orc.id + ',\'' + ck + '\')">' +
-          '<div class="mc-label">' + MESES_SHORT[monthIdx] + '</div>' +
+        '<div class="' + cellCls + '" onclick="openEditMes(' + orc.id + ',\'' + ck + '\',' + labelIdx + ')">' +
+          '<div class="mc-label">' + MESES_SHORT[labelIdx] + '</div>' +
           '<div class="mc-val">' + valFmt + '</div>' +
           spentEl + ovEl +
           '<div class="mc-dot"></div>' +
@@ -3151,15 +3157,15 @@ function buildOrcCardAnual(orc, cicloKeys, curKey, cls) {
   const icon = grp ? grp.cat.split(' ')[0] : '📦';
   let totalOrc = 0, totalGasto = 0;
   let monthsHtml = '';
-  [cicloKeys.slice(0,6), cicloKeys.slice(6,12)].forEach(row => {
+  [cicloKeys.slice(0,6), cicloKeys.slice(6,12)].forEach((row, rowIdx) => {
     monthsHtml += '<div class="orc-months-grid">';
-    row.forEach(ck => {
+    row.forEach((ck, ri) => {
+      const labelIdx   = rowIdx * 6 + ri;
       const valor      = getOrcamentoValor(orc, ck);
       const isPast     = ck < curKey;
       const isCurrent  = ck === curKey;
       const gasto      = (isPast || isCurrent) ? getGastoForCicloKey(orc.catType, orc.catKey, ck) : 0;
       const hasOverride = orc.overrides && orc.overrides[ck] !== undefined;
-      const monthIdx   = parseInt(ck.split('-')[1]) - 1;
       totalOrc   += valor;
       if (isPast || isCurrent) totalGasto += gasto;
       let cellCls = 'orc-month-cell';
@@ -3171,8 +3177,8 @@ function buildOrcCardAnual(orc, cicloKeys, curKey, cls) {
       const spentEl  = (isPast || isCurrent) ? '<div class="mc-spent">' + gastFmt + '</div>' : '';
       const ovEl     = hasOverride ? '<div class="mc-override">*</div>' : '';
       monthsHtml +=
-        '<div class="' + cellCls + '" onclick="openEditMes(' + orc.id + ',\'' + ck + '\')">' +
-          '<div class="mc-label">' + MESES_SHORT[monthIdx] + '</div>' +
+        '<div class="' + cellCls + '" onclick="openEditMes(' + orc.id + ',\'' + ck + '\',' + labelIdx + ')">' +
+          '<div class="mc-label">' + MESES_SHORT[labelIdx] + '</div>' +
           '<div class="mc-val">' + valFmt + '</div>' +
           spentEl + ovEl +
           '<div class="mc-dot"></div>' +
@@ -3183,7 +3189,7 @@ function buildOrcCardAnual(orc, cicloKeys, curKey, cls) {
   const desvio = totalOrc - totalGasto;
   const totHtml =
     '<div class="orc-year-totals">' +
-      '<div class="tot-item"><div class="tot-label">Orçado</div><div class="tot-val">' + formatCurrency(totalOrc) + '</div></div>' +
+      '<div class="tot-item"><div class="tot-label">Orçamentado</div><div class="tot-val">' + formatCurrency(totalOrc) + '</div></div>' +
       '<div class="tot-item"><div class="tot-label">Gasto</div><div class="tot-val">' + formatCurrency(totalGasto) + '</div></div>' +
       '<div class="tot-item"><div class="tot-label">Saldo</div><div class="tot-val' + (desvio < 0 ? ' tot-over' : '') + '">' + (desvio >= 0 ? '+' : '') + formatCurrency(Math.abs(desvio)) + '</div></div>' +
     '</div>';
@@ -3195,14 +3201,14 @@ function buildOrcCardAnual(orc, cicloKeys, curKey, cls) {
   '</div>';
 }
 
-function openEditMes(orcId, cicloKey) {
+function openEditMes(orcId, cicloKey, labelIdx) {
   const orc = orcamentos.find(o => o.id === orcId);
   if (!orc) return;
   const grp  = expenseCats.find(g => orc.catType === 'parent' ? g.cat === orc.catKey : g.subs && g.subs.includes(orc.catKey));
   const icon = grp ? grp.cat.split(' ')[0] : '📦';
-  const monthIdx = parseInt(cicloKey.split('-')[1]) - 1;
-  const year     = cicloKey.split('-')[0];
-  document.getElementById('orc-mes-modal-title').innerHTML = MESES_SHORT[monthIdx] + ' ' + year + ' <button class="modal-close" onclick="closeOrcMesModal()">✕</button>';
+  const displayIdx = labelIdx !== undefined ? labelIdx : parseInt(cicloKey.split('-')[1]) - 1;
+  const year = cicloKey.split('-')[0];
+  document.getElementById('orc-mes-modal-title').innerHTML = MESES_SHORT[displayIdx] + ' ' + year + ' <button class="modal-close" onclick="closeOrcMesModal()">✕</button>';
   document.getElementById('orc-mes-cat-name').textContent  = icon + ' ' + orc.catKey;
   document.getElementById('orc-mes-base').textContent      = formatCurrency(orc.valorBase);
   document.getElementById('orc-mes-orc-id').value          = orcId;
