@@ -3409,8 +3409,8 @@ function renderOrcCatPickerList(query) {
 
 function saveOrcamento() {
   if (!orcCatSelected) { showToast('⚠️ Escolhe uma categoria'); return; }
-  const amountVal = parseFloat(document.getElementById('orc-amount-input').value);
-  if (!amountVal || amountVal <= 0) { showToast('⚠️ Insere um montante válido'); return; }
+  const amountVal = parseFloat(document.getElementById('orc-amount-input').value) || 0;
+  if (isNaN(amountVal) || amountVal < 0) { showToast('⚠️ Insere um montante válido'); return; }
   const overrideStr = document.getElementById('orc-override-input').value.trim();
   const overrideNum = overrideStr !== '' ? parseFloat(overrideStr) : null;
   const cicloKey    = getCicloKey();
