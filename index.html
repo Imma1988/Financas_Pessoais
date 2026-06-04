@@ -1205,6 +1205,7 @@
       <div style="display:flex;gap:6px;align-items:center;">
         <button class="clear-btn" id="ciclo-prev-btn" onclick="navigateCiclo(-1)" style="font-size:16px;padding:4px 8px;">‹</button>
         <button class="clear-btn" id="ciclo-next-btn" onclick="navigateCiclo(1)" style="font-size:16px;padding:4px 8px;">›</button>
+        <button class="clear-btn" id="sort-toggle-btn" onclick="toggleEntriesSort()" title="Ordenação" style="font-size:12px;padding:4px 7px;">📅 Data</button>
         <button class="clear-btn" id="search-toggle-btn" onclick="toggleEntriesSearch()" title="Pesquisar">🔍</button>
         <button class="clear-btn" onclick="clearToday()">Limpar</button>
       </div>
@@ -1906,6 +1907,7 @@ let tiposCustom     = {};
 let cicloInicio     = 25; // day of month cycle starts
 let cicloOffset     = 0;  // 0 = current, -1 = previous, etc.
 let entriesQuery    = '';
+let entriesSortMode = 'date'; // 'date' | 'intro'
 let accessToken  = null;
 let driveFileId  = null;
 let syncTimeout  = null;
@@ -3678,6 +3680,13 @@ function renderSummary() {
   renderOrcBanner();
 }
 
+function toggleEntriesSort() {
+  entriesSortMode = entriesSortMode === 'date' ? 'intro' : 'date';
+  const btn = document.getElementById('sort-toggle-btn');
+  if (btn) btn.textContent = entriesSortMode === 'date' ? '📅 Data' : '🕐 Entrada';
+  renderEntries();
+}
+
 function toggleEntriesSearch() {
   const bar = document.getElementById('entries-search-bar');
   const inp = document.getElementById('entries-search-input');
@@ -3711,12 +3720,16 @@ function renderEntries() {
           || (e.note || '').toLowerCase().includes(q)
           || String(e.amount).includes(q);
       })
-      .sort((a,b) => new Date(b.date)-new Date(a.date) || new Date(b.ts)-new Date(a.ts));
+      .sort((a,b) => entriesSortMode === 'intro'
+        ? new Date(b.ts)-new Date(a.ts)
+        : new Date(b.date)-new Date(a.date) || new Date(b.ts)-new Date(a.ts));
     if (h2El) h2El.textContent = '🔍 ' + visibleEntries.length + ' resultado' + (visibleEntries.length !== 1 ? 's' : '');
     if (nextBtn) { nextBtn.style.opacity = '0.3'; nextBtn.disabled = true; }
   } else {
     visibleEntries = entries.filter(e=>isInCurrentCiclo(e.date))
-      .sort((a,b) => new Date(b.date)-new Date(a.date) || new Date(b.ts)-new Date(a.ts));
+      .sort((a,b) => entriesSortMode === 'intro'
+        ? new Date(b.ts)-new Date(a.ts)
+        : new Date(b.date)-new Date(a.date) || new Date(b.ts)-new Date(a.ts));
     if (h2El) h2El.textContent = '📋 ' + cicloLabel();
     if (nextBtn) { nextBtn.style.opacity = cicloOffset >= 0 ? '0.3' : '1'; nextBtn.disabled = cicloOffset >= 0; }
   }
@@ -3734,14 +3747,18 @@ function renderEntries() {
     const icon      = e.type==='income'
       ? (incomeCats.find(c=>c===e.category)||'💰').split(' ')[0]
       : (catGroup?.cat.split(' ')[0] || '📦');
-    const dateLabel = e.date === todayStr() ? 'Hoje' : formatDate(e.date);
+    const dateLabel  = e.date === todayStr() ? 'Hoje' : formatDate(e.date);
+    const introLabel = e.ts ? new Date(e.ts).toLocaleDateString('pt-PT', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : '';
+    const timeEl = entriesSortMode === 'intro' && introLabel
+      ? `<div class="entry-time">${dateLabel} <span style="color:var(--muted);font-size:10px;">· introduzido ${introLabel}</span></div>`
+      : `<div class="entry-time">${dateLabel}</div>`;
     return `
     <div class="entry ${e.type==='income'?'income-entry':'expense-entry'}">
       <div class="entry-icon">${icon}</div>
       <div class="entry-info">
         <div class="entry-cat">${e.category}</div>
         ${e.note ? `<div class="entry-note">${e.note}</div>` : ''}
-        <div class="entry-time">${dateLabel}</div>
+        ${timeEl}
       </div>
       <div class="entry-amount ${e.type==='income'?'income-amt':'expense-amt'}">${e.type==='income'?'+':'-'}${formatCurrency(e.amount)}</div>
       <div style="display:flex;flex-direction:column;gap:2px;flex-shrink:0;">
