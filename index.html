@@ -1649,8 +1649,9 @@
       <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">Nova categoria pai</div>
       <div class="add-cat-form">
         <input type="text" class="add-cat-emoji" id="new-expense-cat-emoji" maxlength="8" placeholder="🏷️">
-        <input type="text" class="add-cat-name" id="new-expense-cat-name" placeholder="Nome da categoria">
-        <button class="add-cat-btn" onclick="addExpenseCat()">+ Criar</button>
+        <input type="text" class="add-cat-name" id="new-expense-cat-name" placeholder="Nome da categoria"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();addExpenseCat();}">
+        <button type="button" class="add-cat-btn" onclick="addExpenseCat()">+ Criar</button>
       </div>
     </div>
 
@@ -1658,8 +1659,9 @@
     <div class="cat-list" id="income-cat-list"></div>
     <div class="add-cat-form">
       <input type="text" class="add-cat-emoji" id="new-income-emoji" maxlength="8" placeholder="🏷️">
-      <input type="text" class="add-cat-name" id="new-income-name" placeholder="Nome da categoria">
-      <button class="add-cat-btn income-btn" onclick="addCat('income')">+ Adicionar</button>
+      <input type="text" class="add-cat-name" id="new-income-name" placeholder="Nome da categoria"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();addCat('income');}">
+      <button type="button" class="add-cat-btn income-btn" onclick="addCat('income')">+ Adicionar</button>
     </div>
   </div>
 </div>
@@ -4032,26 +4034,30 @@ function saveCats() { scheduleSave(); }
 function renderCatModal() {
   // Expense: hierarchical
   const expList = document.getElementById('expense-cat-list');
-  expList.innerHTML = expenseCats.map((g, gi) => `
+  expList.innerHTML = expenseCats.map((g, gi) => {
+    const subs = g.subs || [];
+    return `
     <div style="margin-bottom:10px;">
       <div style="display:flex;align-items:center;justify-content:space-between;background:var(--card2);border-radius:8px;padding:8px 12px;margin-bottom:4px;">
         <span style="font-size:13px;font-weight:600;">${g.cat}</span>
         <button class="cat-item-del" onclick="deleteExpenseCat(${gi})" ${expenseCats.length<=1?'disabled':''}>🗑️</button>
       </div>
       <div style="padding-left:12px;display:flex;flex-direction:column;gap:4px;">
-        ${g.subs.map((s,si) => `
+        ${subs.map((s,si) => `
           <div class="cat-item" style="padding:7px 12px;">
             <span class="cat-item-name" style="font-size:13px;">${s}</span>
             <div style="display:flex;gap:6px;align-items:center;">
-              <button class="cat-item-del" onclick="deleteExpenseSub(${gi},${si})" ${g.subs.length<=1?'disabled':''}>🗑️</button>
+              <button type="button" class="cat-item-del" onclick="deleteExpenseSub(${gi},${si})" ${subs.length<=1?'disabled':''}>🗑️</button>
             </div>
           </div>`).join('')}
         <div class="add-cat-form" style="margin-top:4px;">
-          <input type="text" class="add-cat-name" id="new-sub-${gi}" placeholder="+ Nova sub-categoria" style="font-size:12px;padding:6px 10px;">
-          <button class="add-cat-btn" onclick="addExpenseSub(${gi})" style="font-size:12px;padding:6px 10px;">+</button>
+          <input type="text" class="add-cat-name" id="new-sub-${gi}" placeholder="+ Nova sub-categoria" style="font-size:12px;padding:6px 10px;"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();addExpenseSub(${gi});}">
+          <button type="button" class="add-cat-btn" onclick="addExpenseSub(${gi})" style="font-size:12px;padding:6px 10px;">+</button>
         </div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
   // Income: flat
   document.getElementById('income-cat-list').innerHTML = incomeCats.map((cat,i) => `
