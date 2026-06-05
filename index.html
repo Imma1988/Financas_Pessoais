@@ -2292,6 +2292,12 @@ async function saveToDrive() {
         // Merge categories
         const remoteDeletedCats = new Set(remote.deletedCatKeys || []);
         remoteDeletedCats.forEach(k => deletedCatKeys.add(k));
+        // Local additions win over remote deletions: if user re-added something, remove the delete key
+        expenseCats.forEach(g => {
+          deletedCatKeys.delete('expense-cat:' + g.cat);
+          (g.subs || []).forEach(s => deletedCatKeys.delete('expense-sub:' + g.cat + ':' + s));
+        });
+        incomeCats.forEach(c => deletedCatKeys.delete('income:' + c));
         // Merge income cats (flat array)
         const remoteIncome = remote.incomeCats || [];
         const localIncomeSet = new Set(incomeCats);
