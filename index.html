@@ -4079,6 +4079,7 @@ function addExpenseCat() {
   if (!name) { showToast('⚠️ Escreve um nome'); return; }
   const full = emoji + ' ' + name;
   if (expenseCats.find(g => g.cat === full)) { showToast('⚠️ Categoria já existe'); return; }
+  deletedCatKeys.delete('expense-cat:' + full);
   expenseCats.push({ cat: full, subs: [] });
   document.getElementById('new-expense-cat-emoji').value = '';
   document.getElementById('new-expense-cat-name').value  = '';
@@ -4102,6 +4103,7 @@ function addExpenseSub(gi) {
   const name  = input.value.trim();
   if (!name) { showToast('⚠️ Escreve o nome da sub-categoria'); return; }
   if (expenseCats[gi].subs.includes(name)) { showToast('⚠️ Sub-categoria já existe'); return; }
+  deletedCatKeys.delete('expense-sub:' + expenseCats[gi].cat + ':' + name);
   expenseCats[gi].subs.push(name);
   input.value = '';
   saveCats(); renderCatModal(); showToast('✅ Sub-categoria adicionada!');
@@ -4121,6 +4123,7 @@ function addCat(type) {
   if (!name) { showToast('⚠️ Escreve um nome para a categoria'); return; }
   const full=emoji+' '+name;
   if (incomeCats.includes(full)) { showToast('⚠️ Categoria já existe'); return; }
+  deletedCatKeys.delete('income:' + full);
   incomeCats.push(full); saveCats();
   eEl.value=''; nEl.value='';
   renderCatModal(); showToast('✅ Categoria adicionada!');
