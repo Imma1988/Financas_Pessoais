@@ -1914,6 +1914,7 @@ let accessToken  = null;
 let driveFileId  = null;
 let syncTimeout  = null;
 let isSyncing    = false;
+let hasLoaded    = false; // prevents token refreshes from overwriting unsaved local changes
 
 // ===== AUTH =====
 let tokenClient = null;
@@ -2029,6 +2030,7 @@ function openSupportEmail() {
 }
 
 function logoutAndReset() {
+  hasLoaded = false;
   if (currentUserEmail) {
     localStorage.removeItem('mh_data_' + currentUserEmail);
     localStorage.removeItem('mh_fileId_' + currentUserEmail);
@@ -2078,7 +2080,10 @@ async function onAuthorised() {
   if (sbEl) sbEl.style.display = '';
   const sbUserEl = document.getElementById('sb-user');
   if (sbUserEl) sbUserEl.textContent = currentUserEmail || '';
-  await loadFromDrive();
+  if (!hasLoaded) {
+    hasLoaded = true;
+    await loadFromDrive();
+  }
   if (!accessToken) return;
   const sbCofresEl = document.getElementById('sb-btn-cofres');
   if (sbCofresEl) sbCofresEl.style.display = cofresEnabled ? '' : 'none';
