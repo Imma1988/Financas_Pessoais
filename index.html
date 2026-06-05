@@ -1648,7 +1648,7 @@
     <div style="margin-top:10px;">
       <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">Nova categoria pai</div>
       <div class="add-cat-form">
-        <input type="text" class="add-cat-emoji" id="new-expense-cat-emoji" maxlength="2" placeholder="🏷️">
+        <input type="text" class="add-cat-emoji" id="new-expense-cat-emoji" maxlength="8" placeholder="🏷️">
         <input type="text" class="add-cat-name" id="new-expense-cat-name" placeholder="Nome da categoria">
         <button class="add-cat-btn" onclick="addExpenseCat()">+ Criar</button>
       </div>
@@ -1657,7 +1657,7 @@
     <div class="cat-section-label" style="margin-top:20px;">📥 Receitas</div>
     <div class="cat-list" id="income-cat-list"></div>
     <div class="add-cat-form">
-      <input type="text" class="add-cat-emoji" id="new-income-emoji" maxlength="2" placeholder="🏷️">
+      <input type="text" class="add-cat-emoji" id="new-income-emoji" maxlength="8" placeholder="🏷️">
       <input type="text" class="add-cat-name" id="new-income-name" placeholder="Nome da categoria">
       <button class="add-cat-btn income-btn" onclick="addCat('income')">+ Adicionar</button>
     </div>
@@ -4071,7 +4071,12 @@ function addExpenseCat() {
   expenseCats.push({ cat: full, subs: [] });
   document.getElementById('new-expense-cat-emoji').value = '';
   document.getElementById('new-expense-cat-name').value  = '';
-  saveCats(); renderCatModal(); showToast('✅ Categoria criada!');
+  saveCats(); renderCatModal();
+  showToast('✅ Categoria criada! Adiciona agora pelo menos uma sub-categoria.');
+  // Focus the sub-category input of the new category
+  const newGi = expenseCats.length - 1;
+  const subInput = document.getElementById('new-sub-' + newGi);
+  if (subInput) { subInput.scrollIntoView({ behavior: 'smooth', block: 'center' }); subInput.focus(); }
 }
 
 function deleteExpenseCat(gi) {
@@ -4084,7 +4089,7 @@ function deleteExpenseCat(gi) {
 function addExpenseSub(gi) {
   const input = document.getElementById('new-sub-' + gi);
   const name  = input.value.trim();
-  if (!name) return;
+  if (!name) { showToast('⚠️ Escreve o nome da sub-categoria'); return; }
   if (expenseCats[gi].subs.includes(name)) { showToast('⚠️ Sub-categoria já existe'); return; }
   expenseCats[gi].subs.push(name);
   input.value = '';
