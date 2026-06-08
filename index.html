@@ -1051,6 +1051,9 @@
       overflow: hidden; align-self: stretch;
       min-height: 0;
     }
+    #view-registos > #entries-col > .orc-banner {
+      flex-shrink: 0;
+    }
     #view-registos > #entries-col > .entries-header {
       flex-shrink: 0; margin-bottom: 8px;
       background: var(--bg); padding: 4px 0;
@@ -1151,16 +1154,6 @@
     </div>
   </div>
 
-  <!-- Budget banner -->
-  <div class="orc-banner" id="orc-banner" style="display:none;">
-    <div class="orc-banner-row">
-      <span class="orc-banner-label">💰 Orçamentos do ciclo</span>
-      <span class="orc-banner-link" onclick="switchView('orcamentos')">Ver tudo →</span>
-    </div>
-    <div class="orc-banner-text" id="orc-banner-text"></div>
-    <div class="progress-bar"><div class="progress-fill" id="orc-banner-fill" style="width:0%;transition:width 0.4s;"></div></div>
-  </div>
-
   <!-- Quick add form -->
   <div class="quick-add" id="quick-add">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
@@ -1200,6 +1193,15 @@
 
   <!-- Entries list -->
   <div id="entries-col" style="display:contents;">
+    <!-- Budget banner -->
+    <div class="orc-banner" id="orc-banner" style="display:none;">
+      <div class="orc-banner-row">
+        <span class="orc-banner-label">💰 Orçamentos do ciclo</span>
+        <span class="orc-banner-link" onclick="switchView('orcamentos')">Ver tudo →</span>
+      </div>
+      <div class="orc-banner-text" id="orc-banner-text"></div>
+      <div class="progress-bar"><div class="progress-fill" id="orc-banner-fill" style="width:0%;transition:width 0.4s;"></div></div>
+    </div>
     <div class="entries-header">
       <h2 id="entries-h2">📋</h2>
       <div style="display:flex;gap:6px;align-items:center;">
