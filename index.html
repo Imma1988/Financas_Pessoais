@@ -4304,6 +4304,7 @@ function renderPatChart(data) {
   const toY = v => H - padB - ((v - minY) / rangeY) * (H - padT - padB);
 
   const pts = data.map((d, i) => [toX(i), toY(d.total)]);
+  svgEl._patChart = { pts, data, padL, padR, padT, padB, W, H };
   const line = pts.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
   const area = line + ` L${pts.at(-1)[0].toFixed(1)},${H - padB} L${padL},${H - padB} Z`;
 
@@ -4340,7 +4341,57 @@ function renderPatChart(data) {
     <path d="${area}" fill="url(#patGrad)"/>
     <path d="${line}" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
     ${pts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3" fill="#a78bfa"/>`).join('')}
-    ${xLabels}`;
+    ${xLabels}
+    <g id="pat-tooltip" style="pointer-events:none;display:none;">
+      <line id="pat-tt-line" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+      <rect id="pat-tt-bg" rx="7" ry="7" fill="var(--card2)" stroke="var(--border)" stroke-width="1"/>
+      <text id="pat-tt-val" fill="var(--text)" font-size="12" font-family="DM Sans,sans-serif" font-weight="700" text-anchor="middle"/>
+      <text id="pat-tt-month" fill="var(--muted)" font-size="10" font-family="DM Sans,sans-serif" text-anchor="middle"/>
+      <circle id="pat-tt-dot" r="5" fill="#a78bfa" stroke="var(--card)" stroke-width="2"/>
+    </g>
+    <rect x="${padL}" y="${padT}" width="${W - padL - padR}" height="${H - padT - padB}" fill="transparent" style="cursor:crosshair;"
+      onmousemove="onPatHover(event)" onmouseleave="onPatLeave()"/>`;
+}
+
+function onPatHover(e) {
+  const svgEl = document.getElementById('pat-chart');
+  const c = svgEl._patChart;
+  if (!c) return;
+  const pt = svgEl.createSVGPoint();
+  pt.x = e.clientX; pt.y = e.clientY;
+  const svgPt = pt.matrixTransform(svgEl.getScreenCTM().inverse());
+  let bi = 0, bd = Infinity;
+  c.pts.forEach(([x], i) => { const d = Math.abs(x - svgPt.x); if (d < bd) { bd = d; bi = i; } });
+  const [px, py] = c.pts[bi];
+  const val = c.data[bi].total;
+  const [yr, mo] = c.data[bi].month.split('-');
+  const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const mLabel = MESES[parseInt(mo) - 1] + ' ' + yr;
+  const vLabel = formatCurrency(val);
+  const ttW = Math.max(vLabel.length * 8 + 16, 80), ttH = 42, gap = 10;
+  let ttX = px + gap;
+  if (ttX + ttW > c.W - c.padR + 4) ttX = px - gap - ttW;
+  const ttY = Math.max(c.padT, Math.min(py - ttH / 2, c.H - c.padB - ttH));
+  document.getElementById('pat-tooltip').style.display = '';
+  const l = document.getElementById('pat-tt-line');
+  l.setAttribute('x1', px); l.setAttribute('x2', px);
+  l.setAttribute('y1', c.padT); l.setAttribute('y2', c.H - c.padB);
+  const bg = document.getElementById('pat-tt-bg');
+  bg.setAttribute('x', ttX); bg.setAttribute('y', ttY);
+  bg.setAttribute('width', ttW); bg.setAttribute('height', ttH);
+  const tv = document.getElementById('pat-tt-val');
+  tv.setAttribute('x', ttX + ttW / 2); tv.setAttribute('y', ttY + 16);
+  tv.textContent = vLabel;
+  const tm = document.getElementById('pat-tt-month');
+  tm.setAttribute('x', ttX + ttW / 2); tm.setAttribute('y', ttY + 31);
+  tm.textContent = mLabel;
+  const dot = document.getElementById('pat-tt-dot');
+  dot.setAttribute('cx', px); dot.setAttribute('cy', py);
+}
+
+function onPatLeave() {
+  const g = document.getElementById('pat-tooltip');
+  if (g) g.style.display = 'none';
 }
 
 function renderBreakdown(total) {
