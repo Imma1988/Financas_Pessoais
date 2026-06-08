@@ -4326,7 +4326,7 @@ function renderPatChart(data) {
     lastX = x;
     const [yr, mo] = d.month.split('-');
     const mo0 = parseInt(mo);
-    const lbl = MESES[mo0 - 1] + (i === 0 || mo0 === 1 ? ' \'' + yr.slice(2) : '');
+    const lbl = MESES[mo0 - 1] + ' \'' + yr.slice(2);
     return `<text x="${x.toFixed(1)}" y="${H - 6}" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="DM Sans,sans-serif">${lbl}</text>`;
   }).join('');
 
