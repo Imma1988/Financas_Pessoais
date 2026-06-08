@@ -1255,7 +1255,7 @@
     </div>
     <div class="chart-wrap" style="margin-bottom:16px;">
       <div class="chart-title">Evolução</div>
-      <svg id="pat-chart" viewBox="0 0 400 120" preserveAspectRatio="none" style="height:180px;width:100%;display:block;"></svg>
+      <svg id="pat-chart" style="height:200px;width:100%;display:block;overflow:visible;"></svg>
     </div>
     <div class="entries-header" style="margin-bottom:8px;">
       <h2>Ativos</h2>
@@ -4278,44 +4278,69 @@ function getChartData() {
   });
 }
 
+function formatValShort(v) {
+  if (Math.abs(v) >= 1000000) return '€' + (v/1000000).toFixed(1) + 'M';
+  if (Math.abs(v) >= 1000)    return '€' + (v/1000).toFixed(1) + 'k';
+  return '€' + Math.round(v);
+}
+
 function renderPatChart(data) {
-  const svg = document.getElementById('pat-chart');
-  if (!data.length) { svg.innerHTML = ''; return; }
+  const svgEl = document.getElementById('pat-chart');
+  if (!data.length) { svgEl.innerHTML = ''; return; }
 
-  const W = 400, H = 120, pad = 20;
+  const W = svgEl.getBoundingClientRect().width || 500;
+  const H = 180;
+  const padL = 58, padR = 12, padT = 14, padB = 28;
+  svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
   const vals = data.map(d => d.total);
-  const min  = Math.min(...vals) * 0.95;
-  const max  = Math.max(...vals) * 1.05 || 1;
-  const range = max - min || 1;
+  const rawMin = Math.min(...vals), rawMax = Math.max(...vals);
+  const spread = rawMax - rawMin || rawMax * 0.1 || 1;
+  const minY = rawMin - spread * 0.12;
+  const maxY = rawMax + spread * 0.12;
+  const rangeY = maxY - minY;
 
-  const pts = data.map((d, i) => {
-    const x = pad + (i / Math.max(data.length - 1, 1)) * (W - pad * 2);
-    const y = H - pad - ((d.total - min) / range) * (H - pad * 2);
-    return [x, y];
-  });
+  const toX = i => padL + (i / Math.max(data.length - 1, 1)) * (W - padL - padR);
+  const toY = v => H - padB - ((v - minY) / rangeY) * (H - padT - padB);
 
-  const line = pts.map((p,i) => (i===0?'M':'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
-  const area = line + ' L' + pts[pts.length-1][0].toFixed(1) + ',' + (H-pad) + ' L' + pad + ',' + (H-pad) + ' Z';
+  const pts = data.map((d, i) => [toX(i), toY(d.total)]);
+  const line = pts.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+  const area = line + ` L${pts.at(-1)[0].toFixed(1)},${H - padB} L${padL},${H - padB} Z`;
 
-  // Month labels
-  const labels = data.length <= 7 ? data.map((d,i) => {
-    const [y,m] = d.month.split('-');
-    const label = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][parseInt(m)-1];
-    const x = pad + (i / Math.max(data.length-1,1)) * (W - pad*2);
-    return `<text x="${x.toFixed(1)}" y="${H-4}" text-anchor="middle" fill="#555" font-size="10" font-family="DM Sans,sans-serif">${label}</text>`;
-  }).join('') : '';
+  // Y-axis: 3 gridlines + labels
+  const yTicks = [0, 0.5, 1].map(t => minY + rangeY * t);
+  const gridLines = yTicks.map(v => {
+    const y = toY(v).toFixed(1);
+    return `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="var(--border)" stroke-width="1"/>
+            <text x="${(padL - 6).toFixed(1)}" y="${(parseFloat(y) + 4).toFixed(1)}" text-anchor="end" fill="var(--muted)" font-size="10" font-family="DM Sans,sans-serif">${formatValShort(v)}</text>`;
+  }).join('');
 
-  svg.innerHTML = `
+  // X-axis labels — skip crowded months
+  const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const minGap = 48;
+  let lastX = -999;
+  const xLabels = data.map((d, i) => {
+    const x = toX(i);
+    if (x - lastX < minGap && i !== data.length - 1) return '';
+    lastX = x;
+    const [yr, mo] = d.month.split('-');
+    const mo0 = parseInt(mo);
+    const lbl = MESES[mo0 - 1] + (i === 0 || mo0 === 1 ? ' \'' + yr.slice(2) : '');
+    return `<text x="${x.toFixed(1)}" y="${H - 6}" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="DM Sans,sans-serif">${lbl}</text>`;
+  }).join('');
+
+  svgEl.innerHTML = `
     <defs>
       <linearGradient id="patGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.3"/>
+        <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.22"/>
         <stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/>
       </linearGradient>
     </defs>
+    ${gridLines}
     <path d="${area}" fill="url(#patGrad)"/>
-    <path d="${line}" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-    ${pts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="#a78bfa"/>`).join('')}
-    ${labels}`;
+    <path d="${line}" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    ${pts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3" fill="#a78bfa"/>`).join('')}
+    ${xLabels}`;
 }
 
 function renderBreakdown(total) {
