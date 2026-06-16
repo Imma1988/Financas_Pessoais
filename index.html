@@ -1166,7 +1166,7 @@
     </div>
     <div class="amount-row">
       <span class="currency">€</span>
-      <input type="number" class="amount-input" id="amount-input" inputmode="decimal" step="0.01" min="0" placeholder="0,00">
+      <input type="text" inputmode="decimal" class="amount-input" id="amount-input" placeholder="0,00" autocomplete="off" spellcheck="false">
     </div>
     <div class="cats-header">
       <span class="cats-label">Sub-categoria</span>
@@ -2491,8 +2491,18 @@ function formatTime(iso) { return new Date(iso).toLocaleTimeString('pt-PT', {hou
 function formatDate(iso) { return new Date(iso).toLocaleDateString('pt-PT', {day:'2-digit',month:'2-digit'}); }
 function formatCurrency(n) { return '€' + Math.abs(n).toFixed(2).replace('.',','); }
 function parseAmount(val) {
-  // Accept both comma and dot as decimal separator
-  return parseFloat(String(val).replace(',','.'));
+  const s = String(val).replace(/,/g, '.').replace(/\s/g, '');
+  if (!s) return 0;
+  // If expression (contains operator after first char), evaluate safely
+  if (/[+\-*/]/.test(s.slice(1))) {
+    if (/^-?[\d.]+([+\-*/]-?[\d.]+)*$/.test(s)) {
+      try {
+        const r = Function('"use strict";return(' + s + ')')();
+        if (typeof r === 'number' && isFinite(r)) return Math.round(r * 100) / 100;
+      } catch(e) {}
+    }
+  }
+  return parseFloat(s) || 0;
 }
 
 // ===== MODE =====
@@ -2757,6 +2767,12 @@ function handleCofreConfirmClick(e) {
 }
 
 document.getElementById('amount-input')?.addEventListener('keydown', e => { if(e.key==='Enter') addEntry(); });
+document.getElementById('amount-input')?.addEventListener('blur', e => {
+  const s = e.target.value.trim();
+  if (!s || !/[+\-*/]/.test(s.slice(1))) return;
+  const result = parseAmount(s);
+  if (result > 0) e.target.value = String(result).replace('.', ',');
+});
 document.getElementById('note-input')?.addEventListener('keydown',   e => { if(e.key==='Enter') addEntry(); });
 
 async function deleteEntry(id) {
