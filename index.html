@@ -156,6 +156,13 @@
     width: 100%; caret-color: var(--accent);
   }
   #amount-input::placeholder { color: var(--border); }
+  .calc-op-btn {
+    background: var(--card2); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); font-size: 20px; font-weight: 700; line-height: 1;
+    padding: 4px 12px; cursor: pointer; flex-shrink: 0; margin-left: 6px;
+    font-family: 'Syne', sans-serif;
+  }
+  .calc-op-btn:active { background: var(--border); }
 
   .cats-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   .cats-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
@@ -1167,6 +1174,7 @@
     <div class="amount-row">
       <span class="currency">€</span>
       <input type="text" inputmode="decimal" class="amount-input" id="amount-input" placeholder="0,00" autocomplete="off" spellcheck="false">
+      <button type="button" class="calc-op-btn" onclick="appendAmountOp('+')" tabindex="-1">+</button>
     </div>
     <div class="cats-header">
       <span class="cats-label">Sub-categoria</span>
@@ -2767,6 +2775,14 @@ function handleCofreConfirmClick(e) {
 }
 
 document.getElementById('amount-input')?.addEventListener('keydown', e => { if(e.key==='Enter') addEntry(); });
+function appendAmountOp(op) {
+  const el = document.getElementById('amount-input');
+  const v = el.value.trim();
+  if (!v) return;
+  // Don't append if already ends with an operator
+  if (/[+\-*/]$/.test(v)) { el.value = v.slice(0,-1) + op; } else { el.value = v + op; }
+  el.focus();
+}
 document.getElementById('amount-input')?.addEventListener('blur', e => {
   const s = e.target.value.trim();
   if (!s || !/[+\-*/]/.test(s.slice(1))) return;
