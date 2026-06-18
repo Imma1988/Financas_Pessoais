@@ -4917,7 +4917,7 @@ function submitImport() {
       saveCats();
     }
     const parentcat = m.tipo === 'expense' ? getSubcatParent(subcat) : '';
-    entries.unshift({
+    const entry = {
       id: Date.now() + i,
       type: m.tipo,
       amount: m.valor,
@@ -4926,11 +4926,31 @@ function submitImport() {
       note: document.getElementById('import-note-' + i)?.value || m.descricao,
       date: document.getElementById('import-date-' + i)?.value || m.data,
       ts: new Date().toISOString()
-    });
+    };
+    entries.unshift(entry);
+
+    // Auto-apply cofre deduction (same as confirmUseCofre but without dialog)
+    if (m.tipo === 'expense' && subcat) {
+      const linked = cofres.filter(c => c.subcategoria === subcat && !cofreCompleto(c));
+      if (linked.length > 0) {
+        const cofre = linked.find(c => c.saldoAtual >= m.valor) || linked[0];
+        const deducted = Math.min(m.valor, cofre.saldoAtual);
+        if (deducted > 0) {
+          const mov = { id: Date.now().toString() + i, tipo: 'levantar', valor: deducted, nota: entry.note || subcat, ts: entry.ts };
+          if (!cofre.movimentos) cofre.movimentos = [];
+          cofre.movimentos.push(mov);
+          cofre.saldoAtual = +(cofre.saldoAtual - deducted).toFixed(2);
+          entries.unshift({ id: Date.now() + i + 0.5, type: 'income', amount: deducted,
+            category: (cofre.emoji || '🏦') + ' ' + cofre.nome,
+            date: entry.date, note: 'Saída de cofre', ts: entry.ts });
+        }
+      }
+    }
     count++;
   });
 
   saveData(entries);
+  saveCofres(cofres);
   scheduleSave(); // save importMemory too
   closeImport();
   renderAll();
