@@ -29,9 +29,8 @@
   }
   .nav-inner { display: flex; align-items: center; justify-content: space-between;
     max-width: 1100px; margin: 0 auto; padding: 16px 24px; }
-  .nav-logo { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800;
-    letter-spacing: -0.3px; text-decoration: none; color: var(--text); }
-  .nav-logo span { color: var(--accent); }
+  .nav-logo { display: flex; align-items: center; text-decoration: none; flex-shrink: 0; }
+  .nav-logo svg { display: block; }
   .nav-cta { background: var(--accent); color: #0a0a0a; border: none; border-radius: 10px;
     padding: 9px 18px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800;
     cursor: pointer; text-decoration: none; transition: opacity 0.15s; white-space: nowrap; }
@@ -220,7 +219,12 @@
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
-    <a href="/" class="nav-logo">MONEY<span>HOLIC</span></a>
+    <a href="/" class="nav-logo">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="8" fill="#c8f135"/>
+        <path d="M7 23V9l9 9 9-9v14" stroke="#0a0a0a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
     <a href="/app" class="nav-cta">Entrar na app →</a>
   </div>
 </nav>
@@ -326,6 +330,11 @@
         <div class="feat-icon">📱</div>
         <div class="feat-title">Funciona em qualquer dispositivo</div>
         <div class="feat-text">Browser, mobile, tablet, desktop. Sem instalação, sem atualizações. Abre e usa — sempre atualizado.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">👫</div>
+        <div class="feat-title">Finanças a dois</div>
+        <div class="feat-text">Partilha o ficheiro do Drive com o teu parceiro ou familiar. Ambos veem e registam em tempo real — sem configurações extra.</div>
       </div>
     </div>
 
