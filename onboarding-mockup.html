@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoneyHolic — Onboarding Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d; --card: #1a1a1a; --card2: #222; --border: #2a2a2a;
+    --text: #f0f0f0; --muted: #666; --accent: #c8f135; --accent-income: #4ade80;
+    --red: #ff5e5e; --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif;
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+  /* ── Phone shell ── */
+  .phone {
+    width: 390px; height: 780px; background: var(--bg);
+    border-radius: 40px; border: 2px solid #333;
+    overflow: hidden; position: relative;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+  }
+
+  /* ── Screens ── */
+  .screen {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    padding: 0; opacity: 0; pointer-events: none;
+    transform: translateX(60px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    overflow: hidden;
+  }
+  .screen.active { opacity: 1; pointer-events: all; transform: translateX(0); }
+  .screen.out { opacity: 0; transform: translateX(-60px); }
+
+  /* ── Navigation dots ── */
+  .nav-dots {
+    display: flex; justify-content: center; gap: 8px; padding: 14px 0 0;
+    position: absolute; bottom: 24px; left: 0; right: 0;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 99px; background: var(--border);
+    transition: all 0.3s; }
+  .dot.active { background: var(--accent); width: 20px; }
+
+  /* ── Buttons ── */
+  .btn-primary {
+    background: var(--accent); color: #0d0d0d; border: none; border-radius: 14px;
+    padding: 16px 24px; font-family: 'Syne', sans-serif; font-size: 15px;
+    font-weight: 800; cursor: pointer; width: 100%; transition: opacity 0.15s;
+  }
+  .btn-primary:active { opacity: 0.85; }
+  .btn-secondary {
+    background: var(--card2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px 24px; font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 700; cursor: pointer; width: 100%; transition: opacity 0.15s;
+  }
+  .btn-google {
+    background: #fff; color: #1a1a1a; border: none; border-radius: 14px;
+    padding: 16px 24px; font-family: 'DM Sans', sans-serif; font-size: 15px;
+    font-weight: 700; cursor: pointer; width: 100%; display: flex;
+    align-items: center; justify-content: center; gap: 10px; transition: opacity 0.15s;
+  }
+  .btn-google:active { opacity: 0.85; }
+  .skip-btn {
+    background: none; border: none; color: var(--muted); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; cursor: pointer; padding: 8px; text-decoration: underline;
+  }
+
+  /* ── Progress bar wizard ── */
+  .wizard-progress {
+    display: flex; gap: 6px; padding: 20px 24px 0;
+  }
+  .wp-step {
+    flex: 1; height: 3px; border-radius: 99px; background: var(--border);
+    transition: background 0.4s;
+  }
+  .wp-step.done { background: var(--accent); }
+  .wp-step.active { background: var(--accent); opacity: 0.5; }
+
+  /* ── Form inputs ── */
+  .form-input {
+    background: var(--card2); border: 1.5px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; color: var(--text); font-family: 'DM Sans', sans-serif;
+    font-size: 16px; width: 100%; outline: none; transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: var(--accent); }
+  .form-input::placeholder { color: var(--muted); }
+
+  /* ════════════════════════════════════════
+     SCREEN 1 — LOGIN
+  ═══════════════════════════════════════ */
+  #s-login {
+    background: linear-gradient(180deg, #111 0%, #0d0d0d 100%);
+    justify-content: flex-end; padding-bottom: 40px;
+  }
+  .login-top {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 40px 32px 20px;
+  }
+  .login-logo {
+    font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800;
+    letter-spacing: -0.5px; margin-bottom: 6px;
+    animation: logoIn 0.8s cubic-bezier(.22,1,.36,1) both;
+  }
+  .login-logo span { color: var(--accent); }
+  @keyframes logoIn {
+    from { opacity: 0; transform: translateY(-20px) scale(0.9); }
+    to   { opacity: 1; transform: none; }
+  }
+  .login-tagline {
+    font-size: 13px; color: var(--muted); margin-bottom: 40px;
+    animation: fadeUp 0.6s 0.2s both;
+  }
+  .feature-list {
+    width: 100%; display: flex; flex-direction: column; gap: 14px;
+    animation: fadeUp 0.6s 0.35s both;
+  }
+  .feature-item {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 16px;
+  }
+  .feature-icon { font-size: 22px; flex-shrink: 0; }
+  .feature-text { font-size: 13px; color: var(--muted); line-height: 1.4; }
+  .feature-text strong { color: var(--text); display: block; margin-bottom: 1px; }
+  .login-bottom {
+    padding: 0 24px; display: flex; flex-direction: column; gap: 10px;
+    animation: fadeUp 0.6s 0.5s both;
+  }
+  .login-terms {
+    text-align: center; font-size: 11px; color: var(--muted); margin-top: 4px;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ════════════════════════════════════════
+     SCREEN 2 — WIZARD STEP 1: NOME
+  ═══════════════════════════════════════ */
+  .wizard-body {
+    flex: 1; display: flex; flex-direction: column;
+    padding: 28px 24px 0; overflow: hidden;
+  }
+  .wizard-emoji { font-size: 52px; margin-bottom: 20px; }
+  .wizard-title {
+    font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800;
+    line-height: 1.2; margin-bottom: 8px;
+  }
+  .wizard-subtitle { font-size: 14px; color: var(--muted); margin-bottom: 28px; line-height: 1.5; }
+  .wizard-footer { padding: 20px 24px 32px; display: flex; flex-direction: column; gap: 10px; }
+
+  /* ════════════════════════════════════════
+     SCREEN 3 — WIZARD STEP 2: CICLO
+  ═══════════════════════════════════════ */
+  .cycle-picker {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 8px;
+  }
+  .cycle-day {
+    aspect-ratio: 1; background: var(--card2); border: 1.5px solid var(--border);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+  }
+  .cycle-day:hover { border-color: var(--accent); color: var(--accent); }
+  .cycle-day.selected { background: var(--accent); color: #0d0d0d; border-color: var(--accent); font-weight: 800; }
+  .cycle-preview {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px 16px; margin-top: 16px; font-size: 13px; color: var(--muted);
+  }
+  .cycle-preview strong { color: var(--text); }
+
+  /* ════════════════════════════════════════
+     SCREEN 4 — WIZARD STEP 3: COFRES
+  ═══════════════════════════════════════ */
+  .cofre-option {
+    background: var(--card); border: 1.5px solid var(--border); border-radius: 14px;
+    padding: 16px; cursor: pointer; transition: all 0.2s; margin-bottom: 12px;
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+  .cofre-option.selected { border-color: var(--accent); background: rgba(200,241,53,0.05); }
+  .cofre-option-icon { font-size: 28px; flex-shrink: 0; }
+  .cofre-option-text { flex: 1; }
+  .cofre-option-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  .cofre-option-desc { font-size: 13px; color: var(--muted); line-height: 1.4; }
+  .cofre-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border);
+    flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; }
+  .cofre-option.selected .cofre-check { background: var(--accent); border-color: var(--accent); }
+  .cofre-check::after { content: '✓'; font-size: 12px; font-weight: 800; color: #0d0d0d; opacity: 0; transition: opacity 0.2s; }
+  .cofre-option.selected .cofre-check::after { opacity: 1; }
+
+  /* ════════════════════════════════════════
+     SCREEN 5 — EMPTY STATE
+  ═══════════════════════════════════════ */
+  #s-empty { background: var(--bg); }
+  .empty-topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+  }
+  .empty-topbar-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+    color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .summary-row { display: flex; gap: 8px; padding: 14px 16px; }
+  .summary-chip {
+    flex: 1; background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 10px 12px;
+  }
+  .summary-chip .lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .summary-chip .val { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; margin-top: 2px; }
+  .empty-hint-card {
+    margin: 0 16px; background: linear-gradient(135deg, rgba(200,241,53,0.08), rgba(200,241,53,0.03));
+    border: 1.5px dashed rgba(200,241,53,0.3); border-radius: 14px;
+    padding: 20px; text-align: center; animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { border-color: rgba(200,241,53,0.3); }
+    50% { border-color: rgba(200,241,53,0.6); }
+  }
+  .empty-hint-emoji { font-size: 32px; margin-bottom: 8px; }
+  .empty-hint-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+  .empty-hint-text { font-size: 13px; color: var(--muted); line-height: 1.4; }
+  .arrow-down { font-size: 24px; color: var(--accent); margin-top: 10px; animation: bounce 1s infinite; }
+  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+  .form-preview {
+    margin: 12px 16px 0; background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 14px; opacity: 0.5;
+  }
+  .form-preview-title { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+    color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .form-row-preview { background: var(--card2); border-radius: 10px; height: 44px; margin-bottom: 8px; }
+
+  /* ════════════════════════════════════════
+     SCREEN 6 — TOOLTIP
+  ═══════════════════════════════════════ */
+  #s-tooltip { background: rgba(0,0,0,0.7); }
+  .tooltip-backdrop {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.75);
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .tooltip-cat-area {
+    background: var(--card); border-radius: 20px 20px 0 0;
+    width: 100%; padding: 20px; position: absolute; bottom: 0;
+  }
+  .tooltip-cat-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+    color: var(--muted); text-transform: uppercase; margin-bottom: 14px; }
+  .tooltip-cat-item {
+    display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+    background: var(--card2); border-radius: 10px; margin-bottom: 8px;
+  }
+  .tooltip-cat-icon { font-size: 20px; }
+  .tooltip-cat-name { font-size: 14px; font-weight: 600; }
+  .tooltip-bubble {
+    position: absolute; background: var(--accent); color: #0d0d0d;
+    border-radius: 12px; padding: 10px 14px; font-size: 13px; font-weight: 700;
+    bottom: 290px; right: 20px; max-width: 180px; line-height: 1.4;
+    box-shadow: 0 8px 24px rgba(200,241,53,0.3);
+    animation: tooltipIn 0.4s cubic-bezier(.22,1,.36,1) both;
+  }
+  .tooltip-bubble::after {
+    content: ''; position: absolute; bottom: -8px; right: 20px;
+    border: 8px solid transparent; border-top-color: var(--accent);
+    border-bottom: none;
+  }
+  @keyframes tooltipIn {
+    from { opacity: 0; transform: scale(0.8) translateY(10px); }
+    to   { opacity: 1; transform: none; }
+  }
+  .tooltip-manage-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--card); border: 1.5px solid var(--accent); border-radius: 10px;
+    padding: 8px 12px; margin-bottom: 8px; font-size: 13px; font-weight: 600;
+    color: var(--accent);
+  }
+
+  /* ── Navigation arrows ── */
+  .nav-arrows {
+    display: flex; justify-content: center; gap: 16px; margin-top: 24px;
+  }
+  .nav-arrow {
+    background: var(--card); border: 1px solid var(--border); border-radius: 99px;
+    width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; cursor: pointer; color: var(--text); transition: all 0.15s;
+    user-select: none;
+  }
+  .nav-arrow:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-arrow:disabled { opacity: 0.3; cursor: default; }
+  .screen-label {
+    margin-top: 12px; font-size: 12px; color: var(--muted); text-align: center;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* Google icon SVG inline */
+  .google-icon { width: 20px; height: 20px; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <!-- ══ SCREEN 1: LOGIN ══ -->
+  <div class="screen active" id="s-login">
+    <div class="login-top">
+      <div class="login-logo">MONEY<span>HOLIC</span></div>
+      <div class="login-tagline">O teu dinheiro, sob controlo.</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-icon">📊</div>
+          <div class="feature-text">
+            <strong>Registo por ciclo</strong>
+            Controla despesas e receitas no teu ritmo, não no do calendário.
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🏦</div>
+          <div class="feature-text">
+            <strong>Cofres de poupança</strong>
+            Separa dinheiro por objectivos e acompanha o progresso.
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">💰</div>
+          <div class="feature-text">
+            <strong>Orçamentos por categoria</strong>
+            Define limites e recebe avisos antes de os ultrapassar.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="login-bottom">
+      <button class="btn-google" onclick="goTo(1)">
+        <svg class="google-icon" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Entrar com Google
+      </button>
+      <div class="login-terms">Os teus dados ficam no teu Google Drive.</div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 2: WIZARD — NOME ══ -->
+  <div class="screen" id="s-w1">
+    <div class="wizard-progress">
+      <div class="wp-step active" id="wp1-1"></div>
+      <div class="wp-step" id="wp1-2"></div>
+      <div class="wp-step" id="wp1-3"></div>
+    </div>
+    <div class="wizard-body">
+      <div class="wizard-emoji">👋</div>
+      <div class="wizard-title">Bem-vindo ao<br>MoneyHolic!</div>
+      <div class="wizard-subtitle">Vamos configurar a app em 3 passos rápidos para que funcione exactamente para ti.</div>
+      <label style="font-size:12px;color:var(--muted);margin-bottom:8px;display:block;">Como te chamas?</label>
+      <input class="form-input" id="name-input" type="text" placeholder="ex: Emanuel" style="font-size:18px;font-weight:700;">
+    </div>
+    <div class="wizard-footer">
+      <button class="btn-primary" onclick="goTo(2)">Continuar →</button>
+      <button class="skip-btn" onclick="goTo(2)">Saltar configuração</button>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 3: WIZARD — CICLO ══ -->
+  <div class="screen" id="s-w2">
+    <div class="wizard-progress">
+      <div class="wp-step done"></div>
+      <div class="wp-step active"></div>
+      <div class="wp-step"></div>
+    </div>
+    <div class="wizard-body" style="overflow-y:auto;">
+      <div class="wizard-emoji">📅</div>
+      <div class="wizard-title">O teu ciclo financeiro</div>
+      <div class="wizard-subtitle">Em que dia do mês começa o teu período financeiro? Normalmente coincide com o dia do salário.</div>
+      <div class="cycle-picker" id="cycle-picker"></div>
+      <div class="cycle-preview" id="cycle-preview">
+        <strong>Ciclo actual:</strong> selecciona um dia
+      </div>
+    </div>
+    <div class="wizard-footer">
+      <button class="btn-primary" onclick="goTo(3)">Continuar →</button>
+      <button class="btn-secondary" onclick="goTo(1)">← Voltar</button>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 4: WIZARD — COFRES ══ -->
+  <div class="screen" id="s-w3">
+    <div class="wizard-progress">
+      <div class="wp-step done"></div>
+      <div class="wp-step done"></div>
+      <div class="wp-step active"></div>
+    </div>
+    <div class="wizard-body">
+      <div class="wizard-emoji">🏦</div>
+      <div class="wizard-title">Usas poupanças com objectivo?</div>
+      <div class="wizard-subtitle" style="margin-bottom:20px;">Os cofres permitem separar dinheiro para metas específicas — férias, fundo de emergência, carro, etc.</div>
+
+      <div class="cofre-option selected" id="cofre-yes" onclick="selectCofre('yes')">
+        <div class="cofre-option-icon">✅</div>
+        <div class="cofre-option-text">
+          <div class="cofre-option-title">Sim, quero usar cofres</div>
+          <div class="cofre-option-desc">Activa a funcionalidade de poupanças com objectivos e acompanhamento de progresso.</div>
+        </div>
+        <div class="cofre-check" id="check-yes"></div>
+      </div>
+      <div class="cofre-option" id="cofre-no" onclick="selectCofre('no')">
+        <div class="cofre-option-icon">➡️</div>
+        <div class="cofre-option-text">
+          <div class="cofre-option-title">Não por agora</div>
+          <div class="cofre-option-desc">Podes activar mais tarde nas Definições.</div>
+        </div>
+        <div class="cofre-check" id="check-no"></div>
+      </div>
+    </div>
+    <div class="wizard-footer">
+      <button class="btn-primary" onclick="goTo(4)">🚀 Começar</button>
+      <button class="btn-secondary" onclick="goTo(2)">← Voltar</button>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 5: EMPTY STATE ══ -->
+  <div class="screen" id="s-empty">
+    <div class="empty-topbar">
+      <div class="empty-topbar-title">⚡ Registos</div>
+      <div style="font-size:12px;color:var(--muted);">25/06 – 24/07</div>
+    </div>
+    <div class="summary-row">
+      <div class="summary-chip">
+        <div class="lbl">Despesas</div>
+        <div class="val" style="color:var(--red);">€0,00</div>
+      </div>
+      <div class="summary-chip">
+        <div class="lbl">Receitas</div>
+        <div class="val" style="color:var(--accent-income);">€0,00</div>
+      </div>
+      <div class="summary-chip">
+        <div class="lbl">Saldo</div>
+        <div class="val">€0,00</div>
+      </div>
+    </div>
+    <div class="empty-hint-card">
+      <div class="empty-hint-emoji">✨</div>
+      <div class="empty-hint-title">Tudo começa aqui</div>
+      <div class="empty-hint-text">Regista a tua primeira despesa ou receita no formulário abaixo.</div>
+      <div class="arrow-down">↓</div>
+    </div>
+    <div class="form-preview">
+      <div class="form-preview-title">⚡ Registo rápido</div>
+      <div class="form-row-preview"></div>
+      <div class="form-row-preview"></div>
+      <div class="form-row-preview" style="height:36px;width:60%;"></div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 6: TOOLTIP ══ -->
+  <div class="screen" id="s-tooltip">
+    <!-- Background app (frozen) -->
+    <div style="position:absolute;inset:0;background:var(--bg);opacity:0.4;"></div>
+    <!-- Category sheet -->
+    <div class="tooltip-backdrop">
+      <div class="tooltip-cat-area">
+        <div class="tooltip-cat-title">Sub-categoria</div>
+        <div class="tooltip-manage-btn">⚙️ Gerir categorias</div>
+        <div class="tooltip-cat-item"><span class="tooltip-cat-icon">🍕</span><span class="tooltip-cat-name">Restaurantes</span></div>
+        <div class="tooltip-cat-item"><span class="tooltip-cat-icon">🛒</span><span class="tooltip-cat-name">Supermercado</span></div>
+        <div class="tooltip-cat-item"><span class="tooltip-cat-icon">⛽</span><span class="tooltip-cat-name">Combustível</span></div>
+        <div class="tooltip-cat-item"><span class="tooltip-cat-icon">🏠</span><span class="tooltip-cat-name">Habitação</span></div>
+      </div>
+      <div class="tooltip-bubble">
+        💡 Podes criar e gerir as tuas categorias aqui em cima
+      </div>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+<!-- Navigation -->
+<div class="nav-arrows">
+  <button class="nav-arrow" id="btn-prev" onclick="prevScreen()" disabled>‹</button>
+  <button class="nav-arrow" id="btn-next" onclick="nextScreen()">›</button>
+</div>
+<div class="screen-label" id="screen-label">Ecrã 1 / 6 — Login</div>
+
+<script>
+const SCREENS = ['s-login','s-w1','s-w2','s-w3','s-empty','s-tooltip'];
+const LABELS  = [
+  'Login — primeira impressão',
+  'Wizard 1/3 — Nome',
+  'Wizard 2/3 — Ciclo financeiro',
+  'Wizard 3/3 — Cofres',
+  'Empty state — primeiro acesso',
+  'Tooltip — picker de categorias'
+];
+let current = 0;
+
+function goTo(idx) {
+  const prev = SCREENS[current];
+  const next = SCREENS[idx];
+  document.getElementById(prev).classList.remove('active');
+  document.getElementById(prev).classList.add('out');
+  setTimeout(() => document.getElementById(prev).classList.remove('out'), 400);
+  document.getElementById(next).classList.add('active');
+  current = idx;
+  updateNav();
+}
+
+function nextScreen() { if (current < SCREENS.length - 1) goTo(current + 1); }
+function prevScreen() { if (current > 0) goTo(current - 1); }
+
+function updateNav() {
+  document.getElementById('btn-prev').disabled = current === 0;
+  document.getElementById('btn-next').disabled = current === SCREENS.length - 1;
+  document.getElementById('screen-label').textContent =
+    `Ecrã ${current + 1} / ${SCREENS.length} — ${LABELS[current]}`;
+}
+
+// Cycle day picker
+let selectedDay = 25;
+const picker = document.getElementById('cycle-picker');
+for (let d = 1; d <= 28; d++) {
+  const el = document.createElement('div');
+  el.className = 'cycle-day' + (d === selectedDay ? ' selected' : '');
+  el.textContent = d;
+  el.onclick = () => selectDay(d);
+  picker.appendChild(el);
+}
+function selectDay(d) {
+  selectedDay = d;
+  document.querySelectorAll('.cycle-day').forEach((el, i) => {
+    el.classList.toggle('selected', i + 1 === d);
+  });
+  const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), d);
+  if (start > now) start.setMonth(start.getMonth() - 1);
+  const end = new Date(start); end.setMonth(end.getMonth() + 1); end.setDate(end.getDate() - 1);
+  document.getElementById('cycle-preview').innerHTML =
+    `<strong>Ciclo actual:</strong> ${start.getDate()} ${months[start.getMonth()]} – ${end.getDate()} ${months[end.getMonth()]}`;
+}
+selectDay(25);
+
+function selectCofre(choice) {
+  document.getElementById('cofre-yes').classList.toggle('selected', choice === 'yes');
+  document.getElementById('cofre-no').classList.toggle('selected',  choice === 'no');
+}
+
+updateNav();
+</script>
+</body>
+</html>
