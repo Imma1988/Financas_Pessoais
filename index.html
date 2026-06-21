@@ -35,6 +35,15 @@
     margin: 0 auto;
   }
 
+  /* USER AVATAR */
+  .user-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent); color: #0d0d0d;
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 12px;
+    display: none; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .user-avatar.visible { display: flex; }
+
   /* BOTTOM NAV */
   .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0;
@@ -94,7 +103,7 @@
     width: 100%; display: flex; justify-content: space-between;
     align-items: flex-start; margin-bottom: 28px;
   }
-  .header-left h1 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; white-space: nowrap; }
+  .header-left h1 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
   .header-left .date { font-size: 12px; color: var(--muted); margin-top: 2px; text-transform: capitalize; }
 
 
@@ -156,13 +165,6 @@
     width: 100%; caret-color: var(--accent);
   }
   #amount-input::placeholder { color: var(--border); }
-  .calc-op-btn {
-    background: var(--card2); border: 1px solid var(--border); border-radius: 8px;
-    color: var(--text); font-size: 20px; font-weight: 700; line-height: 1;
-    padding: 4px 12px; cursor: pointer; flex-shrink: 0; margin-left: 6px;
-    font-family: 'Syne', sans-serif;
-  }
-  .calc-op-btn:active { background: var(--border); }
 
   .cats-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   .cats-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
@@ -230,10 +232,6 @@
     align-items: center; margin-bottom: 12px;
   }
   .entries-header h2 { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-  .entries-search-bar { width: 100%; margin-bottom: 10px; display: none; }
-  .entries-search-bar input { width: 100%; box-sizing: border-box; padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--card2); color: var(--text); font-size: 14px; font-family: 'DM Sans', sans-serif; outline: none; }
-  .entries-search-bar input:focus { border-color: var(--accent); }
-  .entries-search-bar.open { display: block; }
   .clear-btn {
     background: none; border: none; color: var(--muted); font-size: 11px;
     cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 4px 8px;
@@ -780,7 +778,7 @@
   /* Ativos list */
   .ativos-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
   .ativos-header-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-  .ativos-list, #ativos-list { width: 100%; display: flex; flex-direction: column; gap: 14px; }
+  .ativos-list { width: 100%; display: flex; flex-direction: column; gap: 10px; }
   .ativo-card {
     background: var(--card); border: 1px solid var(--border);
     border-radius: 12px; padding: 14px 16px;
@@ -867,13 +865,13 @@
   /* ===== ORÇAMENTOS ===== */
   .orc-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
   .orc-card.pai { border-left: 3px solid var(--accent); }
-  .orc-card.sub { margin-left: 0; border-left: 3px solid var(--muted); }
+  .orc-card.sub { margin-left: 16px; border-left: 3px solid var(--muted); font-size: 13px; }
   .orc-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   .orc-cat-name { font-weight: 700; font-size: 14px; flex: 1; }
   .orc-card.sub .orc-cat-name { font-size: 13px; }
   .orc-valores { font-size: 12px; color: var(--muted); white-space: nowrap; margin-left: 8px; }
   .orc-valores .gasto { color: var(--text); font-weight: 700; }
-  .orc-edit-btn { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; padding: 2px 6px; border-radius: 6px; line-height: 1; }
+  .orc-edit-btn { background: none; border: none; color: var(--muted); font-size: 16px; cursor: pointer; padding: 2px 6px; border-radius: 6px; }
   .orc-edit-btn:hover { background: var(--card2); color: var(--text); }
   .orc-progress-wrap { margin-top: 4px; }
   .orc-progress-pct { font-size: 10px; color: var(--muted); text-align: right; margin-bottom: 3px; }
@@ -886,61 +884,49 @@
   .orc-total-banner { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; }
   .orc-total-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
   .orc-total-row .orc-total-val { color: var(--text); font-weight: 700; font-size: 14px; }
+  /* Budget banner in registos view */
   .orc-banner { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; }
   .orc-banner-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
   .orc-banner-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
   .orc-banner-link { color: var(--accent); font-weight: 700; font-size: 11px; cursor: pointer; }
   .orc-banner-text { font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+  /* Budget indicator in category picker */
   .bs-cat-budget { font-size: 10px; color: var(--muted); display: block; margin-top: 1px; }
   .bs-cat-budget.aviso { color: #f0a500; }
   .bs-cat-budget.ultrapassado { color: var(--red); font-weight: 700; }
+  /* Orc modal type toggle */
   .orc-type-toggle { display: flex; gap: 6px; margin-bottom: 14px; }
   .orc-type-btn { flex: 1; background: var(--card2); border: 1.5px solid var(--border); border-radius: 9px; padding: 9px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all 0.2s; }
   .orc-type-btn.active { background: var(--accent); color: #0d0d0d; border-color: var(--accent); }
-  /* Annual view */
-  .orc-tab-toggle { display: flex; gap: 6px; margin-bottom: 14px; }
-  .orc-tab-btn { flex: 1; padding: 9px; border-radius: 9px; border: 1.5px solid var(--border); background: var(--card2); color: var(--muted); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+
+  /* ===== ORÇAMENTOS — VISTA ANUAL ===== */
+  .orc-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+  .orc-tab-btn { flex: 1; background: var(--card2); border: 1.5px solid var(--border); border-radius: 9px; padding: 8px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all 0.2s; }
   .orc-tab-btn.active { background: var(--accent); color: #0d0d0d; border-color: var(--accent); }
-  .orc-year-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+  .orc-section-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; font-weight: 700; padding: 0 2px; }
+  .orc-year-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 14px; }
   .orc-year-card.pai { border-left: 3px solid var(--accent); }
-  .orc-year-card.sub { margin-left: 0; border-left: 3px solid var(--muted); }
+  .orc-year-card.sub { margin-left: 16px; border-left: 3px solid var(--muted); }
+  .orc-year-card.income { border-left: 3px solid #4ade80; }
   .orc-year-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-  .orc-year-cat-name { font-weight: 700; font-size: 14px; }
+  .orc-year-cat-name { font-weight: 700; font-size: 14px; flex: 1; }
   .orc-year-base { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
   .orc-months-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-bottom: 4px; }
-  .orc-month-cell { display: flex; flex-direction: column; align-items: center; padding: 6px 2px; border-radius: 8px; cursor: pointer; border: 1.5px solid transparent; transition: all 0.15s; background: var(--card2); min-width: 0; }
-  .orc-month-cell:hover { border-color: var(--accent); }
-  .orc-month-cell.current { border-color: var(--accent); background: rgba(200,241,53,0.08); }
-  .orc-month-cell.past-over { background: rgba(255,80,80,0.1); }
-  .orc-month-cell .mc-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
-  .orc-month-cell .mc-val { font-size: 11px; font-weight: 700; margin: 2px 0 1px; white-space: nowrap; }
-  .orc-month-cell .mc-spent { font-size: 9px; color: var(--muted); }
-  .orc-month-cell.past-over .mc-spent { color: var(--red); }
-  .orc-month-cell .mc-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--card); margin-top: 2px; }
-  .orc-month-cell.past-ok .mc-dot { background: var(--accent); }
-  .orc-month-cell.past-over .mc-dot { background: var(--red); }
-  .orc-month-cell.current .mc-dot { background: var(--accent); }
-  .orc-month-cell .mc-override { font-size: 8px; color: var(--accent); line-height: 1; }
-  .orc-year-totals { display: flex; gap: 8px; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 8px; }
-  .orc-year-totals .tot-item { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-  .orc-year-totals .tot-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
-  .orc-year-totals .tot-val { font-size: 13px; font-weight: 700; color: var(--text); }
-  /* Income budget cards */
-  .orc-card.income { border-left: 3px solid var(--accent-income); }
-  .orc-progress-fill.income-ok   { background: var(--accent-income); }
-  .orc-progress-fill.income-low  { background: var(--red); }
-  .orc-section-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; padding: 10px 2px 4px; }
-  /* Savings estimate banner */
-  .orc-savings-banner { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-top: 14px; }
-  .orc-savings-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-  .orc-savings-row .val { font-weight: 700; color: var(--text); }
-  .orc-year-totals .tot-over { color: var(--red); }
-  /* AI suggest */
-  .orc-suggest-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-  .orc-suggest-btn { background: none; border: 1px solid var(--border); border-radius: 8px; color: var(--accent); font-size: 11px; font-weight: 700; padding: 3px 9px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
-  .orc-suggest-btn:hover { background: rgba(200,241,53,0.1); border-color: var(--accent); }
-  .orc-suggest-btn:disabled { opacity: 0.5; cursor: default; }
-  .orc-suggest-chip { font-size: 11px; color: var(--muted); background: var(--card2); border-radius: 8px; padding: 7px 10px; margin-top: 6px; border-left: 2px solid var(--accent); display: none; line-height: 1.5; }
+  .orc-month-cell { background: var(--card2); border-radius: 8px; padding: 6px 3px; text-align: center; cursor: pointer; position: relative; transition: background 0.15s; min-width: 0; overflow: hidden; }
+  .orc-month-cell:hover { background: var(--border); }
+  .orc-month-cell.current { border: 1.5px solid var(--accent); }
+  .orc-month-cell.past-ok { background: rgba(200,241,53,0.08); }
+  .orc-month-cell.past-over { background: rgba(255,94,94,0.1); }
+  .mc-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; }
+  .mc-val { font-size: 11px; font-weight: 700; color: var(--text); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mc-spent { font-size: 9px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mc-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--border); margin: 3px auto 0; }
+  .mc-override { position: absolute; top: 2px; right: 3px; font-size: 8px; color: var(--accent); font-weight: 700; line-height: 1; }
+  .orc-year-totals { display: flex; gap: 6px; margin-top: 10px; }
+  .tot-item { flex: 1; background: var(--card2); border-radius: 8px; padding: 8px 4px; text-align: center; }
+  .tot-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px; }
+  .tot-val { font-size: 13px; font-weight: 700; color: var(--text); }
+  .tot-val.tot-over { color: var(--red); }
 
   /* App shell — mobile defaults */
   #app-shell { width: 100%; }
@@ -950,7 +936,7 @@
   @media (min-width: 900px) {
 
     body {
-      overflow: hidden; height: 100vh; height: 100dvh; display: flex;
+      overflow: hidden; height: 100vh; display: flex;
       max-width: 100% !important; width: 100% !important;
       padding: 0 !important; margin: 0 !important;
       align-items: stretch !important; flex-direction: row !important;
@@ -964,14 +950,14 @@
     .header-left  { display: none !important; }
 
     /* App shell */
-    #app-shell { display: flex !important; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; }
+    #app-shell { display: flex !important; width: 100%; height: 100vh; overflow: hidden; }
 
     /* Sidebar */
     #desktop-sidebar {
       display: flex !important; flex-direction: column;
       width: 210px; min-width: 210px;
       background: #111; border-right: 1px solid var(--border);
-      height: 100vh; height: 100dvh; max-height: 100vh; max-height: 100dvh; overflow-y: auto; flex-shrink: 0;
+      height: 100vh; max-height: 100vh; overflow: hidden; flex-shrink: 0;
     }
     .sb-logo { padding: 16px 16px 14px; border-bottom: 1px solid var(--border); margin-bottom: 4px; overflow: hidden; flex-shrink: 0; }
     .sb-logo img { width: 160px !important; height: auto; display: block; }
@@ -988,7 +974,7 @@
     .sb-user { font-size: 11px; color: var(--muted); padding: 8px 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     /* Main content */
-    #main-content { flex: 1; height: 100vh; height: 100dvh; min-width: 0; position: relative; overflow: hidden; }
+    #main-content { flex: 1; height: 100vh; min-width: 0; position: relative; overflow: hidden; }
     #main-content > .view { position: absolute; inset: 0; overflow-y: auto; display: none !important; padding: 16px 24px 48px !important; }
     #main-content > .view.active { display: block !important; }
     #main-content > #view-registos.active { display: grid !important; overflow: hidden; padding: 16px 24px !important; }
@@ -1014,6 +1000,7 @@
     /* Registos two-column */
     #view-registos {
       max-width: 100% !important; width: 100% !important;
+      height: 100vh;
       display: grid !important;
       grid-template-columns: 380px 1fr;
       grid-template-rows: auto 1fr;
@@ -1021,17 +1008,17 @@
       padding: 16px 24px !important;
       box-sizing: border-box; overflow: hidden;
       align-items: stretch;
-      z-index: 1;
+      position: relative; z-index: 1;
     }
     #main-content > .view.active:not(#view-registos) {
-      z-index: 2;
+      position: relative; z-index: 2;
     }
 
     /* Summary — first card aligns with left column, rest with right */
     #view-registos > .summary {
       grid-column: 1 / -1; grid-row: 1;
       display: grid !important;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 380px 1fr 1fr;
       gap: 0 24px;
       margin-bottom: 16px;
     }
@@ -1044,10 +1031,11 @@
       overflow: hidden;
       padding: 16px !important;
       align-self: stretch;
-      min-height: 0;
+      height: 100%;
     }
+    #view-registos > .quick-add > *:not(.add-btn) { flex-shrink: 0; }
     #view-registos > .quick-add > .add-btn {
-      margin-top: 14px !important;
+      margin-top: auto !important;
       flex-shrink: 0;
     }
 
@@ -1056,10 +1044,6 @@
       grid-column: 2; grid-row: 2;
       display: flex !important; flex-direction: column;
       overflow: hidden; align-self: stretch;
-      min-height: 0;
-    }
-    #view-registos > #entries-col > .orc-banner {
-      flex-shrink: 0;
     }
     #view-registos > #entries-col > .entries-header {
       flex-shrink: 0; margin-bottom: 8px;
@@ -1094,6 +1078,107 @@
       z-index: 2000 !important; width: 100vw !important; max-width: 100vw !important;
     }
   }
+
+/* ── ONBOARDING OVERLAY ── */
+.ob-overlay {
+  display: none; position: fixed; inset: 0; z-index: 1000;
+  background: #0d0d0d; flex-direction: column; align-items: center;
+  max-width: 480px; margin: 0 auto; overflow: hidden;
+}
+.ob-overlay.open { display: flex; }
+.ob-screen {
+  width: 100%; flex: 1; display: flex; flex-direction: column; overflow: hidden;
+  animation: obSlideIn 0.3s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes obSlideIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: none; } }
+.ob-progress { display: flex; gap: 6px; padding: 20px 24px 0; flex-shrink: 0; }
+.ob-wp { flex: 1; height: 3px; border-radius: 99px; background: #2a2a2a; }
+.ob-wp.done { background: var(--accent); }
+.ob-wp.active { background: var(--accent); opacity: 0.5; }
+.ob-body { flex: 1; display: flex; flex-direction: column; padding: 24px 24px 0; overflow: hidden; }
+.ob-emoji { font-size: 44px; margin-bottom: 14px; }
+.ob-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; line-height: 1.2; margin-bottom: 8px; }
+.ob-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+.ob-footer { padding: 16px 24px 32px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
+.ob-btn-primary {
+  background: var(--accent); color: #0d0d0d; border: none; border-radius: 14px;
+  padding: 15px; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; cursor: pointer; width: 100%;
+}
+.ob-btn-secondary {
+  background: #1e1e1e; color: var(--text); border: 1px solid #2a2a2a; border-radius: 14px;
+  padding: 15px; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; width: 100%;
+}
+.ob-skip { background: none; border: none; color: var(--muted); font-size: 13px; cursor: pointer; padding: 8px; text-decoration: underline; font-family: 'DM Sans', sans-serif; }
+.ob-name-input {
+  background: #1e1e1e; border: 1.5px solid #2a2a2a; border-radius: 12px;
+  padding: 14px 16px; color: var(--text); font-family: 'DM Sans', sans-serif;
+  font-size: 18px; font-weight: 700; width: 100%; outline: none;
+}
+.ob-name-input:focus { border-color: var(--accent); }
+.ob-name-input::placeholder { color: #444; font-weight: 400; font-size: 16px; }
+.ob-cycle-picker { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.ob-day {
+  aspect-ratio: 1; background: #1e1e1e; border: 1.5px solid #2a2a2a;
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; color: var(--text);
+}
+.ob-day:hover { border-color: var(--accent); color: var(--accent); }
+.ob-day.sel { background: var(--accent); color: #0d0d0d; border-color: var(--accent); font-weight: 800; }
+.ob-cycle-preview {
+  background: #161616; border: 1px solid #2a2a2a; border-radius: 12px;
+  padding: 10px 14px; margin-top: 12px; font-size: 13px; color: var(--muted);
+}
+.ob-cycle-preview strong { color: var(--text); }
+.ob-cofre-opt {
+  background: #161616; border: 1.5px solid #2a2a2a; border-radius: 14px;
+  padding: 14px; cursor: pointer; transition: all 0.2s; margin-bottom: 10px;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.ob-cofre-opt.sel { border-color: var(--accent); background: rgba(200,241,53,0.05); }
+.ob-cofre-icon { font-size: 26px; flex-shrink: 0; }
+.ob-cofre-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 3px; }
+.ob-cofre-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.ob-cofre-check {
+  width: 20px; height: 20px; border-radius: 50%; border: 2px solid #2a2a2a;
+  margin-left: auto; flex-shrink: 0; margin-top: 2px;
+  display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.ob-cofre-opt.sel .ob-cofre-check { background: var(--accent); border-color: var(--accent); }
+.ob-cofre-check::after { content: '✓'; font-size: 11px; font-weight: 800; color: #0d0d0d; opacity: 0; transition: opacity 0.2s; }
+.ob-cofre-opt.sel .ob-cofre-check::after { opacity: 1; }
+/* Tour */
+.ob-tour-overlay {
+  display: none; position: fixed; inset: 0; z-index: 1001; pointer-events: none;
+  max-width: 480px; margin: 0 auto;
+}
+.ob-tour-overlay.open { display: block; }
+.ob-tour-dim { position: absolute; inset: 0; background: rgba(0,0,0,0.78); }
+.ob-tour-spot {
+  position: absolute; border-radius: 10px;
+  box-shadow: 0 0 0 9999px rgba(0,0,0,0.78);
+  transition: all 0.4s cubic-bezier(.22,1,.36,1); pointer-events: none;
+}
+.ob-tour-bubble {
+  position: fixed; background: var(--accent); color: #0d0d0d;
+  border-radius: 14px; padding: 12px 16px; font-size: 13px; font-weight: 700;
+  line-height: 1.5; max-width: 260px; z-index: 1002;
+  box-shadow: 0 8px 28px rgba(200,241,53,0.4);
+  animation: obBubbleIn 0.35s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes obBubbleIn { from { opacity: 0; transform: scale(0.88) translateY(8px); } to { opacity: 1; transform: none; } }
+.ob-tour-footer {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 1003; pointer-events: all;
+  padding: 12px 20px 28px; max-width: 480px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  background: linear-gradient(to top, rgba(13,13,13,1) 60%, transparent);
+}
+.ob-tour-dots { display: flex; gap: 6px; }
+.ob-tour-dot { width: 6px; height: 6px; border-radius: 99px; background: #2a2a2a; transition: all 0.3s; }
+.ob-tour-dot.active { background: var(--accent); width: 18px; }
+.ob-tour-next {
+  background: var(--accent); color: #0d0d0d; border: none; border-radius: 12px;
+  padding: 10px 20px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer;
+}
 </style>
 </head>
 <body>
@@ -1116,7 +1201,7 @@
     <button class="sb-btn" style="color:var(--red);" onclick="logoutApp()"><span class="sb-icon">🚪</span>Sair</button>
   </div>
 </div>
-<div id="main-content" style="flex:1;min-width:0;">
+<div id="main-content" style="flex:1;overflow-y:auto;min-width:0;">
 
 <!-- ===== VIEW: REGISTOS ===== -->
 <div id="login-screen">
@@ -1137,7 +1222,8 @@
     <div class="header-left">
       <img src="data:image/jpeg;base64,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" alt="Moneyholic" style="height:56px;width:auto;display:block;">
     </div>
-    <div class="header-right sync-indicator" style="position:static;font-size:11px;">
+    <div class="header-right sync-indicator" style="position:static;font-size:11px;gap:8px;display:flex;align-items:center;">
+      <div class="user-avatar" id="user-avatar"></div>
       <div class="sync-dot" id="sync-dot"></div>
       <span class="sync-label" id="sync-label">Guardado</span>
     </div>
@@ -1157,8 +1243,18 @@
     <div class="summary-card balance">
       <div class="label">Saldo</div>
       <div class="amount" id="today-balance">€0</div>
-      <div class="sub" id="today-balance-sub">ciclo</div>
+      <div class="sub">ciclo</div>
     </div>
+  </div>
+
+  <!-- Budget banner -->
+  <div class="orc-banner" id="orc-banner" style="display:none;">
+    <div class="orc-banner-row">
+      <span class="orc-banner-label">💰 Orçamentos do ciclo</span>
+      <span class="orc-banner-link" onclick="switchView('orcamentos')">Ver tudo →</span>
+    </div>
+    <div class="orc-banner-text" id="orc-banner-text"></div>
+    <div class="progress-bar"><div class="progress-fill" id="orc-banner-fill" style="width:0%;background:var(--accent);transition:width 0.4s;"></div></div>
   </div>
 
   <!-- Quick add form -->
@@ -1168,13 +1264,12 @@
       <button onclick="openImport()" style="background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;padding:6px 12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;" onmouseover="this.style.color='#a78bfa';this.style.borderColor='#a78bfa'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border)'">📥 Importar extrato</button>
     </div>
     <div class="type-toggle">
-      <button class="type-btn active-expense" id="btn-expense" onclick="setMode('expense')">📤 Despesa</button>
+      <button class="type-btn active" id="btn-expense" onclick="setMode('expense')">📤 Despesa</button>
       <button class="type-btn" id="btn-income" onclick="setMode('income')">📥 Receita</button>
     </div>
     <div class="amount-row">
       <span class="currency">€</span>
-      <input type="text" inputmode="decimal" class="amount-input" id="amount-input" placeholder="0,00" autocomplete="off" spellcheck="false">
-      <button type="button" class="calc-op-btn" onclick="appendAmountOp('+')" tabindex="-1">+</button>
+      <input type="number" class="amount-input" id="amount-input" inputmode="decimal" step="0.01" min="0" placeholder="0,00">
     </div>
     <div class="cats-header">
       <span class="cats-label">Sub-categoria</span>
@@ -1200,33 +1295,17 @@
   </div>
 
   <!-- Entries list -->
-  <div id="entries-col" style="display:contents;">
-    <!-- Budget banner -->
-    <div class="orc-banner" id="orc-banner" style="display:none;">
-      <div class="orc-banner-row">
-        <span class="orc-banner-label">💰 Orçamentos do ciclo</span>
-        <span class="orc-banner-link" onclick="switchView('orcamentos')">Ver tudo →</span>
-      </div>
-      <div class="orc-banner-text" id="orc-banner-text"></div>
-      <div class="progress-bar"><div class="progress-fill" id="orc-banner-fill" style="width:0%;transition:width 0.4s;"></div></div>
+  <div class="entries-header">
+    <h2 id="entries-h2">📋</h2>
+    <div style="display:flex;gap:6px;align-items:center;">
+      <button class="clear-btn" id="ciclo-prev-btn" onclick="navigateCiclo(-1)" style="font-size:16px;padding:4px 8px;">‹</button>
+      <button class="clear-btn" id="ciclo-next-btn" onclick="navigateCiclo(1)" style="font-size:16px;padding:4px 8px;">›</button>
+      <button class="clear-btn" onclick="clearToday()">Limpar</button>
     </div>
-    <div class="entries-header">
-      <h2 id="entries-h2">📋</h2>
-      <div style="display:flex;gap:6px;align-items:center;">
-        <button class="clear-btn" id="ciclo-prev-btn" onclick="navigateCiclo(-1)" style="font-size:16px;padding:4px 8px;">‹</button>
-        <button class="clear-btn" id="ciclo-next-btn" onclick="navigateCiclo(1)" style="font-size:16px;padding:4px 8px;">›</button>
-        <button class="clear-btn" id="sort-toggle-btn" onclick="toggleEntriesSort()" title="Ordenação" style="font-size:12px;padding:4px 7px;">📅 Data</button>
-        <button class="clear-btn" id="search-toggle-btn" onclick="toggleEntriesSearch()" title="Pesquisar">🔍</button>
-        <button class="clear-btn" onclick="clearToday()">Limpar</button>
-      </div>
-    </div>
-    <div class="entries-search-bar" id="entries-search-bar">
-      <input type="text" id="entries-search-input" placeholder="🔍 Pesquisar categoria, nota, valor..." oninput="onEntriesSearch(this.value)" autocomplete="off">
-    </div>
-    <div class="entries" id="entries-list"
-      ontouchstart="handleSwipeStart(event)"
-      ontouchend="handleSwipeEnd(event)"></div>
   </div>
+  <div class="entries" id="entries-list"
+    ontouchstart="handleSwipeStart(event)"
+    ontouchend="handleSwipeEnd(event)"></div>
 </div>
 
 
@@ -1244,7 +1323,6 @@
     </div>
     <div class="rb-icon">🪙</div>
   </div>
-  <button class="contribuir-todos-btn" onclick="openContribuirTodos()" style="margin-bottom:14px;">🪙 Contribuir para todos</button>
   <div class="cofres-list" id="cofres-list"></div>
 </div>
 
@@ -1253,7 +1331,7 @@
   <div class="header">
     <div class="header-left"><h1>📊 Património</h1></div>
   </div>
-  <div style="padding-bottom:80px;">
+  <div style="padding:0 16px 80px;">
     <div class="summary" style="margin-bottom:16px;">
       <div class="summary-card balance" style="flex:1;">
         <div class="label">Total</div>
@@ -1263,7 +1341,7 @@
     </div>
     <div class="chart-wrap" style="margin-bottom:16px;">
       <div class="chart-title">Evolução</div>
-      <svg id="pat-chart" style="height:200px;width:100%;display:block;overflow:visible;"></svg>
+      <div id="pat-chart" style="height:180px;"></div>
     </div>
     <div class="entries-header" style="margin-bottom:8px;">
       <h2>Ativos</h2>
@@ -1279,7 +1357,7 @@
   <div class="header">
     <div class="header-left"><h1>📈 Relatórios</h1></div>
   </div>
-  <div style="padding-bottom:80px;">
+  <div style="padding:0 16px 80px;">
     <div class="type-toggle" style="margin-bottom:12px;">
       <button class="range-btn active" id="rel-ciclo-atual" onclick="setRelatorioPeriod('atual')">Atual</button>
       <button class="range-btn" id="rel-ciclo-anterior" onclick="setRelatorioPeriod('anterior')">Anterior</button>
@@ -1304,16 +1382,12 @@
       <div class="summary-card balance">
         <div class="label">Saldo</div>
         <div class="amount" id="rel-saldo">€0</div>
-        <div class="sub" id="rel-saldo-sub">período</div>
+        <div class="sub">período</div>
       </div>
     </div>
     <div class="chart-wrap" id="rel-chart-wrap" style="margin-bottom:16px;">
       <div class="chart-title" id="rel-chart-title">Por categoria</div>
       <div id="rel-chart-container"></div>
-    </div>
-    <div style="display:flex;gap:6px;margin-bottom:12px;">
-      <button class="orc-tab-btn active" id="rel-tab-exp" onclick="switchRelTab('exp')" style="flex:1;">💸 Despesas</button>
-      <button class="orc-tab-btn"        id="rel-tab-inc" onclick="switchRelTab('inc')" style="flex:1;">💰 Receitas</button>
     </div>
     <div id="rel-categories-list"></div>
   </div>
@@ -1324,7 +1398,7 @@
   <div class="header">
     <div class="header-left"><h1>⚙️ Definições</h1></div>
   </div>
-  <div style="padding-bottom:80px;" id="definicoes-content">
+  <div style="padding:0 16px 80px;" id="definicoes-content">
 
     <!-- Gemini API Key -->
     <div class="breakdown-wrap" style="margin-bottom:16px;">
@@ -1408,41 +1482,22 @@
 <div class="view" id="view-orcamentos">
   <div class="header">
     <div class="header-left"><h1>💰 Orçamentos</h1></div>
-  </div>
-  <div style="display:flex;justify-content:flex-end;align-items:center;margin-top:-18px;margin-bottom:10px;">
-    <div id="orc-ciclo-nav" style="display:flex;align-items:center;gap:2px;">
-      <button onclick="navigateCiclo(-1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:2px 6px;">‹</button>
+    <div class="header-right" style="display:flex;align-items:center;gap:6px;">
+      <button class="icon-btn" id="orc-nav-prev" onclick="navigateCiclo(-1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:4px 8px;">‹</button>
       <span id="orc-ciclo-label" style="font-size:12px;color:var(--muted);white-space:nowrap;"></span>
-      <button id="orc-nav-next" onclick="navigateCiclo(1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:2px 6px;">›</button>
-    </div>
-    <div id="orc-ano-nav" style="display:none;align-items:center;gap:2px;">
-      <button onclick="navigateOrcAno(-1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:2px 6px;">‹</button>
-      <span id="orc-ano-label" style="font-size:12px;color:var(--muted);white-space:nowrap;font-weight:700;"></span>
-      <button id="orc-ano-next" onclick="navigateOrcAno(1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:2px 6px;">›</button>
+      <button class="icon-btn" id="orc-nav-next" onclick="navigateCiclo(1)" style="font-size:20px;background:none;border:none;color:var(--text);cursor:pointer;padding:4px 8px;">›</button>
     </div>
   </div>
   <div style="padding-bottom:80px;" id="orcamentos-content">
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;">
-      <button class="orc-tab-btn active" id="orc-tab-ciclo" onclick="switchOrcViewMode('ciclo')" style="flex:1;margin-bottom:0;">📅 Ciclo</button>
-      <button class="orc-tab-btn"        id="orc-tab-ano"   onclick="switchOrcViewMode('ano')"   style="flex:1;margin-bottom:0;">📆 Ano</button>
-      <button onclick="addAllSubcatOrcamentos()" title="Adicionar todas as sub-categorias com sugestão automática" style="background:none;border:1.5px solid var(--border);border-radius:9px;color:var(--accent);font-size:12px;font-weight:700;padding:9px 12px;cursor:pointer;white-space:nowrap;font-family:'Syne',sans-serif;">✨ Auto</button>
-    </div>
-    <div id="orc-ciclo-content">
-      <div id="orc-total-banner" class="orc-total-banner" style="display:none;"></div>
-      <div id="orc-list"></div>
-      <div id="orc-income-list"></div>
-      <div id="orc-savings-banner" class="orc-savings-banner" style="display:none;"></div>
-    </div>
-    <div id="orc-ano-content" style="display:none;">
-      <div id="orc-ano-list"></div>
-    </div>
+    <div id="orc-total-banner" class="orc-total-banner" style="display:none;"></div>
+    <div id="orc-list"></div>
     <div id="orc-empty" style="display:none;text-align:center;padding:48px 20px;color:var(--muted);">
       <div style="font-size:40px;margin-bottom:12px;">💰</div>
       <div style="font-weight:700;font-size:16px;margin-bottom:8px;">Sem orçamentos</div>
       <div style="font-size:13px;">Toca em + para definir limites por categoria</div>
     </div>
   </div>
-  <button id="fab-orc" onclick="openAddOrcamento()" title="Novo orçamento" style="display:none;position:fixed;bottom:80px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--accent);color:#0d0d0d;border:none;font-size:26px;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.35);z-index:100;line-height:1;">+</button>
+  <button class="fab" onclick="openAddOrcamento()" title="Novo orçamento" style="position:fixed;bottom:80px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--accent);color:#0d0d0d;border:none;font-size:26px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.3);display:none;" id="fab-orc">+</button>
 </div>
 
 <!-- SIDE MENU -->
@@ -1486,6 +1541,89 @@
 </div>
 
 
+
+<!-- ===== ONBOARDING WIZARD ===== -->
+<div id="onboarding-overlay" class="ob-overlay">
+
+  <!-- Step 1: Name -->
+  <div class="ob-screen" id="ob-s1">
+    <div class="ob-progress">
+      <div class="ob-wp active"></div><div class="ob-wp"></div><div class="ob-wp"></div>
+    </div>
+    <div class="ob-body">
+      <div class="ob-emoji">👋</div>
+      <div class="ob-title">Bem-vindo ao<br>MoneyHolic!</div>
+      <div class="ob-sub">Vamos configurar a app em 3 passos rápidos para que funcione exatamente para ti.</div>
+      <label style="font-size:12px;color:var(--muted);margin-bottom:8px;display:block;">Como te chamas?</label>
+      <input class="ob-name-input" id="ob-name" type="text" placeholder="ex: Emanuel" autocomplete="given-name">
+    </div>
+    <div class="ob-footer">
+      <button class="ob-btn-primary" onclick="obGoTo(2)">Continuar →</button>
+      <button class="ob-skip" onclick="obGoTo(2)">Saltar configuração</button>
+    </div>
+  </div>
+
+  <!-- Step 2: Cycle -->
+  <div class="ob-screen" id="ob-s2" style="display:none;">
+    <div class="ob-progress">
+      <div class="ob-wp done"></div><div class="ob-wp active"></div><div class="ob-wp"></div>
+    </div>
+    <div class="ob-body">
+      <div class="ob-emoji">📅</div>
+      <div class="ob-title">O teu ciclo financeiro</div>
+      <div class="ob-sub">Em que dia do mês começa o teu período financeiro? Normalmente coincide com o dia do salário.</div>
+      <div class="ob-cycle-picker" id="ob-cycle-picker"></div>
+      <div class="ob-cycle-preview" id="ob-cycle-preview"><strong>Ciclo atual:</strong> seleciona um dia</div>
+    </div>
+    <div class="ob-footer">
+      <button class="ob-btn-primary" onclick="obGoTo(3)">Continuar →</button>
+      <button class="ob-btn-secondary" onclick="obGoTo(1)">← Voltar</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Cofres -->
+  <div class="ob-screen" id="ob-s3" style="display:none;">
+    <div class="ob-progress">
+      <div class="ob-wp done"></div><div class="ob-wp done"></div><div class="ob-wp active"></div>
+    </div>
+    <div class="ob-body">
+      <div class="ob-emoji">🏦</div>
+      <div class="ob-title">Queres usar cofres?</div>
+      <div class="ob-sub">Os cofres permitem guardar mensalmente uma parte do dinheiro para despesas irregulares — seguro do carro, férias, revisão — para que quando chegarem não pesem tanto no orçamento.</div>
+      <div class="ob-cofre-opt sel" id="ob-cofre-yes" onclick="obSelectCofre(true)">
+        <div class="ob-cofre-icon">✅</div>
+        <div style="flex:1;">
+          <div class="ob-cofre-title">Sim, quero usar cofres</div>
+          <div class="ob-cofre-desc">Ativa poupanças por objetivo com acompanhamento de progresso mensal.</div>
+        </div>
+        <div class="ob-cofre-check"></div>
+      </div>
+      <div class="ob-cofre-opt" id="ob-cofre-no" onclick="obSelectCofre(false)">
+        <div class="ob-cofre-icon">➡️</div>
+        <div style="flex:1;">
+          <div class="ob-cofre-title">Não por agora</div>
+          <div class="ob-cofre-desc">Podes ativar mais tarde nas Definições.</div>
+        </div>
+        <div class="ob-cofre-check"></div>
+      </div>
+    </div>
+    <div class="ob-footer">
+      <button class="ob-btn-primary" onclick="obFinish()">🚀 Começar</button>
+      <button class="ob-btn-secondary" onclick="obGoTo(2)">← Voltar</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== TOUR OVERLAY ===== -->
+<div id="ob-tour-overlay" class="ob-tour-overlay">
+  <div class="ob-tour-spot" id="ob-tour-spot"></div>
+  <div class="ob-tour-bubble" id="ob-tour-bubble" style="display:none;"></div>
+  <div class="ob-tour-footer">
+    <div class="ob-tour-dots" id="ob-tour-dots"></div>
+    <button class="ob-tour-next" id="ob-tour-next" onclick="obTourNext()">Próxima →</button>
+  </div>
+</div>
 
 <!-- ===== MODAL: Cat Picker ===== -->
 <div class="bottom-sheet-overlay" id="cat-picker-overlay" onclick="handleCatPickerOverlayClick(event)">
@@ -1658,20 +1796,18 @@
     <div style="margin-top:10px;">
       <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">Nova categoria pai</div>
       <div class="add-cat-form">
-        <input type="text" class="add-cat-emoji" id="new-expense-cat-emoji" maxlength="8" placeholder="🏷️">
-        <input type="text" class="add-cat-name" id="new-expense-cat-name" placeholder="Nome da categoria"
-          onkeydown="if(event.key==='Enter'){event.preventDefault();addExpenseCat();}">
-        <button type="button" class="add-cat-btn" onclick="addExpenseCat()">+ Criar</button>
+        <input type="text" class="add-cat-emoji" id="new-expense-cat-emoji" maxlength="2" placeholder="🏷️">
+        <input type="text" class="add-cat-name" id="new-expense-cat-name" placeholder="Nome da categoria">
+        <button class="add-cat-btn" onclick="addExpenseCat()">+ Criar</button>
       </div>
     </div>
 
     <div class="cat-section-label" style="margin-top:20px;">📥 Receitas</div>
     <div class="cat-list" id="income-cat-list"></div>
     <div class="add-cat-form">
-      <input type="text" class="add-cat-emoji" id="new-income-emoji" maxlength="8" placeholder="🏷️">
-      <input type="text" class="add-cat-name" id="new-income-name" placeholder="Nome da categoria"
-        onkeydown="if(event.key==='Enter'){event.preventDefault();addCat('income');}">
-      <button type="button" class="add-cat-btn income-btn" onclick="addCat('income')">+ Adicionar</button>
+      <input type="text" class="add-cat-emoji" id="new-income-emoji" maxlength="2" placeholder="🏷️">
+      <input type="text" class="add-cat-name" id="new-income-name" placeholder="Nome da categoria">
+      <button class="add-cat-btn income-btn" onclick="addCat('income')">+ Adicionar</button>
     </div>
   </div>
 </div>
@@ -1754,10 +1890,6 @@
       <label class="form-label">Nota (opcional)</label>
       <input type="text" class="form-input" id="mov-nota" placeholder="Ex: contribuição de maio">
     </div>
-    <div class="form-row">
-      <label class="form-label">Data</label>
-      <input type="date" class="form-input" id="mov-data">
-    </div>
     <div>
       <label class="form-label">Movimentos recentes</label>
       <div class="movimentos-list" id="mov-historico-list"></div>
@@ -1799,66 +1931,44 @@
 <div class="modal-overlay" id="orc-modal-overlay" onclick="handleOrcModalClick(event)">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title" id="orc-modal-title">💰 Novo Orçamento <button class="modal-close" onclick="closeOrcModal()">✕</button></div>
+
     <div style="margin-bottom:14px;">
-      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Lado</div>
-      <div class="orc-type-toggle">
-        <button class="orc-type-btn active" id="orc-side-expense" onclick="setOrcModalSide('expense')">💸 Despesa</button>
-        <button class="orc-type-btn"        id="orc-side-income"  onclick="setOrcModalSide('income')">💰 Receita</button>
-      </div>
-    </div>
-    <div id="orc-cattype-row" style="margin-bottom:14px;">
       <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Tipo de categoria</div>
       <div class="orc-type-toggle">
         <button class="orc-type-btn active" id="orc-type-parent" onclick="setOrcModalType('parent')">Categoria</button>
         <button class="orc-type-btn" id="orc-type-sub" onclick="setOrcModalType('sub')">Sub-categoria</button>
       </div>
     </div>
+
     <button class="cat-picker-btn" id="orc-cat-btn" onclick="openOrcCatPicker()" style="margin-bottom:14px;">
       <span id="orc-cat-icon">📂</span>
       <span id="orc-cat-label" style="flex:1;">Escolher categoria</span>
       <span style="color:var(--muted);font-size:12px;">›</span>
     </button>
+
     <div class="form-row" style="margin-bottom:14px;">
-      <div class="orc-suggest-row">
-        <label class="form-label" style="margin-bottom:0;">Montante base (recorrente)</label>
-        <button class="orc-suggest-btn" id="orc-suggest-btn" onclick="applySugestao()" type="button">💡 Sugerir</button>
-      </div>
-      <input type="number" inputmode="decimal" class="form-input" id="orc-amount-input" placeholder="ex: 300" min="0" step="0.01" style="margin-top:6px;">
-      <div class="orc-suggest-chip" id="orc-suggest-chip"></div>
+      <label class="form-label">Montante base (recorrente)</label>
+      <input type="number" inputmode="decimal" class="form-input" id="orc-amount-input" placeholder="ex: 300" min="0" step="0.01">
     </div>
+
     <div class="form-row" style="margin-bottom:18px;">
       <label class="form-label">Montante para este ciclo <span style="color:var(--muted);font-weight:400;">(opcional)</span></label>
       <input type="number" inputmode="decimal" class="form-input" id="orc-override-input" placeholder="Deixa em branco para usar o base" min="0" step="0.01">
     </div>
+
     <button class="modal-submit-btn" onclick="saveOrcamento()">Guardar</button>
     <button id="orc-delete-btn" class="modal-submit-btn danger" style="margin-top:8px;display:none;" onclick="deleteOrcamentoFromModal()">Eliminar orçamento</button>
     <input type="hidden" id="orc-editing-id" value="">
   </div>
 </div>
 
-<!-- ORÇAMENTO CAT PICKER -->
-<div class="bottom-sheet-overlay" id="orc-cat-picker-overlay" onclick="handleOrcCatPickerOverlayClick(event)" style="z-index:250;">
+<!-- ORÇAMENTO CAT PICKER (bottom sheet) -->
+<div class="bottom-sheet-overlay" id="orc-cat-picker-overlay" onclick="handleOrcCatPickerOverlayClick(event)">
   <div class="bottom-sheet" onclick="event.stopPropagation()">
     <div class="bottom-sheet-handle"></div>
-    <div class="bottom-sheet-title">Escolher categoria</div>
+    <div class="bottom-sheet-title" id="orc-cat-picker-title">Escolher categoria</div>
     <input type="text" class="bottom-sheet-search" id="orc-cat-picker-search" placeholder="🔍 Pesquisar..." oninput="renderOrcCatPickerList(this.value)">
     <div class="bottom-sheet-list" id="orc-cat-picker-list"></div>
-  </div>
-</div>
-
-<!-- EDITAR MÊS MODAL -->
-<div class="modal-overlay" id="orc-mes-modal-overlay" onclick="handleOrcMesModalClick(event)">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title" id="orc-mes-modal-title">Janeiro 2026 <button class="modal-close" onclick="closeOrcMesModal()">✕</button></div>
-    <div id="orc-mes-cat-name" style="font-size:15px;font-weight:700;margin-bottom:4px;"></div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Base recorrente: <span id="orc-mes-base" style="font-weight:700;color:var(--text);"></span></div>
-    <div class="form-row" style="margin-bottom:18px;">
-      <label class="form-label">Montante para este mês <span style="color:var(--muted);font-weight:400;">(deixa em branco para usar o base)</span></label>
-      <input type="number" inputmode="decimal" class="form-input" id="orc-mes-input" placeholder="ex: 450" min="0" step="0.01">
-    </div>
-    <button class="modal-submit-btn" onclick="saveOrcMes()">Guardar</button>
-    <input type="hidden" id="orc-mes-orc-id">
-    <input type="hidden" id="orc-mes-ciclo-key">
   </div>
 </div>
 
@@ -1866,7 +1976,7 @@
 
 <script>
 // ===== CONFIG =====
-const CLIENT_ID    = '344816457312-pf9jjnsojiu4sves48acu4f60d0p4ue3.apps.googleusercontent.com';
+const CLIENT_ID    = '780147822875-9ecc4n99h3k07lrkb8t8f6v4cvlunon1.apps.googleusercontent.com';
 const WORKER_URL    = 'https://financas-gemini.imateixeira23054.workers.dev';
 const DRIVE_FILE    = 'financas_dados.json';
 const DRIVE_FOLDER  = 'Finanças Pessoais';
@@ -1917,15 +2027,13 @@ let orcamentos      = [];
 let deletedOrcIds   = new Set();
 let tiposCustom     = {};
 let cicloInicio     = 25; // day of month cycle starts
+let userName       = '';
+let onboardingDone = false;
 let cicloOffset     = 0;  // 0 = current, -1 = previous, etc.
-let entriesQuery    = '';
-let entriesSortMode = 'date'; // 'date' | 'intro'
-let sessionLastDate = null;   // resets to today on each page load
 let accessToken  = null;
 let driveFileId  = null;
 let syncTimeout  = null;
 let isSyncing    = false;
-let hasLoaded    = false; // prevents token refreshes from overwriting unsaved local changes
 
 // ===== AUTH =====
 let tokenClient = null;
@@ -1939,8 +2047,6 @@ function initAuth() {
       if (resp.error) { showLoginError(); return; }
       accessToken = resp.access_token;
       localStorage.setItem('gToken', accessToken);
-      localStorage.setItem('gTokenTime', Date.now());
-      scheduleTokenRefresh();
       try {
         const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
           headers: { Authorization: 'Bearer ' + accessToken }
@@ -1948,7 +2054,6 @@ function initAuth() {
         const info = await r.json();
         if (!info.email) { showLoginError(); return; }
         currentUserEmail = info.email;
-        localStorage.setItem('mh_email', info.email);
         onAuthorised();
       } catch(e) { showLoginError(); }
     }
@@ -1958,47 +2063,12 @@ function initAuth() {
   const saved = localStorage.getItem('gToken');
   if (saved) {
     accessToken = saved;
-    // Render from cache immediately, before network confirms token
-    const cachedEmail = localStorage.getItem('mh_email');
-    if (cachedEmail) {
-      currentUserEmail = cachedEmail;
-      const cachedData = localStorage.getItem('mh_data_' + cachedEmail);
-      if (cachedData) {
-        try {
-          applyData(JSON.parse(cachedData));
-          const sbEl = document.getElementById('desktop-sidebar');
-          if (sbEl) sbEl.style.display = '';
-          const sbUserEl = document.getElementById('sb-user');
-          if (sbUserEl) sbUserEl.textContent = cachedEmail;
-          renderAll(); renderCats(); setMode('expense'); resetDatePicker();
-          const mce = document.getElementById('menu-cofres');
-          if (mce) mce.style.display = cofresEnabled ? '' : 'none';
-          const sce = document.getElementById('sb-btn-cofres');
-          if (sce) sce.style.display = cofresEnabled ? '' : 'none';
-          document.getElementById('login-screen').classList.add('hidden');
-        } catch(e) {}
-      }
-    }
-    // If token was issued recently, schedule proactive refresh and skip network verify
-    const tokenAge = Date.now() - (parseInt(localStorage.getItem('gTokenTime')) || 0);
-    if (tokenAge < 55 * 60 * 1000) {
-      // Token still fresh — use it and schedule refresh for when it nears expiry
-      const remaining = 55 * 60 * 1000 - tokenAge;
-      setTimeout(() => { if (accessToken) silentRefresh(); }, remaining);
-      scheduleTokenRefresh();
-      const cachedEmail2 = localStorage.getItem('mh_email');
-      if (cachedEmail2) { currentUserEmail = cachedEmail2; onAuthorised(); }
-      return;
-    }
     // Verify it's still valid
     fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
       headers: { Authorization: 'Bearer ' + accessToken }
     }).then(r => r.json()).then(info => {
-      if (!accessToken) return; // user logged out while fetch was in flight
       if (info.email && !info.error) {
         currentUserEmail = info.email;
-        localStorage.setItem('mh_email', info.email);
-        scheduleTokenRefresh();
         onAuthorised();
       } else if (info.error) {
         // Token expired — try silent refresh before giving up
@@ -2014,19 +2084,9 @@ function initAuth() {
   }
 }
 
-let _tokenRefreshInterval = null;
-
 function silentRefresh() {
   if (!tokenClient) return;
   tokenClient.requestAccessToken({ prompt: '' });
-}
-
-function scheduleTokenRefresh() {
-  if (_tokenRefreshInterval) clearInterval(_tokenRefreshInterval);
-  // Proactively renew every 55 minutes (tokens expire at 60 min)
-  _tokenRefreshInterval = setInterval(() => {
-    if (accessToken) silentRefresh();
-  }, 55 * 60 * 1000);
 }
 
 function openSupportEmail() {
@@ -2041,14 +2101,23 @@ function openSupportEmail() {
 }
 
 function logoutAndReset() {
-  hasLoaded = false;
+  // Clear local cache
   if (currentUserEmail) {
     localStorage.removeItem('mh_data_' + currentUserEmail);
     localStorage.removeItem('mh_fileId_' + currentUserEmail);
   }
   localStorage.removeItem('gToken');
-  localStorage.removeItem('mh_email');
-  window.location.reload();
+  accessToken = null;
+  currentUserEmail = '';
+  // Reset all state
+  entries = []; expenseCats = JSON.parse(JSON.stringify(DEFAULT_EXPENSE_CATS));
+  incomeCats = [...DEFAULT_INCOME_CATS]; cofres = []; ativos = [];
+  geminiKey = ''; cofresEnabled = false; cicloOffset = 0;
+  driveFileId = null; sharedFileId = '';
+  // Go back to registos view
+  switchView('registos');
+  document.getElementById('license-screen').classList.remove('show');
+  document.getElementById('login-screen').classList.remove('hidden');
 }
 
 async function logoutApp() {
@@ -2073,7 +2142,6 @@ async function onAuthorised() {
       body: JSON.stringify({ email: currentUserEmail })
     });
     const verifyData = await verifyRes.json();
-    if (!accessToken) return;
     if (!verifyData.licensed) {
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('license-screen').classList.add('show');
@@ -2084,18 +2152,13 @@ async function onAuthorised() {
     console.warn('License check failed, allowing access:', e);
   }
 
-  if (!accessToken) return;
   document.getElementById('login-screen').classList.add('hidden');
-  // Show sidebar and email immediately — don't wait for Drive load
+  await loadFromDrive();
+  // Desktop sidebar
   const sbEl = document.getElementById('desktop-sidebar');
   if (sbEl) sbEl.style.display = '';
   const sbUserEl = document.getElementById('sb-user');
   if (sbUserEl) sbUserEl.textContent = currentUserEmail || '';
-  if (!hasLoaded) {
-    hasLoaded = true;
-    await loadFromDrive();
-  }
-  if (!accessToken) return;
   const sbCofresEl = document.getElementById('sb-btn-cofres');
   if (sbCofresEl) sbCofresEl.style.display = cofresEnabled ? '' : 'none';
   // Apply cofres visibility after data loaded
@@ -2115,9 +2178,10 @@ async function onAuthorised() {
     if (poupanca && !poupanca.subs.includes('Cofres')) poupanca.subs.push('Cofres');
   }
   // Show onboarding for new users
-  if (entries.length === 0 && !geminiKey && cicloInicio === 25) {
-    setTimeout(showOnboarding, 500);
+  if (!onboardingDone) {
+    setTimeout(showOnboarding, 400);
   }
+  updateAvatar();
   // Refresh token every 45 min silently
   setInterval(() => {
     if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
@@ -2203,6 +2267,8 @@ function applyData(data) {
   deletedCatKeys  = new Set(data.deletedCatKeys  || []);
   orcamentos      = data.orcamentos      || [];
   deletedOrcIds   = new Set(data.deletedOrcIds   || []);
+  userName       = data.userName       || '';
+  onboardingDone = data.onboardingDone || false;
 }
 
 async function loadFromDrive() {
@@ -2214,12 +2280,6 @@ async function loadFromDrive() {
       applyData(JSON.parse(cached));
       renderAll();
       renderCats();
-      setMode('expense');
-      resetDatePicker();
-      const _mce = document.getElementById('menu-cofres');
-      if (_mce) _mce.style.display = cofresEnabled ? '' : 'none';
-      const _sce = document.getElementById('sb-btn-cofres');
-      if (_sce) _sce.style.display = cofresEnabled ? '' : 'none';
     }
     // Load from Drive in background
     await findOrCreateDriveFile();
@@ -2303,12 +2363,6 @@ async function saveToDrive() {
         // Merge categories
         const remoteDeletedCats = new Set(remote.deletedCatKeys || []);
         remoteDeletedCats.forEach(k => deletedCatKeys.add(k));
-        // Local additions win over remote deletions: if user re-added something, remove the delete key
-        expenseCats.forEach(g => {
-          deletedCatKeys.delete('expense-cat:' + g.cat);
-          (g.subs || []).forEach(s => deletedCatKeys.delete('expense-sub:' + g.cat + ':' + s));
-        });
-        incomeCats.forEach(c => deletedCatKeys.delete('income:' + c));
         // Merge income cats (flat array)
         const remoteIncome = remote.incomeCats || [];
         const localIncomeSet = new Set(incomeCats);
@@ -2349,7 +2403,7 @@ async function saveToDrive() {
       }
     }
 
-    const payload = JSON.stringify({ entries, expenseCats, incomeCats, cofres, ativos, orcamentos, cicloInicio, importMemory, tiposCustom, geminiKey, cofresEnabled, deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds], deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys], deletedAtivoIds: [...deletedAtivoIds], deletedOrcIds: [...deletedOrcIds] });
+    const payload = JSON.stringify({ entries, expenseCats, incomeCats, cofres, ativos, orcamentos, cicloInicio, importMemory, tiposCustom, geminiKey, cofresEnabled, deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds], deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys], deletedAtivoIds: [...deletedAtivoIds], deletedOrcIds: [...deletedOrcIds], userName, onboardingDone });
 
     await fetch('https://www.googleapis.com/upload/drive/v3/files/' + driveFileId + '?uploadType=media', {
       method: 'PATCH',
@@ -2381,9 +2435,10 @@ function scheduleSave() {
 }
 
 function setSyncStatus(state, label) {
-  document.querySelectorAll('.sync-dot').forEach(d => d.className = 'sync-dot ' + state);
+  const dot = document.getElementById('sync-dot');
   const lbl = document.getElementById('sync-label');
-  if (lbl) lbl.textContent = label;
+  dot.className = 'sync-dot ' + state;
+  lbl.textContent = label;
 }
 
 // ===== STORAGE WRAPPERS =====
@@ -2454,12 +2509,12 @@ function cicloLabel(offset) {
 }
 
 function navigateCiclo(delta) {
-  const isOrc = document.getElementById('view-orcamentos').classList.contains('active');
   cicloOffset += delta;
-  if (!isOrc && cicloOffset > 0) cicloOffset = 0;
+  // Don't go into the future
+  if (cicloOffset > 0) cicloOffset = 0;
   renderAll();
   resetDatePicker();
-  if (isOrc) renderOrcamentos();
+  if (document.getElementById('view-orcamentos').classList.contains('active')) renderOrcamentos();
 }
 function getEntryDate() {
   const val = document.getElementById('date-input').value;
@@ -2482,7 +2537,8 @@ function onDateChange(val) {
   }
 }
 function resetDatePicker() {
-  const lastDate = sessionLastDate || todayStr();
+  // Use date of last entry, or today if none
+  const lastDate = entries.length > 0 ? entries[0].date : todayStr();
   const isToday  = lastDate === todayStr();
   document.getElementById('date-input').value = lastDate;
   if (isToday) {
@@ -2499,18 +2555,8 @@ function formatTime(iso) { return new Date(iso).toLocaleTimeString('pt-PT', {hou
 function formatDate(iso) { return new Date(iso).toLocaleDateString('pt-PT', {day:'2-digit',month:'2-digit'}); }
 function formatCurrency(n) { return '€' + Math.abs(n).toFixed(2).replace('.',','); }
 function parseAmount(val) {
-  const s = String(val).replace(/,/g, '.').replace(/\s/g, '');
-  if (!s) return 0;
-  // If expression (contains operator after first char), evaluate safely
-  if (/[+\-*/]/.test(s.slice(1))) {
-    if (/^-?[\d.]+([+\-*/]-?[\d.]+)*$/.test(s)) {
-      try {
-        const r = Function('"use strict";return(' + s + ')')();
-        if (typeof r === 'number' && isFinite(r)) return Math.round(r * 100) / 100;
-      } catch(e) {}
-    }
-  }
-  return parseFloat(s) || 0;
+  // Accept both comma and dot as decimal separator
+  return parseFloat(String(val).replace(',','.'));
 }
 
 // ===== MODE =====
@@ -2625,17 +2671,18 @@ function renderCatPickerList(query) {
         const icon = group.cat.split(' ')[0];
         const btn  = document.createElement('button');
         btn.className = 'bs-cat-btn' + (sub === selectedCatValue ? ' active' : '');
-        const orc = orcamentos.find(o => !deletedOrcIds.has(o.id) && o.catType === 'sub' && o.catKey === sub);
+        // Budget indicator
+        const orc = orcamentos.find(o => o.catType === 'sub' && o.catKey === sub);
         let budgetHtml = '';
         if (orc) {
-          const cicloKey  = getCicloKey();
-          const valor     = getOrcamentoValor(orc, cicloKey);
-          const gasto     = getGastoOrcamentoCiclo('sub', sub);
-          const cls       = gasto > valor ? 'ultrapassado' : (gasto / valor >= 0.8 ? 'aviso' : '');
+          const cicloKey = getCicloKey();
+          const valor = getOrcamentoValor(orc, cicloKey);
+          const gasto = getGastoOrcamentoCiclo('sub', sub);
+          const restante = valor - gasto;
+          const cls = gasto > valor ? 'ultrapassado' : (gasto / valor >= 0.8 ? 'aviso' : '');
           budgetHtml = '<span class="bs-cat-budget ' + cls + '">' +
-            (gasto > valor
-              ? '⚠️ Ultrapassado: ' + formatCurrency(gasto) + ' / ' + formatCurrency(valor)
-              : formatCurrency(valor - gasto) + ' restantes de ' + formatCurrency(valor)) +
+            (gasto > valor ? '⚠️ Ultrapassado: ' + formatCurrency(gasto) + ' / ' + formatCurrency(valor)
+              : formatCurrency(restante) + ' restantes de ' + formatCurrency(valor)) +
             '</span>';
         }
         btn.innerHTML = '<span class="bs-icon">' + icon + '</span><span style="flex:1"><span>' + sub + '</span>' + budgetHtml + '</span>';
@@ -2695,22 +2742,23 @@ function addEntry() {
 function commitEntry(entry) {
   entries.unshift(entry);
   saveData(entries);
-  sessionLastDate = entry.date;
   document.getElementById('amount-input').value='';
   document.getElementById('note-input').value='';
   resetDatePicker();
   document.getElementById('amount-input').focus();
   renderAll();
   if (entry.type === 'expense') {
-    const orcSub    = orcamentos.find(o => !deletedOrcIds.has(o.id) && o.catType === 'sub'    && o.catKey === entry.category);
-    const orcParent = orcamentos.find(o => !deletedOrcIds.has(o.id) && o.catType === 'parent' && o.catKey === entry.parentCategory);
+    const orcSub    = orcamentos.find(o => o.catType === 'sub' && o.catKey === entry.category);
+    const orcParent = orcamentos.find(o => o.catType === 'parent' && o.catKey === entry.parentCategory);
     const cicloKey  = getCicloKey();
     if (orcSub) {
-      const val = getOrcamentoValor(orcSub, cicloKey);
-      if (getGastoOrcamentoCiclo('sub', entry.category) > val) { showToast('⚠️ Orçamento de ' + entry.category + ' ultrapassado!'); return; }
+      const val   = getOrcamentoValor(orcSub, cicloKey);
+      const gasto = getGastoOrcamentoCiclo('sub', entry.category);
+      if (gasto > val) { showToast('⚠️ Orçamento de ' + entry.category + ' ultrapassado!'); return; }
     } else if (orcParent) {
-      const val = getOrcamentoValor(orcParent, cicloKey);
-      if (getGastoOrcamentoCiclo('parent', entry.parentCategory) > val) { showToast('⚠️ Orçamento de ' + entry.parentCategory + ' ultrapassado!'); return; }
+      const val   = getOrcamentoValor(orcParent, cicloKey);
+      const gasto = getGastoOrcamentoCiclo('parent', entry.parentCategory);
+      if (gasto > val) { showToast('⚠️ Orçamento de ' + entry.parentCategory + ' ultrapassado!'); return; }
     }
   }
   showToast(getMotivationToast(entries.filter(e=>e.date===todayStr()).length, entry.type));
@@ -2746,19 +2794,12 @@ function confirmUseCofre(cofreId) {
   if (!pendingEntry) return;
   const cofre = cofres.find(c => c.id === cofreId);
   if (cofre) {
-    const deducted = Math.min(pendingEntry.amount, cofre.saldoAtual);
-    if (deducted > 0) {
-      const mov = { id: Date.now().toString(), tipo:'levantar', valor: deducted, nota: pendingEntry.note || pendingEntry.category, ts: new Date().toISOString() };
-      if (!cofre.movimentos) cofre.movimentos = [];
-      cofre.movimentos.push(mov);
-      cofre.saldoAtual = +(cofre.saldoAtual - deducted).toFixed(2);
-      saveCofres(cofres);
-      // Income entry to offset the expense (money came from the cofre, not current income)
-      const incEntry = { id: Date.now() + 1, type: 'income', amount: deducted,
-        category: (cofre.emoji || '🏦') + ' ' + cofre.nome,
-        date: pendingEntry.date, note: 'Saída de cofre', ts: new Date().toISOString() };
-      entries.unshift(incEntry);
-    }
+    const valor = pendingEntry.amount;
+    const mov   = { id: Date.now().toString(), tipo:'levantar', valor, nota: pendingEntry.note || pendingEntry.category, ts: new Date().toISOString() };
+    if (!cofre.movimentos) cofre.movimentos = [];
+    cofre.movimentos.push(mov);
+    cofre.saldoAtual = Math.max(0, +(cofre.saldoAtual - valor).toFixed(2));
+    saveCofres(cofres);
   }
   commitEntry(pendingEntry);
   pendingEntry = null;
@@ -2776,27 +2817,9 @@ function handleCofreConfirmClick(e) {
 }
 
 document.getElementById('amount-input')?.addEventListener('keydown', e => { if(e.key==='Enter') addEntry(); });
-function appendAmountOp(op) {
-  const el = document.getElementById('amount-input');
-  const v = el.value.trim();
-  if (!v) return;
-  // Don't append if already ends with an operator
-  if (/[+\-*/]$/.test(v)) { el.value = v.slice(0,-1) + op; } else { el.value = v + op; }
-  el.focus();
-}
-document.getElementById('amount-input')?.addEventListener('blur', e => {
-  const s = e.target.value.trim();
-  if (!s || !/[+\-*/]/.test(s.slice(1))) return;
-  const result = parseAmount(s);
-  if (result > 0) e.target.value = String(result).replace('.', ',');
-});
 document.getElementById('note-input')?.addEventListener('keydown',   e => { if(e.key==='Enter') addEntry(); });
 
-async function deleteEntry(id) {
-  const ok = await appConfirm('Tens a certeza que queres eliminar este registo?', 'Eliminar registo', 'Eliminar', true);
-  if (!ok) return;
-  deletedIds.add(id); entries=entries.filter(e=>e.id!==id); saveData(entries); renderAll();
-}
+function deleteEntry(id) { deletedIds.add(id); entries=entries.filter(e=>e.id!==id); saveData(entries); renderAll(); }
 
 let editEntryId = null;
 let editEntryMode = 'expense';
@@ -2811,7 +2834,7 @@ function openEditEntry(id) {
   document.getElementById('edit-amount').value = e.amount;
   document.getElementById('edit-note').value   = e.note || '';
   document.getElementById('edit-date').value   = e.date;
-  document.getElementById('edit-date').max     = '';
+  document.getElementById('edit-date').max     = todayStr();
 
   populateEditCatSelect(e.type, e.category);
   document.getElementById('edit-entry-overlay').classList.add('open');
@@ -2868,14 +2891,7 @@ function handleSwipeEnd(e) {
   else if (cicloOffset < 0) navigateCiclo(1); // swipe left = next
 }
 
-// ===== ORÇAMENTOS =====
-function getReceitaOrcamentoCiclo(catKey, offset) {
-  const { start, end } = getCicloRange(offset !== undefined ? offset : cicloOffset);
-  return entries
-    .filter(e => e.type === 'income' && e.date >= start && e.date <= end && e.category === catKey)
-    .reduce((s, e) => s + e.amount, 0);
-}
-
+// ===== ORÇAMENTOS HELPERS =====
 function getCicloKey(offset) {
   const { start } = getCicloRange(offset !== undefined ? offset : cicloOffset);
   return start.slice(0, 7);
@@ -2883,30 +2899,6 @@ function getCicloKey(offset) {
 function getOrcamentoValor(orc, cicloKey) {
   return (orc.overrides && orc.overrides[cicloKey] !== undefined) ? orc.overrides[cicloKey] : orc.valorBase;
 }
-// Returns virtual expense entries from cofre contributions within [start,end]
-function getCofreVirtualEntries(start, end) {
-  const virtual = [];
-  cofres.forEach(c => {
-    if (!c.subcategoria) return;
-    const parent = getSubcatParent(c.subcategoria) || c.subcategoria;
-    (c.movimentos || []).forEach(m => {
-      if (m.tipo !== 'contribuir' || !m.ts) return;
-      const date = m.ts.slice(0, 10);
-      if (date < start || date > end) return;
-      virtual.push({ id: 'cofre-' + c.id + '-' + m.id, type: 'expense', amount: m.valor,
-        category: c.subcategoria, parentCategory: parent, date, note: c.nome, ts: m.ts, _cofre: true });
-    });
-  });
-  return virtual;
-}
-
-// Sum cofre contributions within [start,end] for categories linked to cofres
-function getCofreGasto(catType, catKey, start, end) {
-  return getCofreVirtualEntries(start, end)
-    .filter(e => catType === 'parent' ? e.parentCategory === catKey : e.category === catKey)
-    .reduce((s, e) => s + e.amount, 0);
-}
-
 function getGastoOrcamentoCiclo(catType, catKey, offset) {
   const { start, end } = getCicloRange(offset !== undefined ? offset : cicloOffset);
   return entries
@@ -2915,16 +2907,16 @@ function getGastoOrcamentoCiclo(catType, catKey, offset) {
     .reduce((sum, e) => sum + e.amount, 0);
 }
 
+// ===== ORÇAMENTOS RENDER =====
 function renderOrcBanner() {
   const banner = document.getElementById('orc-banner');
   if (!banner) return;
-  const activeOrcs = orcamentos.filter(o => !deletedOrcIds.has(o.id) && o.catType !== 'income');
+  const activeOrcs = orcamentos.filter(o => !deletedOrcIds.has(o.id));
   if (!activeOrcs.length) { banner.style.display = 'none'; return; }
   const cicloKey = getCicloKey();
   let totalOrc = 0, totalGasto = 0, ultrapassados = 0;
   activeOrcs.forEach(o => {
-    const val = getOrcamentoValor(o, cicloKey);
-    if (val === 0) return;
+    const val   = getOrcamentoValor(o, cicloKey);
     const gasto = getGastoOrcamentoCiclo(o.catType, o.catKey);
     totalOrc   += val;
     totalGasto += gasto;
@@ -2932,32 +2924,21 @@ function renderOrcBanner() {
   });
   if (totalOrc === 0) { banner.style.display = 'none'; return; }
   banner.style.display = '';
-  const pct    = Math.min(100, Math.round(totalGasto / totalOrc * 100));
+  const pct = Math.min(100, Math.round(totalGasto / totalOrc * 100));
   const fillEl = document.getElementById('orc-banner-fill');
   const textEl = document.getElementById('orc-banner-text');
   if (fillEl) {
-    fillEl.style.width      = pct + '%';
+    fillEl.style.width = pct + '%';
     fillEl.style.background = pct >= 100 ? 'var(--red)' : pct >= 80 ? '#f0a500' : 'var(--accent)';
   }
   if (textEl) {
-    const alert = ultrapassados > 0 ? ' · ⚠️ ' + ultrapassados + ' ultrapassado' + (ultrapassados > 1 ? 's' : '') : '';
-    textEl.textContent = formatCurrency(totalGasto) + ' gastos de ' + formatCurrency(totalOrc) + ' (' + pct + '%)' + alert;
+    const alertText = ultrapassados > 0 ? ' · ⚠️ ' + ultrapassados + ' ultrapassado' + (ultrapassados > 1 ? 's' : '') : '';
+    textEl.textContent = formatCurrency(totalGasto) + ' gastos de ' + formatCurrency(totalOrc) + ' orçados (' + pct + '%)' + alertText;
     textEl.style.color = ultrapassados > 0 ? 'var(--red)' : 'var(--muted)';
   }
 }
 
 function renderOrcamentos() {
-  // Keep tab state in sync
-  const cicloContent = document.getElementById('orc-ciclo-content');
-  const anoContent   = document.getElementById('orc-ano-content');
-  const cicloNav     = document.getElementById('orc-ciclo-nav');
-  const anoNav       = document.getElementById('orc-ano-nav');
-  if (cicloContent) cicloContent.style.display = orcViewMode === 'ciclo' ? '' : 'none';
-  if (anoContent)   anoContent.style.display   = orcViewMode === 'ano'   ? '' : 'none';
-  if (cicloNav)     cicloNav.style.display     = orcViewMode === 'ciclo' ? 'flex' : 'none';
-  if (anoNav)       anoNav.style.display       = orcViewMode === 'ano'   ? 'flex' : 'none';
-  if (orcViewMode === 'ano') { renderOrcamentosAnual(); return; }
-
   const activeOrcs = orcamentos.filter(o => !deletedOrcIds.has(o.id));
   const cicloKey   = getCicloKey();
   const labelEl    = document.getElementById('orc-ciclo-label');
@@ -2967,8 +2948,8 @@ function renderOrcamentos() {
   const bannerEl   = document.getElementById('orc-total-banner');
   const fabEl      = document.getElementById('fab-orc');
   if (labelEl) labelEl.textContent = cicloLabel();
-  if (nextBtn) { nextBtn.style.opacity = '1'; nextBtn.disabled = false; }
-  if (fabEl)   fabEl.style.display = '';
+  if (nextBtn)  { nextBtn.style.opacity = cicloOffset >= 0 ? '0.3' : '1'; nextBtn.disabled = cicloOffset >= 0; }
+  if (fabEl)    fabEl.style.display = '';
 
   if (!activeOrcs.length) {
     if (listEl)   listEl.innerHTML = '';
@@ -2978,8 +2959,9 @@ function renderOrcamentos() {
   }
   if (emptyEl) emptyEl.style.display = 'none';
 
+  // Compute totals
   let totalOrc = 0, totalGasto = 0;
-  activeOrcs.filter(o => o.catType !== 'income').forEach(o => {
+  activeOrcs.forEach(o => {
     totalOrc   += getOrcamentoValor(o, cicloKey);
     totalGasto += getGastoOrcamentoCiclo(o.catType, o.catKey);
   });
@@ -2987,19 +2969,29 @@ function renderOrcamentos() {
     bannerEl.style.display = '';
     const bPct = totalOrc > 0 ? Math.min(100, Math.round(totalGasto / totalOrc * 100)) : 0;
     const bCls = bPct >= 100 ? 'ultrapassado' : bPct >= 80 ? 'aviso' : '';
-    bannerEl.innerHTML =
-      '<div class="orc-total-row"><span>Total orçado</span><span class="orc-total-val">' + formatCurrency(totalOrc) + '</span></div>' +
-      '<div class="orc-total-row" style="margin-bottom:8px;"><span>Gasto no ciclo</span>' +
-        '<span class="orc-total-val" style="color:' + (bPct>=100?'var(--red)':bPct>=80?'#f0a500':'var(--text)') + '">' + formatCurrency(totalGasto) + '</span></div>' +
-      '<div class="orc-progress-bar"><div class="orc-progress-fill ' + bCls + '" style="width:' + bPct + '%"></div></div>' +
-      '<div class="orc-progress-pct ' + bCls + '" style="margin-top:3px;">' + bPct + '% utilizado</div>';
+    bannerEl.innerHTML = `
+      <div class="orc-total-row">
+        <span>Total orçado</span>
+        <span class="orc-total-val">${formatCurrency(totalOrc)}</span>
+      </div>
+      <div class="orc-total-row" style="margin-bottom:8px;">
+        <span>Gasto no ciclo</span>
+        <span class="orc-total-val" style="color:${bPct>=100?'var(--red)':bPct>=80?'#f0a500':'var(--text)'}">${formatCurrency(totalGasto)}</span>
+      </div>
+      <div class="orc-progress-bar">
+        <div class="orc-progress-fill ${bCls}" style="width:${bPct}%"></div>
+      </div>
+      <div class="orc-progress-pct ${bCls}" style="margin-top:3px;">${bPct}% utilizado</div>`;
   }
 
-  const expOrcs    = activeOrcs.filter(o => o.catType !== 'income');
-  const incOrcs    = activeOrcs.filter(o => o.catType === 'income');
-  const parentOrcs = expOrcs.filter(o => o.catType === 'parent');
-  const subOrcs    = expOrcs.filter(o => o.catType === 'sub');
-  const parentKeys = [...new Set([...parentOrcs.map(o => o.catKey), ...subOrcs.map(o => o.parentCat)])];
+  // Group: parents first, then subs under their parent
+  const parentOrcs = activeOrcs.filter(o => o.catType === 'parent');
+  const subOrcs    = activeOrcs.filter(o => o.catType === 'sub');
+  // Collect all parent keys (from parent budgets + implicit from subs)
+  const parentKeys = [...new Set([
+    ...parentOrcs.map(o => o.catKey),
+    ...subOrcs.map(o => o.parentCat)
+  ])];
 
   let html = '';
   parentKeys.forEach(pk => {
@@ -3007,55 +2999,30 @@ function renderOrcamentos() {
     if (pOrc) {
       html += buildOrcCard(pOrc, cicloKey, 'pai');
     } else {
-      html += '<div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:8px 2px 4px;">' + pk + '</div>';
+      // Label only (no budget for parent, but subs exist)
+      const catGroup = expenseCats.find(g => g.cat === pk);
+      const icon = catGroup ? catGroup.cat.split(' ')[0] : '📦';
+      html += `<div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:8px 2px 4px;">${icon} ${pk}</div>`;
     }
-    subOrcs.filter(o => o.parentCat === pk).forEach(o => { html += buildOrcCard(o, cicloKey, 'sub'); });
+    subOrcs.filter(o => o.parentCat === pk).forEach(o => {
+      html += buildOrcCard(o, cicloKey, 'sub');
+    });
   });
-  subOrcs.filter(o => !parentKeys.includes(o.parentCat)).forEach(o => { html += buildOrcCard(o, cicloKey, 'sub'); });
+  // Subs without a grouped parent (shouldn't happen but safety)
+  subOrcs.filter(o => !parentKeys.includes(o.parentCat)).forEach(o => {
+    html += buildOrcCard(o, cicloKey, 'sub');
+  });
   if (listEl) listEl.innerHTML = html;
-
-  // Income budgets
-  const incomeListEl = document.getElementById('orc-income-list');
-  if (incomeListEl) {
-    let ihtml = '';
-    if (incOrcs.length) {
-      ihtml += '<div class="orc-section-label">💰 Receitas esperadas</div>';
-      incOrcs.forEach(o => { ihtml += buildOrcCardIncome(o, cicloKey); });
-    }
-    incomeListEl.innerHTML = ihtml;
-  }
-
-  // Savings estimate banner
-  const savBanner = document.getElementById('orc-savings-banner');
-  if (savBanner && (expOrcs.length || incOrcs.length)) {
-    const totalIncOrc = incOrcs.reduce((s, o) => s + getOrcamentoValor(o, cicloKey), 0);
-    const totalExpOrc = expOrcs.reduce((s, o) => s + getOrcamentoValor(o, cicloKey), 0);
-    const estSavings  = totalIncOrc - totalExpOrc;
-    const estPct      = totalIncOrc > 0 ? Math.round(estSavings / totalIncOrc * 100) : null;
-    const realInc     = incOrcs.reduce((s, o) => s + getReceitaOrcamentoCiclo(o.catKey), 0);
-    const realExp     = expOrcs.reduce((s, o) => s + getGastoOrcamentoCiclo(o.catType, o.catKey), 0);
-    const realSavings = realInc - realExp;
-    const realPct     = realInc > 0 ? Math.round(realSavings / realInc * 100) : null;
-    const pctColor    = p => p === null ? 'var(--muted)' : p >= 20 ? 'var(--accent)' : p >= 0 ? '#f0a500' : 'var(--red)';
-    savBanner.style.display = '';
-    savBanner.innerHTML =
-      '<div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;font-weight:700;">🎯 Estimativa de poupança</div>' +
-      (totalIncOrc > 0 ? '<div class="orc-savings-row"><span>Receita esperada</span><span class="val">' + formatCurrency(totalIncOrc) + '</span></div>' : '') +
-      (totalExpOrc > 0 ? '<div class="orc-savings-row"><span>Despesas orçadas</span><span class="val">' + formatCurrency(totalExpOrc) + '</span></div>' : '') +
-      (totalIncOrc > 0 && totalExpOrc > 0 ? '<div class="orc-savings-row" style="border-top:1px solid var(--border);padding-top:6px;margin-top:4px;"><span>Poupança estimada</span><span class="val" style="color:' + pctColor(estPct) + ';">' + formatCurrency(estSavings) + (estPct !== null ? ' (' + estPct + '%)' : '') + '</span></div>' : '') +
-      (realInc > 0 ? '<div class="orc-savings-row" style="margin-top:2px;"><span style="color:var(--muted);font-size:11px;">Real (até agora)</span><span style="font-size:11px;font-weight:700;color:' + pctColor(realPct) + ';">' + formatCurrency(realSavings) + (realPct !== null ? ' (' + realPct + '%)' : '') + '</span></div>' : '');
-  } else if (savBanner) {
-    savBanner.style.display = 'none';
-  }
 }
 
 function buildOrcCard(orc, cicloKey, cls) {
-  const valor    = getOrcamentoValor(orc, cicloKey);
-  const gasto    = getGastoOrcamentoCiclo(orc.catType, orc.catKey);
-  const pct      = valor > 0 ? Math.min(100, Math.round(gasto / valor * 100)) : 0;
-  const fillCls  = gasto > valor ? 'ultrapassado' : gasto / valor >= 0.8 ? 'aviso' : '';
-  const grp      = expenseCats.find(g => cls === 'pai' ? g.cat === orc.catKey : g.subs && g.subs.includes(orc.catKey));
-  const icon     = grp ? grp.cat.split(' ')[0] : '📦';
+  const valor  = getOrcamentoValor(orc, cicloKey);
+  const gasto  = getGastoOrcamentoCiclo(orc.catType, orc.catKey);
+  const pct    = valor > 0 ? Math.min(100, Math.round(gasto / valor * 100)) : 0;
+  const fillCls = gasto > valor ? 'ultrapassado' : gasto / valor >= 0.8 ? 'aviso' : '';
+  const catGroup = expenseCats.find(g => cls === 'pai' ? g.cat === orc.catKey : g.subs.includes(orc.catKey));
+  const icon = catGroup ? catGroup.cat.split(' ')[0] : '📦';
+  const name = cls === 'pai' ? orc.catKey : orc.catKey;
   const override = orc.overrides && orc.overrides[cicloKey] !== undefined;
   const cycleTag = override ? ' <span style="font-size:10px;color:var(--accent);font-weight:400;">(este ciclo)</span>' : '';
   return '<div class="orc-card ' + cls + '">' +
@@ -3141,13 +3108,7 @@ function getReceitaForCicloKey(catKey, cicloKey) {
 function renderOrcamentosAnual() {
   const year       = new Date().getFullYear() + orcAnoOffset;
   const curKey     = getCicloKey(0);
-  // For cicloInicio > 1: label "Jun" = cycle starting May 25–Jun 24, so cicloKey is month i (not i+1)
-  const cicloKeys  = Array.from({length:12}, (_, i) => {
-    if (cicloInicio <= 1) return year + '-' + String(i + 1).padStart(2, '0');
-    const ckM = i === 0 ? 12 : i;
-    const ckY = i === 0 ? year - 1 : year;
-    return ckY + '-' + String(ckM).padStart(2, '0');
-  });
+  const cicloKeys  = Array.from({length:12}, (_, i) => year + '-' + String(i+1).padStart(2,'0'));
   const activeOrcs = orcamentos.filter(o => !deletedOrcIds.has(o.id));
   const labelEl    = document.getElementById('orc-ano-label');
   const nextBtn    = document.getElementById('orc-ano-next');
@@ -3183,15 +3144,15 @@ function renderOrcamentosAnual() {
 function buildOrcCardAnualIncome(orc, cicloKeys, curKey) {
   let totalOrc = 0, totalRecebido = 0;
   let monthsHtml = '';
-  [cicloKeys.slice(0,6), cicloKeys.slice(6,12)].forEach((row, rowIdx) => {
+  [cicloKeys.slice(0,6), cicloKeys.slice(6,12)].forEach(row => {
     monthsHtml += '<div class="orc-months-grid">';
-    row.forEach((ck, ri) => {
-      const labelIdx   = rowIdx * 6 + ri;
+    row.forEach(ck => {
       const valor      = getOrcamentoValor(orc, ck);
       const isPast     = ck < curKey;
       const isCurrent  = ck === curKey;
       const recebido   = (isPast || isCurrent) ? getReceitaForCicloKey(orc.catKey, ck) : 0;
       const hasOverride = orc.overrides && orc.overrides[ck] !== undefined;
+      const monthIdx   = parseInt(ck.split('-')[1]) - 1;
       totalOrc        += valor;
       if (isPast || isCurrent) totalRecebido += recebido;
       let cellCls = 'orc-month-cell';
@@ -3203,8 +3164,8 @@ function buildOrcCardAnualIncome(orc, cicloKeys, curKey) {
       const spentEl = (isPast || isCurrent) ? '<div class="mc-spent" style="color:var(--accent-income)">' + recFmt + '</div>' : '';
       const ovEl    = hasOverride ? '<div class="mc-override">*</div>' : '';
       monthsHtml +=
-        '<div class="' + cellCls + '" onclick="openEditMes(' + orc.id + ',\'' + ck + '\',' + labelIdx + ')">' +
-          '<div class="mc-label">' + MESES_SHORT[labelIdx] + '</div>' +
+        '<div class="' + cellCls + '" onclick="openEditMes(' + orc.id + ',\'' + ck + '\')">' +
+          '<div class="mc-label">' + MESES_SHORT[monthIdx] + '</div>' +
           '<div class="mc-val">' + valFmt + '</div>' +
           spentEl + ovEl +
           '<div class="mc-dot"></div>' +
@@ -3232,15 +3193,15 @@ function buildOrcCardAnual(orc, cicloKeys, curKey, cls) {
   const icon = grp ? grp.cat.split(' ')[0] : '📦';
   let totalOrc = 0, totalGasto = 0;
   let monthsHtml = '';
-  [cicloKeys.slice(0,6), cicloKeys.slice(6,12)].forEach((row, rowIdx) => {
+  [cicloKeys.slice(0,6), cicloKeys.slice(6,12)].forEach(row => {
     monthsHtml += '<div class="orc-months-grid">';
-    row.forEach((ck, ri) => {
-      const labelIdx   = rowIdx * 6 + ri;
+    row.forEach(ck => {
       const valor      = getOrcamentoValor(orc, ck);
       const isPast     = ck < curKey;
       const isCurrent  = ck === curKey;
       const gasto      = (isPast || isCurrent) ? getGastoForCicloKey(orc.catType, orc.catKey, ck) : 0;
       const hasOverride = orc.overrides && orc.overrides[ck] !== undefined;
+      const monthIdx   = parseInt(ck.split('-')[1]) - 1;
       totalOrc   += valor;
       if (isPast || isCurrent) totalGasto += gasto;
       let cellCls = 'orc-month-cell';
@@ -3252,8 +3213,8 @@ function buildOrcCardAnual(orc, cicloKeys, curKey, cls) {
       const spentEl  = (isPast || isCurrent) ? '<div class="mc-spent">' + gastFmt + '</div>' : '';
       const ovEl     = hasOverride ? '<div class="mc-override">*</div>' : '';
       monthsHtml +=
-        '<div class="' + cellCls + '" onclick="openEditMes(' + orc.id + ',\'' + ck + '\',' + labelIdx + ')">' +
-          '<div class="mc-label">' + MESES_SHORT[labelIdx] + '</div>' +
+        '<div class="' + cellCls + '" onclick="openEditMes(' + orc.id + ',\'' + ck + '\')">' +
+          '<div class="mc-label">' + MESES_SHORT[monthIdx] + '</div>' +
           '<div class="mc-val">' + valFmt + '</div>' +
           spentEl + ovEl +
           '<div class="mc-dot"></div>' +
@@ -3264,7 +3225,7 @@ function buildOrcCardAnual(orc, cicloKeys, curKey, cls) {
   const desvio = totalOrc - totalGasto;
   const totHtml =
     '<div class="orc-year-totals">' +
-      '<div class="tot-item"><div class="tot-label">Orçamentado</div><div class="tot-val">' + formatCurrency(totalOrc) + '</div></div>' +
+      '<div class="tot-item"><div class="tot-label">Orçado</div><div class="tot-val">' + formatCurrency(totalOrc) + '</div></div>' +
       '<div class="tot-item"><div class="tot-label">Gasto</div><div class="tot-val">' + formatCurrency(totalGasto) + '</div></div>' +
       '<div class="tot-item"><div class="tot-label">Saldo</div><div class="tot-val' + (desvio < 0 ? ' tot-over' : '') + '">' + (desvio >= 0 ? '+' : '') + formatCurrency(Math.abs(desvio)) + '</div></div>' +
     '</div>';
@@ -3276,14 +3237,14 @@ function buildOrcCardAnual(orc, cicloKeys, curKey, cls) {
   '</div>';
 }
 
-function openEditMes(orcId, cicloKey, labelIdx) {
+function openEditMes(orcId, cicloKey) {
   const orc = orcamentos.find(o => o.id === orcId);
   if (!orc) return;
   const grp  = expenseCats.find(g => orc.catType === 'parent' ? g.cat === orc.catKey : g.subs && g.subs.includes(orc.catKey));
   const icon = grp ? grp.cat.split(' ')[0] : '📦';
-  const displayIdx = labelIdx !== undefined ? labelIdx : parseInt(cicloKey.split('-')[1]) - 1;
-  const year = cicloKey.split('-')[0];
-  document.getElementById('orc-mes-modal-title').innerHTML = MESES_SHORT[displayIdx] + ' ' + year + ' <button class="modal-close" onclick="closeOrcMesModal()">✕</button>';
+  const monthIdx = parseInt(cicloKey.split('-')[1]) - 1;
+  const year     = cicloKey.split('-')[0];
+  document.getElementById('orc-mes-modal-title').innerHTML = MESES_SHORT[monthIdx] + ' ' + year + ' <button class="modal-close" onclick="closeOrcMesModal()">✕</button>';
   document.getElementById('orc-mes-cat-name').textContent  = icon + ' ' + orc.catKey;
   document.getElementById('orc-mes-base').textContent      = formatCurrency(orc.valorBase);
   document.getElementById('orc-mes-orc-id').value          = orcId;
@@ -3315,71 +3276,46 @@ function saveOrcMes() {
 }
 
 // ===== ORÇAMENTOS CRUD =====
-let orcModalType   = 'parent';
-let orcModalSide   = 'expense';
+let orcModalType = 'parent';
 let orcCatSelected = null;
-
-function resetOrcSuggestChip() {
-  const chip = document.getElementById('orc-suggest-chip');
-  const btn  = document.getElementById('orc-suggest-btn');
-  if (chip) { chip.style.display = 'none'; chip.textContent = ''; }
-  if (btn)  { btn.disabled = false; btn.innerHTML = '💡 Sugerir'; }
-}
 
 function openAddOrcamento() {
   orcModalType   = 'parent';
-  orcModalSide   = 'expense';
   orcCatSelected = null;
-  document.getElementById('orc-editing-id').value   = '';
+  document.getElementById('orc-editing-id').value = '';
   document.getElementById('orc-modal-title').innerHTML = '💰 Novo Orçamento <button class="modal-close" onclick="closeOrcModal()">✕</button>';
   document.getElementById('orc-amount-input').value  = '';
   document.getElementById('orc-override-input').value = '';
   document.getElementById('orc-cat-icon').textContent  = '📂';
   document.getElementById('orc-cat-label').textContent = 'Escolher categoria';
   document.getElementById('orc-delete-btn').style.display = 'none';
-  document.getElementById('orc-side-expense').className = 'orc-type-btn active';
-  document.getElementById('orc-side-income').className  = 'orc-type-btn';
-  document.getElementById('orc-cattype-row').style.display = '';
-  const suggestBtn = document.getElementById('orc-suggest-btn');
-  if (suggestBtn) suggestBtn.style.display = '';
   setOrcModalTypeUI('parent');
-  resetOrcSuggestChip();
   document.getElementById('orc-modal-overlay').classList.add('open');
 }
 
 function openEditOrcamento(id) {
   const orc = orcamentos.find(o => o.id === id);
   if (!orc) return;
-  const isIncome  = orc.catType === 'income';
-  orcModalSide    = isIncome ? 'income' : 'expense';
-  orcModalType    = isIncome ? 'parent' : orc.catType;
-  orcCatSelected  = { catType: orc.catType, catKey: orc.catKey, parentCat: orc.parentCat };
-  document.getElementById('orc-editing-id').value   = id;
+  orcModalType   = orc.catType;
+  orcCatSelected = { catType: orc.catType, catKey: orc.catKey, parentCat: orc.parentCat };
+  document.getElementById('orc-editing-id').value = id;
   document.getElementById('orc-modal-title').innerHTML = '✏️ Editar Orçamento <button class="modal-close" onclick="closeOrcModal()">✕</button>';
-  document.getElementById('orc-amount-input').value  = orc.valorBase;
+  document.getElementById('orc-amount-input').value    = orc.valorBase;
   const cicloKey = getCicloKey();
-  document.getElementById('orc-override-input').value = (orc.overrides && orc.overrides[cicloKey] !== undefined) ? orc.overrides[cicloKey] : '';
-  let icon = '📂';
-  if (isIncome) {
-    icon = orc.catKey.split(' ')[0] || '💰';
-  } else {
-    const grp = expenseCats.find(g => orc.catType === 'parent' ? g.cat === orc.catKey : g.subs && g.subs.includes(orc.catKey));
-    icon = grp ? grp.cat.split(' ')[0] : '📦';
-  }
+  document.getElementById('orc-override-input').value  = (orc.overrides && orc.overrides[cicloKey] !== undefined) ? orc.overrides[cicloKey] : '';
+  const catGroup = expenseCats.find(g => orc.catType === 'parent' ? g.cat === orc.catKey : g.subs.includes(orc.catKey));
+  const icon = catGroup ? catGroup.cat.split(' ')[0] : '📦';
   document.getElementById('orc-cat-icon').textContent  = icon;
   document.getElementById('orc-cat-label').textContent = orc.catKey;
   document.getElementById('orc-delete-btn').style.display = '';
-  document.getElementById('orc-side-expense').className = 'orc-type-btn' + (!isIncome ? ' active' : '');
-  document.getElementById('orc-side-income').className  = 'orc-type-btn' + (isIncome  ? ' active' : '');
-  document.getElementById('orc-cattype-row').style.display = isIncome ? 'none' : '';
-  const suggestBtn = document.getElementById('orc-suggest-btn');
-  if (suggestBtn) suggestBtn.style.display = isIncome ? 'none' : '';
-  if (!isIncome) setOrcModalTypeUI(orc.catType);
-  resetOrcSuggestChip();
+  setOrcModalTypeUI(orc.catType);
   document.getElementById('orc-modal-overlay').classList.add('open');
 }
 
-function closeOrcModal() { document.getElementById('orc-modal-overlay').classList.remove('open'); orcCatSelected = null; }
+function closeOrcModal() {
+  document.getElementById('orc-modal-overlay').classList.remove('open');
+  orcCatSelected = null;
+}
 function handleOrcModalClick(e) { if (e.target === document.getElementById('orc-modal-overlay')) closeOrcModal(); }
 
 function setOrcModalType(type) {
@@ -3388,26 +3324,10 @@ function setOrcModalType(type) {
   document.getElementById('orc-cat-icon').textContent  = '📂';
   document.getElementById('orc-cat-label').textContent = 'Escolher categoria';
   setOrcModalTypeUI(type);
-  resetOrcSuggestChip();
 }
 function setOrcModalTypeUI(type) {
   document.getElementById('orc-type-parent').className = 'orc-type-btn' + (type === 'parent' ? ' active' : '');
   document.getElementById('orc-type-sub').className    = 'orc-type-btn' + (type === 'sub'    ? ' active' : '');
-}
-
-function setOrcModalSide(side) {
-  orcModalSide   = side;
-  orcCatSelected = null;
-  document.getElementById('orc-cat-icon').textContent  = '📂';
-  document.getElementById('orc-cat-label').textContent = 'Escolher categoria';
-  document.getElementById('orc-side-expense').className = 'orc-type-btn' + (side === 'expense' ? ' active' : '');
-  document.getElementById('orc-side-income').className  = 'orc-type-btn' + (side === 'income'  ? ' active' : '');
-  // For income there is no parent/sub distinction — hide that row
-  document.getElementById('orc-cattype-row').style.display = side === 'income' ? 'none' : '';
-  // Hide suggest button for income (no historical suggestion logic for income yet)
-  const suggestRow = document.getElementById('orc-suggest-btn');
-  if (suggestRow) suggestRow.style.display = side === 'income' ? 'none' : '';
-  resetOrcSuggestChip();
 }
 
 function openOrcCatPicker() {
@@ -3420,25 +3340,9 @@ function handleOrcCatPickerOverlayClick(e) { if (e.target === document.getElemen
 
 function renderOrcCatPickerList(query) {
   query = (query || '').toLowerCase().trim();
-  const list = document.getElementById('orc-cat-picker-list');
+  const list  = document.getElementById('orc-cat-picker-list');
   list.innerHTML = '';
-  if (orcModalSide === 'income') {
-    incomeCats
-      .filter(c => !query || c.toLowerCase().includes(query))
-      .forEach(c => {
-        const icon = c.split(' ')[0] || '💰';
-        const btn  = document.createElement('button');
-        btn.className = 'bs-cat-btn' + (orcCatSelected && orcCatSelected.catKey === c ? ' active' : '');
-        btn.innerHTML = '<span class="bs-icon">' + icon + '</span><span>' + c + '</span>';
-        btn.onclick = () => {
-          orcCatSelected = { catType: 'income', catKey: c, parentCat: c };
-          document.getElementById('orc-cat-icon').textContent  = icon;
-          document.getElementById('orc-cat-label').textContent = c;
-          closeOrcCatPicker();
-        };
-        list.appendChild(btn);
-      });
-  } else if (orcModalType === 'parent') {
+  if (orcModalType === 'parent') {
     expenseCats
       .filter(g => !query || g.cat.toLowerCase().includes(query))
       .forEach(g => {
@@ -3456,8 +3360,8 @@ function renderOrcCatPickerList(query) {
       });
   } else {
     expenseCats.forEach(g => {
-      const subs = g.subs.filter(s => !query || s.toLowerCase().includes(query) || g.cat.toLowerCase().includes(query));
-      if (!subs.length) return;
+      const filteredSubs = g.subs.filter(s => !query || s.toLowerCase().includes(query) || g.cat.toLowerCase().includes(query));
+      if (!filteredSubs.length) return;
       if (!query) {
         const lbl = document.createElement('div');
         lbl.className = 'bs-group-label';
@@ -3465,7 +3369,7 @@ function renderOrcCatPickerList(query) {
         list.appendChild(lbl);
       }
       const icon = g.cat.split(' ')[0];
-      subs.forEach(sub => {
+      filteredSubs.forEach(sub => {
         const btn = document.createElement('button');
         btn.className = 'bs-cat-btn' + (orcCatSelected && orcCatSelected.catKey === sub ? ' active' : '');
         btn.innerHTML = '<span class="bs-icon">' + icon + '</span><span>' + sub + '</span>';
@@ -3484,31 +3388,22 @@ function renderOrcCatPickerList(query) {
 
 function saveOrcamento() {
   if (!orcCatSelected) { showToast('⚠️ Escolhe uma categoria'); return; }
-  const amountVal = parseFloat(document.getElementById('orc-amount-input').value) || 0;
-  if (isNaN(amountVal) || amountVal < 0) { showToast('⚠️ Insere um montante válido'); return; }
-  const overrideStr = document.getElementById('orc-override-input').value.trim();
-  const overrideNum = overrideStr !== '' ? parseFloat(overrideStr) : null;
+  const amountVal = parseFloat(document.getElementById('orc-amount-input').value);
+  if (!amountVal || amountVal <= 0) { showToast('⚠️ Insere um montante válido'); return; }
+  const overrideVal = document.getElementById('orc-override-input').value.trim();
+  const overrideNum = overrideVal !== '' ? parseFloat(overrideVal) : null;
   const cicloKey    = getCicloKey();
   const editingId   = parseInt(document.getElementById('orc-editing-id').value) || null;
 
   if (editingId) {
     const orc = orcamentos.find(o => o.id === editingId);
     if (orc) {
-      if (!orc.overrides) orc.overrides = {};
-      // Freeze past months at the old base before changing it
-      if (orc.valorBase !== amountVal) {
-        const oldBase = orc.valorBase;
-        for (let i = 1; i <= 12; i++) {
-          const ck = getCicloKey(-i);
-          if (ck >= cicloKey) continue;
-          if (orc.overrides[ck] === undefined) orc.overrides[ck] = oldBase;
-        }
-      }
       orc.valorBase = amountVal;
-      if (overrideNum !== null && overrideNum > 0) orc.overrides[cicloKey] = overrideNum;
-      else delete orc.overrides[cicloKey];
+      if (overrideNum !== null && overrideNum > 0) { if (!orc.overrides) orc.overrides = {}; orc.overrides[cicloKey] = overrideNum; }
+      else if (orc.overrides) { delete orc.overrides[cicloKey]; }
     }
   } else {
+    // Check for duplicate
     const dup = orcamentos.find(o => !deletedOrcIds.has(o.id) && o.catType === orcCatSelected.catType && o.catKey === orcCatSelected.catKey);
     if (dup) { showToast('⚠️ Já existe orçamento para esta categoria'); return; }
     const newOrc = { id: Date.now(), catType: orcCatSelected.catType, catKey: orcCatSelected.catKey, parentCat: orcCatSelected.parentCat, valorBase: amountVal, overrides: {} };
@@ -3540,162 +3435,6 @@ async function deleteOrcamentoFromModal() {
   await deleteOrcamento(id);
 }
 
-// ===== BULK ADD ALL SUBCATEGORIES =====
-async function addAllSubcatOrcamentos() {
-  const toAdd    = [];
-  const toUpdate = [];
-
-  // Expense subcategories
-  expenseCats.forEach((g, gi) => {
-    (g.subs || []).forEach((sub, si) => {
-      const res    = calcSugestaoLocal('sub', sub);
-      const valor  = res ? res.valor : 0;
-      const existing = orcamentos.find(o => !deletedOrcIds.has(o.id) && o.catType === 'sub' && o.catKey === sub);
-      if (existing) { if (existing.valorBase !== valor) toUpdate.push({ orc: existing, valor }); }
-      else toAdd.push({ catType: 'sub', catKey: sub, parentCat: g.cat, valor, _idx: gi * 1000 + si });
-    });
-  });
-
-  // Income categories
-  incomeCats.forEach((cat, ci) => {
-    const res = calcSugestaoLocalIncome(cat);
-    if (!res || res.valor <= 0) return;
-    const existing = orcamentos.find(o => !deletedOrcIds.has(o.id) && o.catType === 'income' && o.catKey === cat);
-    if (existing) { if (existing.valorBase !== res.valor) toUpdate.push({ orc: existing, valor: res.valor }); }
-    else toAdd.push({ catType: 'income', catKey: cat, parentCat: cat, valor: res.valor, _idx: 100000 + ci });
-  });
-
-  if (!toAdd.length && !toUpdate.length) { showToast('Sem categorias com dados suficientes'); return; }
-  const parts = [];
-  if (toAdd.length)    parts.push(toAdd.length    + ' novo'        + (toAdd.length    > 1 ? 's' : ''));
-  if (toUpdate.length) parts.push(toUpdate.length + ' actualizado' + (toUpdate.length > 1 ? 's' : ''));
-  const ok = await appConfirm(
-    parts.join(' e ') + ' orçamento' + (toAdd.length + toUpdate.length > 1 ? 's' : '') + ' com valores sugeridos.\nPodes editar cada um depois.',
-    'Actualizar automaticamente', 'Confirmar'
-  );
-  if (!ok) return;
-  const base = Date.now();
-  const curKey = getCicloKey();
-  toAdd.forEach(({ catType, catKey, parentCat, valor, _idx }) => {
-    orcamentos.push({ id: base + _idx, catType, catKey, parentCat, valorBase: valor, overrides: {} });
-  });
-  toUpdate.forEach(({ orc, valor }) => {
-    if (!orc.overrides) orc.overrides = {};
-    const oldBase = orc.valorBase;
-    for (let i = 1; i <= 12; i++) {
-      const ck = getCicloKey(-i);
-      if (ck >= curKey) continue;
-      if (orc.overrides[ck] === undefined) orc.overrides[ck] = oldBase;
-    }
-    orc.valorBase = valor;
-  });
-  scheduleSave();
-  renderOrcamentos();
-  renderOrcBanner();
-  const total = toAdd.length + toUpdate.length;
-  showToast('✅ ' + total + ' orçamento' + (total > 1 ? 's' : '') + ' ' +
-    (toAdd.length && toUpdate.length ? 'criados/actualizados' : toAdd.length ? (total > 1 ? 'criados' : 'criado') : (total > 1 ? 'actualizados' : 'actualizado')) + '!');
-}
-
-// ===== AI SUGGEST BUDGET =====
-function calcSugestaoLocal(catType, catKey) {
-  // Collect spending for the last 6 cycles (excluding current)
-  const gastos = [];
-  for (let i = 0; i <= 6; i++) {
-    const ck   = getCicloKey(-i);
-    const val  = getGastoForCicloKey(catType, catKey, ck);
-    if (val > 0) gastos.push({ ck, val });
-  }
-  if (!gastos.length) return null;
-  const avg   = gastos.reduce((s, g) => s + g.val, 0) / gastos.length;
-  // Round to nearest 5
-  const valor = Math.ceil(avg / 5) * 5;
-  return { valor, nMeses: gastos.length, gastos };
-}
-
-function calcSugestaoLocalIncome(catKey) {
-  const receitas = [];
-  for (let i = 0; i <= 6; i++) {
-    const ck = getCicloKey(-i);
-    const { start, end } = getCicloRangeFromKey(ck);
-    const val = entries
-      .filter(e => e.type === 'income' && e.date >= start && e.date <= end && e.category === catKey)
-      .reduce((s, e) => s + e.amount, 0);
-    if (val > 0) receitas.push(val);
-  }
-  if (!receitas.length) return null;
-  const avg = receitas.reduce((s, v) => s + v, 0) / receitas.length;
-  return { valor: Math.ceil(avg / 5) * 5, nMeses: receitas.length };
-}
-
-async function applySugestao() {
-  if (!orcCatSelected) { showToast('⚠️ Escolhe primeiro uma categoria'); return; }
-  const btn  = document.getElementById('orc-suggest-btn');
-  const chip = document.getElementById('orc-suggest-chip');
-  btn.disabled = true;
-  btn.textContent = '⏳';
-  chip.style.display = 'none';
-
-  // Try historical spending first (includes cofre contributions via getCofreGasto)
-  const res = calcSugestaoLocal(orcCatSelected.catType, orcCatSelected.catKey);
-  if (!res) {
-    // No history — fall back to cofre planned monthly amount if available
-    const linkedCofres = cofres.filter(c => {
-      if (cofreCompleto(c) || !c.subcategoria) return false;
-      if (orcCatSelected.catType === 'sub') return c.subcategoria === orcCatSelected.catKey;
-      const grp = expenseCats.find(g => g.cat === orcCatSelected.catKey);
-      return grp && grp.subs.includes(c.subcategoria);
-    });
-    if (linkedCofres.length) {
-      const totalCofre = linkedCofres.reduce((s, c) => s + cofreMensal(c), 0);
-      document.getElementById('orc-amount-input').value = Math.round(totalCofre * 100) / 100;
-      const nomes = linkedCofres.map(c => '"' + c.nome + '"').join(', ');
-      chip.textContent = '💡 Sem histórico — baseado no objetivo do' + (linkedCofres.length > 1 ? 's cofres ' : ' cofre ') + nomes;
-      chip.style.display = 'block';
-    } else {
-      chip.textContent = 'Sem histórico suficiente — insere o montante manualmente.';
-      chip.style.display = 'block';
-    }
-    btn.disabled = false;
-    btn.innerHTML = '💡 Sugerir';
-    return;
-  }
-
-  // Fill the input immediately with local calculation
-  document.getElementById('orc-amount-input').value = res.valor;
-
-  if (geminiKey) {
-    // Build a compact spending history string
-    const histStr = res.gastos.map(g => {
-      const [y, m] = g.ck.split('-');
-      return MESES_SHORT[parseInt(m) - 1] + ' ' + y + ': €' + g.val.toFixed(2);
-    }).join(', ');
-    const prompt = `Sou utilizador de uma app de finanças pessoais. Gastos em "${orcCatSelected.catKey}" (${orcCatSelected.catType === 'parent' ? 'categoria' : 'sub-categoria'}): ${histStr}. Sugere um orçamento mensal razoável (em EUR) e uma frase curta em português (máx 12 palavras) a explicar porquê. Responde APENAS em JSON: {"valor": 300, "mensagem": "..."}`;
-    try {
-      const body = { contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.2, maxOutputTokens: 120 } };
-      const resp = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, geminiApiKey: geminiKey }) });
-      const data = await resp.json();
-      const txt  = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      const match = txt.match(/\{[\s\S]*?\}/);
-      if (match) {
-        const parsed = JSON.parse(match[0]);
-        if (parsed.valor > 0) document.getElementById('orc-amount-input').value = parsed.valor;
-        chip.textContent = '💡 ' + (parsed.mensagem || 'Baseado em ' + res.nMeses + ' mês' + (res.nMeses > 1 ? 'es' : '') + ' de histórico');
-        chip.style.display = 'block';
-        btn.disabled = false;
-        btn.innerHTML = '💡 Sugerir';
-        return;
-      }
-    } catch (_) { /* fall through to local message */ }
-  }
-
-  // Local fallback chip
-  chip.textContent = '💡 Média de ' + res.nMeses + ' mês' + (res.nMeses > 1 ? 'es' : '') + ' de histórico → €' + res.valor;
-  chip.style.display = 'block';
-  btn.disabled = false;
-  btn.innerHTML = '💡 Sugerir';
-}
-
 // ===== RENDER REGISTOS =====
 function renderAll() { renderSummary(); renderEntries(); renderDate(); }
 
@@ -3714,99 +3453,44 @@ function renderSummary() {
   const incEl = document.getElementById('today-income');
   const incCntEl = document.getElementById('today-income-count');
   const balEl = document.getElementById('today-balance');
-  const balSubEl = document.getElementById('today-balance-sub');
+  const balSubEl = document.querySelector('.summary-card.balance .sub');
   if (expEl) expEl.textContent = formatCurrency(cExp);
   if (expCntEl) expCntEl.textContent = cE.filter(e=>e.type==='expense').length + ' registos';
   if (incEl) incEl.textContent = formatCurrency(cInc);
   if (incCntEl) incCntEl.textContent = cE.filter(e=>e.type==='income').length + ' registos';
   if (balEl) { balEl.textContent = (bal>=0?'+':'')+formatCurrency(Math.abs(bal)); balEl.style.color = bal>=0 ? 'var(--accent)' : 'var(--red)'; }
-  if (balSubEl) {
-    const poupPct = cInc > 0 ? Math.round((cInc - cExp) / cInc * 100) : null;
-    balSubEl.textContent = poupPct !== null ? poupPct + '% poupado' : cicloLabel();
-    balSubEl.style.color = poupPct !== null ? (poupPct >= 20 ? 'var(--accent)' : poupPct >= 0 ? '#f0a500' : 'var(--red)') : '';
-  }
+  if (balSubEl) balSubEl.textContent = cicloLabel();
   renderOrcBanner();
-}
-
-function toggleEntriesSort() {
-  entriesSortMode = entriesSortMode === 'date' ? 'intro' : 'date';
-  const btn = document.getElementById('sort-toggle-btn');
-  if (btn) btn.textContent = entriesSortMode === 'date' ? '📅 Data' : '🕐 Entrada';
-  renderEntries();
-}
-
-function toggleEntriesSearch() {
-  const bar = document.getElementById('entries-search-bar');
-  const inp = document.getElementById('entries-search-input');
-  const isOpen = bar.classList.toggle('open');
-  if (isOpen) {
-    inp.focus();
-  } else {
-    inp.value = '';
-    entriesQuery = '';
-    renderEntries();
-  }
-}
-function onEntriesSearch(val) {
-  entriesQuery = val.trim().toLowerCase();
-  renderEntries();
 }
 
 function renderEntries() {
   const list = document.getElementById('entries-list');
-  const h2El   = document.getElementById('entries-h2');
+  const cicloEntries = entries.filter(e=>isInCurrentCiclo(e.date))
+    .sort((a,b) => new Date(b.date)-new Date(a.date) || new Date(b.ts)-new Date(a.ts));
+  // Update header label
+  const h2El = document.getElementById('entries-h2');
   const nextBtn = document.getElementById('ciclo-next-btn');
-
-  let visibleEntries;
-  if (entriesQuery) {
-    // Search across all entries
-    visibleEntries = entries
-      .filter(e => {
-        const q = entriesQuery;
-        return e.category.toLowerCase().includes(q)
-          || (e.parentCategory || '').toLowerCase().includes(q)
-          || (e.note || '').toLowerCase().includes(q)
-          || String(e.amount).includes(q);
-      })
-      .sort((a,b) => entriesSortMode === 'intro'
-        ? new Date(b.ts)-new Date(a.ts)
-        : new Date(b.date)-new Date(a.date) || new Date(b.ts)-new Date(a.ts));
-    if (h2El) h2El.textContent = '🔍 ' + visibleEntries.length + ' resultado' + (visibleEntries.length !== 1 ? 's' : '');
-    if (nextBtn) { nextBtn.style.opacity = '0.3'; nextBtn.disabled = true; }
-  } else {
-    visibleEntries = entries.filter(e=>isInCurrentCiclo(e.date))
-      .sort((a,b) => entriesSortMode === 'intro'
-        ? new Date(b.ts)-new Date(a.ts)
-        : new Date(b.date)-new Date(a.date) || new Date(b.ts)-new Date(a.ts));
-    if (h2El) h2El.textContent = '📋 ' + cicloLabel();
-    if (nextBtn) { nextBtn.style.opacity = cicloOffset >= 0 ? '0.3' : '1'; nextBtn.disabled = cicloOffset >= 0; }
-  }
-
-  if (!visibleEntries.length) {
-    list.innerHTML = entriesQuery
-      ? `<div class="empty-state"><div class="emoji">🔍</div><p>Sem resultados para "${entriesQuery}"</p></div>`
-      : `<div class="empty-state"><div class="emoji">📭</div><p>Nenhum registo neste ciclo.<br>Usa o formulário acima — é rápido!</p></div>`;
+  if (h2El) h2El.textContent = '📋 ' + cicloLabel();
+  if (nextBtn) { nextBtn.style.opacity = cicloOffset >= 0 ? '0.3' : '1'; nextBtn.disabled = cicloOffset >= 0; }
+  if (!cicloEntries.length) {
+    list.innerHTML=`<div class="empty-state"><div class="emoji">📭</div><p>Nenhum registo neste ciclo.<br>Usa o formulário acima — é rápido!</p></div>`;
     return;
   }
-  list.innerHTML = visibleEntries.map(e=>{
+  list.innerHTML = cicloEntries.map(e=>{
     // Get icon from parent category
     const parentCat = e.parentCategory || e.category;
     const catGroup  = expenseCats.find(g => g.cat === parentCat);
     const icon      = e.type==='income'
       ? (incomeCats.find(c=>c===e.category)||'💰').split(' ')[0]
       : (catGroup?.cat.split(' ')[0] || '📦');
-    const dateLabel  = e.date === todayStr() ? 'Hoje' : formatDate(e.date);
-    const introLabel = e.ts ? new Date(e.ts).toLocaleDateString('pt-PT', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : '';
-    const timeEl = entriesSortMode === 'intro' && introLabel
-      ? `<div class="entry-time">${dateLabel} <span style="color:var(--muted);font-size:10px;">· introduzido ${introLabel}</span></div>`
-      : `<div class="entry-time">${dateLabel}</div>`;
+    const dateLabel = e.date === todayStr() ? 'Hoje' : formatDate(e.date);
     return `
     <div class="entry ${e.type==='income'?'income-entry':'expense-entry'}">
       <div class="entry-icon">${icon}</div>
       <div class="entry-info">
         <div class="entry-cat">${e.category}</div>
         ${e.note ? `<div class="entry-note">${e.note}</div>` : ''}
-        ${timeEl}
+        <div class="entry-time">${dateLabel}</div>
       </div>
       <div class="entry-amount ${e.type==='income'?'income-amt':'expense-amt'}">${e.type==='income'?'+':'-'}${formatCurrency(e.amount)}</div>
       <div style="display:flex;flex-direction:column;gap:2px;flex-shrink:0;">
@@ -4008,7 +3692,6 @@ function openMovimento(id, tipo) {
     document.getElementById('mov-amount').value = '';
     document.getElementById('mov-nota').value   = '';
   }
-  document.getElementById('mov-data').value = new Date().toISOString().slice(0, 10);
   renderMovHistorico(cofre);
   document.getElementById('movimento-modal-overlay').classList.add('open');
   setTimeout(()=>{ const el=document.getElementById('mov-amount'); el.focus(); el.select(); },200);
@@ -4040,10 +3723,8 @@ function submitMovimento() {
   const cofre = cofres.find(c=>c.id===movCofreId);
   if (!cofre) return;
   if (movTipo==='levantar'&&valor>cofre.saldoAtual) { showToast('⚠️ Saldo insuficiente'); return; }
-  const nota    = document.getElementById('mov-nota').value.trim();
-  const dataVal = document.getElementById('mov-data').value || new Date().toISOString().slice(0, 10);
-  const ts      = dataVal + 'T12:00:00.000Z';
-  const mov     = {id:Date.now().toString(), tipo:movTipo, valor, nota, ts};
+  const nota = document.getElementById('mov-nota').value.trim();
+  const mov  = {id:Date.now().toString(), tipo:movTipo, valor, nota, ts:new Date().toISOString()};
   if (!cofre.movimentos) cofre.movimentos=[];
   cofre.movimentos.push(mov);
   cofre.saldoAtual = +(cofre.saldoAtual+(movTipo==='contribuir'?valor:-valor)).toFixed(2);
@@ -4080,30 +3761,26 @@ function saveCats() { scheduleSave(); }
 function renderCatModal() {
   // Expense: hierarchical
   const expList = document.getElementById('expense-cat-list');
-  expList.innerHTML = expenseCats.map((g, gi) => {
-    const subs = g.subs || [];
-    return `
+  expList.innerHTML = expenseCats.map((g, gi) => `
     <div style="margin-bottom:10px;">
       <div style="display:flex;align-items:center;justify-content:space-between;background:var(--card2);border-radius:8px;padding:8px 12px;margin-bottom:4px;">
         <span style="font-size:13px;font-weight:600;">${g.cat}</span>
         <button class="cat-item-del" onclick="deleteExpenseCat(${gi})" ${expenseCats.length<=1?'disabled':''}>🗑️</button>
       </div>
       <div style="padding-left:12px;display:flex;flex-direction:column;gap:4px;">
-        ${subs.map((s,si) => `
+        ${g.subs.map((s,si) => `
           <div class="cat-item" style="padding:7px 12px;">
             <span class="cat-item-name" style="font-size:13px;">${s}</span>
             <div style="display:flex;gap:6px;align-items:center;">
-              <button type="button" class="cat-item-del" onclick="deleteExpenseSub(${gi},${si})" ${subs.length<=1?'disabled':''}>🗑️</button>
+              <button class="cat-item-del" onclick="deleteExpenseSub(${gi},${si})" ${g.subs.length<=1?'disabled':''}>🗑️</button>
             </div>
           </div>`).join('')}
         <div class="add-cat-form" style="margin-top:4px;">
-          <input type="text" class="add-cat-name" id="new-sub-${gi}" placeholder="+ Nova sub-categoria" style="font-size:12px;padding:6px 10px;"
-            onkeydown="if(event.key==='Enter'){event.preventDefault();addExpenseSub(${gi});}">
-          <button type="button" class="add-cat-btn" onclick="addExpenseSub(${gi})" style="font-size:12px;padding:6px 10px;">+</button>
+          <input type="text" class="add-cat-name" id="new-sub-${gi}" placeholder="+ Nova sub-categoria" style="font-size:12px;padding:6px 10px;">
+          <button class="add-cat-btn" onclick="addExpenseSub(${gi})" style="font-size:12px;padding:6px 10px;">+</button>
         </div>
       </div>
-    </div>`;
-  }).join('');
+    </div>`).join('');
 
   // Income: flat
   document.getElementById('income-cat-list').innerHTML = incomeCats.map((cat,i) => `
@@ -4120,16 +3797,10 @@ function addExpenseCat() {
   if (!name) { showToast('⚠️ Escreve um nome'); return; }
   const full = emoji + ' ' + name;
   if (expenseCats.find(g => g.cat === full)) { showToast('⚠️ Categoria já existe'); return; }
-  deletedCatKeys.delete('expense-cat:' + full);
   expenseCats.push({ cat: full, subs: [] });
   document.getElementById('new-expense-cat-emoji').value = '';
   document.getElementById('new-expense-cat-name').value  = '';
-  saveCats(); renderCatModal();
-  showToast('✅ Categoria criada! Adiciona agora pelo menos uma sub-categoria.');
-  // Focus the sub-category input of the new category
-  const newGi = expenseCats.length - 1;
-  const subInput = document.getElementById('new-sub-' + newGi);
-  if (subInput) { subInput.scrollIntoView({ behavior: 'smooth', block: 'center' }); subInput.focus(); }
+  saveCats(); renderCatModal(); showToast('✅ Categoria criada!');
 }
 
 function deleteExpenseCat(gi) {
@@ -4142,9 +3813,8 @@ function deleteExpenseCat(gi) {
 function addExpenseSub(gi) {
   const input = document.getElementById('new-sub-' + gi);
   const name  = input.value.trim();
-  if (!name) { showToast('⚠️ Escreve o nome da sub-categoria'); return; }
+  if (!name) return;
   if (expenseCats[gi].subs.includes(name)) { showToast('⚠️ Sub-categoria já existe'); return; }
-  deletedCatKeys.delete('expense-sub:' + expenseCats[gi].cat + ':' + name);
   expenseCats[gi].subs.push(name);
   input.value = '';
   saveCats(); renderCatModal(); showToast('✅ Sub-categoria adicionada!');
@@ -4164,7 +3834,6 @@ function addCat(type) {
   if (!name) { showToast('⚠️ Escreve um nome para a categoria'); return; }
   const full=emoji+' '+name;
   if (incomeCats.includes(full)) { showToast('⚠️ Categoria já existe'); return; }
-  deletedCatKeys.delete('income:' + full);
   incomeCats.push(full); saveCats();
   eEl.value=''; nEl.value='';
   renderCatModal(); showToast('✅ Categoria adicionada!');
@@ -4311,120 +3980,44 @@ function getChartData() {
   });
 }
 
-function formatValShort(v) {
-  if (Math.abs(v) >= 1000000) return '€' + (v/1000000).toFixed(1) + 'M';
-  if (Math.abs(v) >= 1000)    return '€' + (v/1000).toFixed(1) + 'k';
-  return '€' + Math.round(v);
-}
-
 function renderPatChart(data) {
-  const svgEl = document.getElementById('pat-chart');
-  if (!data.length) { svgEl.innerHTML = ''; return; }
+  const svg = document.getElementById('pat-chart');
+  if (!data.length) { svg.innerHTML = ''; return; }
 
-  const W = svgEl.getBoundingClientRect().width || 500;
-  const H = 180;
-  const padL = 58, padR = 12, padT = 14, padB = 28;
-  svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
-
+  const W = 400, H = 120, pad = 20;
   const vals = data.map(d => d.total);
-  const rawMin = Math.min(...vals), rawMax = Math.max(...vals);
-  const spread = rawMax - rawMin || rawMax * 0.1 || 1;
-  const minY = rawMin - spread * 0.12;
-  const maxY = rawMax + spread * 0.12;
-  const rangeY = maxY - minY;
+  const min  = Math.min(...vals) * 0.95;
+  const max  = Math.max(...vals) * 1.05 || 1;
+  const range = max - min || 1;
 
-  const toX = i => padL + (i / Math.max(data.length - 1, 1)) * (W - padL - padR);
-  const toY = v => H - padB - ((v - minY) / rangeY) * (H - padT - padB);
+  const pts = data.map((d, i) => {
+    const x = pad + (i / Math.max(data.length - 1, 1)) * (W - pad * 2);
+    const y = H - pad - ((d.total - min) / range) * (H - pad * 2);
+    return [x, y];
+  });
 
-  const pts = data.map((d, i) => [toX(i), toY(d.total)]);
-  svgEl._patChart = { pts, data, padL, padR, padT, padB, W, H };
-  const line = pts.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
-  const area = line + ` L${pts.at(-1)[0].toFixed(1)},${H - padB} L${padL},${H - padB} Z`;
+  const line = pts.map((p,i) => (i===0?'M':'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+  const area = line + ' L' + pts[pts.length-1][0].toFixed(1) + ',' + (H-pad) + ' L' + pad + ',' + (H-pad) + ' Z';
 
-  // Y-axis: 3 gridlines + labels
-  const yTicks = [0, 0.5, 1].map(t => minY + rangeY * t);
-  const gridLines = yTicks.map(v => {
-    const y = toY(v).toFixed(1);
-    return `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="var(--border)" stroke-width="1"/>
-            <text x="${(padL - 6).toFixed(1)}" y="${(parseFloat(y) + 4).toFixed(1)}" text-anchor="end" fill="var(--muted)" font-size="10" font-family="DM Sans,sans-serif">${formatValShort(v)}</text>`;
-  }).join('');
+  // Month labels
+  const labels = data.length <= 7 ? data.map((d,i) => {
+    const [y,m] = d.month.split('-');
+    const label = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][parseInt(m)-1];
+    const x = pad + (i / Math.max(data.length-1,1)) * (W - pad*2);
+    return `<text x="${x.toFixed(1)}" y="${H-4}" text-anchor="middle" fill="#555" font-size="10" font-family="DM Sans,sans-serif">${label}</text>`;
+  }).join('') : '';
 
-  // X-axis labels — skip crowded months
-  const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  const minGap = 48;
-  let lastX = -999;
-  const xLabels = data.map((d, i) => {
-    const x = toX(i);
-    if (x - lastX < minGap && i !== data.length - 1) return '';
-    lastX = x;
-    const [yr, mo] = d.month.split('-');
-    const mo0 = parseInt(mo);
-    const lbl = MESES[mo0 - 1] + ' \'' + yr.slice(2);
-    return `<text x="${x.toFixed(1)}" y="${H - 6}" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="DM Sans,sans-serif">${lbl}</text>`;
-  }).join('');
-
-  svgEl.innerHTML = `
+  svg.innerHTML = `
     <defs>
       <linearGradient id="patGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.22"/>
+        <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.3"/>
         <stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/>
       </linearGradient>
     </defs>
-    ${gridLines}
     <path d="${area}" fill="url(#patGrad)"/>
-    <path d="${line}" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-    ${pts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3" fill="#a78bfa"/>`).join('')}
-    ${xLabels}
-    <g id="pat-tooltip" style="pointer-events:none;display:none;">
-      <line id="pat-tt-line" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
-      <rect id="pat-tt-bg" rx="7" ry="7" fill="var(--card2)" stroke="var(--border)" stroke-width="1"/>
-      <text id="pat-tt-val" fill="var(--text)" font-size="12" font-family="DM Sans,sans-serif" font-weight="700" text-anchor="middle"/>
-      <text id="pat-tt-month" fill="var(--muted)" font-size="10" font-family="DM Sans,sans-serif" text-anchor="middle"/>
-      <circle id="pat-tt-dot" r="5" fill="#a78bfa" stroke="var(--card)" stroke-width="2"/>
-    </g>
-    <rect x="${padL}" y="${padT}" width="${W - padL - padR}" height="${H - padT - padB}" fill="transparent" style="cursor:crosshair;"
-      onmousemove="onPatHover(event)" onmouseleave="onPatLeave()"/>`;
-}
-
-function onPatHover(e) {
-  const svgEl = document.getElementById('pat-chart');
-  const c = svgEl._patChart;
-  if (!c) return;
-  const pt = svgEl.createSVGPoint();
-  pt.x = e.clientX; pt.y = e.clientY;
-  const svgPt = pt.matrixTransform(svgEl.getScreenCTM().inverse());
-  let bi = 0, bd = Infinity;
-  c.pts.forEach(([x], i) => { const d = Math.abs(x - svgPt.x); if (d < bd) { bd = d; bi = i; } });
-  const [px, py] = c.pts[bi];
-  const val = c.data[bi].total;
-  const [yr, mo] = c.data[bi].month.split('-');
-  const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  const mLabel = MESES[parseInt(mo) - 1] + ' ' + yr;
-  const vLabel = formatCurrency(val);
-  const ttW = Math.max(vLabel.length * 8 + 16, 80), ttH = 42, gap = 10;
-  let ttX = px + gap;
-  if (ttX + ttW > c.W - c.padR + 4) ttX = px - gap - ttW;
-  const ttY = Math.max(c.padT, Math.min(py - ttH / 2, c.H - c.padB - ttH));
-  document.getElementById('pat-tooltip').style.display = '';
-  const l = document.getElementById('pat-tt-line');
-  l.setAttribute('x1', px); l.setAttribute('x2', px);
-  l.setAttribute('y1', c.padT); l.setAttribute('y2', c.H - c.padB);
-  const bg = document.getElementById('pat-tt-bg');
-  bg.setAttribute('x', ttX); bg.setAttribute('y', ttY);
-  bg.setAttribute('width', ttW); bg.setAttribute('height', ttH);
-  const tv = document.getElementById('pat-tt-val');
-  tv.setAttribute('x', ttX + ttW / 2); tv.setAttribute('y', ttY + 16);
-  tv.textContent = vLabel;
-  const tm = document.getElementById('pat-tt-month');
-  tm.setAttribute('x', ttX + ttW / 2); tm.setAttribute('y', ttY + 31);
-  tm.textContent = mLabel;
-  const dot = document.getElementById('pat-tt-dot');
-  dot.setAttribute('cx', px); dot.setAttribute('cy', py);
-}
-
-function onPatLeave() {
-  const g = document.getElementById('pat-tooltip');
-  if (g) g.style.display = 'none';
+    <path d="${line}" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+    ${pts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="#a78bfa"/>`).join('')}
+    ${labels}`;
 }
 
 function renderBreakdown(total) {
@@ -4709,30 +4302,27 @@ async function processImportFile(file) {
 
     // Build prompt for Gemini
     const allSubcats = expenseCats.flatMap(g => g.subs);
-    const promptText = `Analisa este extrato bancário e extrai todos os movimentos financeiros.
-Para cada movimento devolve um JSON com esta estrutura exata:
+    const promptText = `Analisa este extrato bancário (pode ser um ficheiro ou screenshot) e extrai os movimentos financeiros.
+Para cada movimento, devolve um JSON com esta estrutura exata:
 {
   "movimentos": [
     {
       "data": "YYYY-MM-DD",
-      "descricao": "descrição original do movimento",
+      "descricao": "descrição original",
       "valor": 12.50,
-      "tipo": "expense",
-      "subcategoria": "Sub-categoria",
-      "cashback": false
+      "tipo": "expense" ou "income",
+      "subcategoria": "nome da sub-categoria mais adequada ou null se não souberes"
     }
   ]
 }
 
 Sub-categorias disponíveis para despesas: ${allSubcats.join(', ')}
 
-Regras importantes:
+Regras:
 - valor sempre positivo
-- tipo "expense" para saídas de dinheiro (débitos), "income" para entradas (créditos)
-- Ignora APENAS pagamentos do próprio cartão (ex: "PAGAMENTO DEBITO DIRETO", "PAGAMENTO CARTAO") — esses são liquidações internas
-- NÃO ignores créditos de programas de recompensa, reembolsos ou benefícios
-- cashback: identifica de forma inteligente qualquer crédito que seja um benefício/recompensa do cartão — pode aparecer como "PROGRAMA REEMBOLSO", "CASHBACK", "ABONO", "REEMBOLSO PROGRAMA", "DESCONTO PROGRAMA", "PONTOS CONVERTIDOS", "REWARDS", "BENEFICIO CARTAO" ou qualquer variante. Se for cashback/reembolso de programa, define tipo "income", subcategoria "Cashback" e cashback true
-- Devolve APENAS o JSON válido, sem texto adicional`;
+- tipo "income" para entradas de dinheiro, "expense" para saídas
+- Ignora movimentos entre contas próprias e transferências internas
+- Devolve APENAS o JSON, sem texto adicional`;
 
     const filePart = fileContent.base64
       ? { inline_data: { mime_type: fileContent.mimeType, data: fileContent.base64 } }
@@ -4790,13 +4380,12 @@ function normalizeDesc(desc) {
 }
 
 function isDuplicate(m) {
-  const mDate = new Date(m.data + 'T12:00:00Z').getTime();
-  return entries.find(e => {
-    if (Math.abs(e.amount - m.valor) >= 0.01) return false;
-    if (normalizeDesc(e.note || '') !== normalizeDesc(m.descricao)) return false;
-    const eDate = new Date(e.date + 'T12:00:00Z').getTime();
-    return Math.abs(mDate - eDate) <= 75 * 24 * 60 * 60 * 1000;
-  }) || null;
+  // Check if an entry with same date, amount and similar description already exists
+  return entries.some(e =>
+    e.date === m.data &&
+    Math.abs(e.amount - m.valor) < 0.01 &&
+    normalizeDesc(e.note || '') === normalizeDesc(m.descricao)
+  );
 }
 
 function findMemoryMatch(m) {
@@ -4826,7 +4415,7 @@ function renderImportReview() {
     else if (mem?.subcat) { m._autoSubcat = mem.subcat; autoMatched++; }
   });
 
-  const autoDups = importedMovements.filter(m => !!isDuplicate(m)).length;
+  const autoDups = importedMovements.filter(m => isDuplicate(m)).length;
   let summary = `${importedMovements.length} movimentos encontrados.`;
   if (autoMatched > 0) summary += ` ${autoMatched} já categorizados.`;
   if (autoSkipped > 0) summary += ` ${autoSkipped} da memória.`;
@@ -4834,30 +4423,22 @@ function renderImportReview() {
   document.getElementById('import-summary').textContent = summary;
 
   document.getElementById('import-movements-list').innerHTML = importedMovements.map((m, i) => {
-    const isCashback = m.cashback === true;
-    if (isCashback) { m.tipo = 'income'; m.subcategoria = 'Cashback'; }
     const isExpense  = m.tipo === 'expense';
-    let subcats      = isExpense ? allSubcats : incomeSubcats;
-    if (isCashback && !subcats.includes('Cashback')) subcats = ['Cashback', ...subcats];
+    const subcats    = isExpense ? allSubcats : incomeSubcats;
     const bestSubcat = m._autoSubcat || m.subcategoria;
     const options    = subcats.map(s => `<option value="${s}" ${s===bestSubcat?'selected':''}>${s}</option>`).join('');
     const duplicate  = isDuplicate(m);
-    const isSkipped  = m._autoSkip || !!duplicate || false;
+    const isSkipped  = m._autoSkip || duplicate || false;
     const skipLabel  = isSkipped ? 'Incluir' : 'Saltar';
     const skipClass  = isSkipped ? 'im-skip-btn unskip' : 'im-skip-btn';
     const autoTag    = m._autoSkip ? '<span style="font-size:10px;color:var(--muted);margin-left:6px;">🧠 memória</span>'
                      : m._autoSubcat ? '<span style="font-size:10px;color:var(--accent);margin-left:6px;">🧠 memória</span>'
                      : '';
-    const cashbackTag = isCashback ? '<span style="font-size:10px;color:#2ecc71;margin-left:6px;font-weight:700;">💳 cashback</span>' : '';
-    const dupDate    = duplicate ? new Date(duplicate.date + 'T12:00:00Z').toLocaleDateString('pt-PT', {day:'numeric', month:'short'}) : '';
-    const exactDate  = duplicate && duplicate.date === m.data;
-    const dupTag     = duplicate
-      ? `<span class="im-duplicate-badge">⚠️ duplicado${exactDate ? '' : ' · registado em ' + dupDate}</span>`
-      : '';
+    const dupTag     = duplicate ? '<span class="im-duplicate-badge">⚠️ duplicado</span>' : '';
     return `
       <div class="import-movement ${isSkipped?'skipped':''}" id="import-mov-${i}">
         <div class="im-top">
-          <div class="im-desc">${m.descricao}${autoTag}${cashbackTag}${dupTag}</div>
+          <div class="im-desc">${m.descricao}${autoTag}${dupTag}</div>
           <div class="im-amount ${isExpense?'expense':'income'}">${isExpense?'-':'+'}${formatCurrency(m.valor)}</div>
         </div>
         <div style="display:flex;gap:8px;margin-bottom:6px;">
@@ -4912,13 +4493,8 @@ function submitImport() {
       importMemory.matches[key] = subcat;
     }
 
-    // Auto-add Cashback to incomeCats if not present
-    if (m.tipo === 'income' && subcat === 'Cashback' && !incomeCats.includes('Cashback')) {
-      incomeCats.push('Cashback');
-      saveCats();
-    }
     const parentcat = m.tipo === 'expense' ? getSubcatParent(subcat) : '';
-    const entry = {
+    entries.unshift({
       id: Date.now() + i,
       type: m.tipo,
       amount: m.valor,
@@ -4927,31 +4503,11 @@ function submitImport() {
       note: document.getElementById('import-note-' + i)?.value || m.descricao,
       date: document.getElementById('import-date-' + i)?.value || m.data,
       ts: new Date().toISOString()
-    };
-    entries.unshift(entry);
-
-    // Auto-apply cofre deduction (same as confirmUseCofre but without dialog)
-    if (m.tipo === 'expense' && subcat) {
-      const linked = cofres.filter(c => c.subcategoria === subcat && !cofreCompleto(c));
-      if (linked.length > 0) {
-        const cofre = linked.find(c => c.saldoAtual >= m.valor) || linked[0];
-        const deducted = Math.min(m.valor, cofre.saldoAtual);
-        if (deducted > 0) {
-          const mov = { id: Date.now().toString() + i, tipo: 'levantar', valor: deducted, nota: entry.note || subcat, ts: entry.ts };
-          if (!cofre.movimentos) cofre.movimentos = [];
-          cofre.movimentos.push(mov);
-          cofre.saldoAtual = +(cofre.saldoAtual - deducted).toFixed(2);
-          entries.unshift({ id: Date.now() + i + 0.5, type: 'income', amount: deducted,
-            category: (cofre.emoji || '🏦') + ' ' + cofre.nome,
-            date: entry.date, note: 'Saída de cofre', ts: entry.ts });
-        }
-      }
-    }
+    });
     count++;
   });
 
   saveData(entries);
-  saveCofres(cofres);
   scheduleSave(); // save importMemory too
   closeImport();
   renderAll();
@@ -5085,14 +4641,6 @@ document.addEventListener('input', e => { if(e.target.id==='ciclo-dia-input') up
 
 // ===== RELATÓRIOS =====
 let relatorioPeriod = 'atual';
-let relatorioTab    = 'exp';
-
-function switchRelTab(tab) {
-  relatorioTab = tab;
-  document.getElementById('rel-tab-exp').className = 'orc-tab-btn' + (tab === 'exp' ? ' active' : '');
-  document.getElementById('rel-tab-inc').className = 'orc-tab-btn' + (tab === 'inc' ? ' active' : '');
-  renderRelatorios();
-}
 
 const CAT_COLORS = [
   '#a78bfa','#35c8f1','#c8f135','#f1a835','#ff5e5e',
@@ -5179,15 +4727,9 @@ function renderRelatorios() {
   document.getElementById('rel-total-expense').textContent = formatCurrency(totalExp);
   document.getElementById('rel-total-income').textContent  = formatCurrency(totalInc);
   const saldo = totalInc - totalExp;
-  const sEl    = document.getElementById('rel-saldo');
-  const sSubEl = document.getElementById('rel-saldo-sub');
+  const sEl = document.getElementById('rel-saldo');
   sEl.textContent = (saldo>=0?'+':'')+formatCurrency(saldo).replace('€',saldo<0?'-€':'€');
   sEl.style.color = saldo >= 0 ? 'var(--accent)' : 'var(--red)';
-  if (sSubEl) {
-    const poupPct = totalInc > 0 ? Math.round((totalInc - totalExp) / totalInc * 100) : null;
-    sSubEl.textContent = poupPct !== null ? poupPct + '% poupado' : 'período';
-    sSubEl.style.color = poupPct !== null ? (poupPct >= 20 ? 'var(--accent)' : poupPct >= 0 ? '#f0a500' : 'var(--red)') : '';
-  }
 
   // VS labels
   if (prevDates) {
@@ -5202,19 +4744,15 @@ function renderRelatorios() {
     document.getElementById('rel-vs-income').textContent  = '';
   }
 
-  // Chart (always shows expenses)
+  // Chart
   if (relatorioPeriod === 'atual') {
     renderPieChart(expenses, totalExp);
   } else {
     renderBarChart(expenses, prevEntries.filter(e=>e.type==='expense'), dates, prevDates);
   }
 
-  // Tab: despesas or receitas
-  if (relatorioTab === 'inc') {
-    renderRelReceitas(incomes, prevEntries.filter(e=>e.type==='income'), totalInc);
-  } else {
-    renderRelCategorias(expenses, prevEntries.filter(e=>e.type==='expense'), totalExp);
-  }
+  // Categories list
+  renderRelCategorias(expenses, prevEntries.filter(e=>e.type==='expense'), totalExp);
 }
 
 function getPrevPeriodDates(dates) {
@@ -5394,102 +4932,154 @@ function toggleRelSub(id) {
   document.getElementById(id).classList.toggle('sub-open');
 }
 
-function renderRelReceitas(incomes, prevIncomes, totalInc) {
-  const list = document.getElementById('rel-categories-list');
-  if (!incomes.length) {
-    list.innerHTML = '<div class="empty-state"><div class="emoji">💰</div><p>Sem receitas neste período.</p></div>';
-    return;
-  }
-  // Group by category
-  const bycat = {};
-  incomes.forEach(e => {
-    if (!bycat[e.category]) bycat[e.category] = { total: 0, entries: [] };
-    bycat[e.category].total   += e.amount;
-    bycat[e.category].entries.push(e);
-  });
-  const prevBycat = {};
-  prevIncomes.forEach(e => {
-    if (!prevBycat[e.category]) prevBycat[e.category] = 0;
-    prevBycat[e.category] += e.amount;
-  });
-  const sorted = Object.entries(bycat).sort((a,b) => b[1].total - a[1].total);
-
-  list.innerHTML = sorted.map(([cat, data], i) => {
-    const pct     = totalInc > 0 ? Math.round(data.total / totalInc * 100) : 0;
-    const color   = CAT_COLORS[i % CAT_COLORS.length];
-    const prevTot = prevBycat[cat] || 0;
-    const diff    = prevTot > 0 ? data.total - prevTot : null;
-    const vsLabel = diff !== null
-      ? `<span style="font-size:11px;color:${diff>=0?'var(--accent)':'var(--red)'};margin-left:6px;">${diff>=0?'+':'-'}${formatCurrency(Math.abs(diff))}</span>`
-      : '';
-    const entryItems = data.entries
-      .sort((a,b) => new Date(b.date) - new Date(a.date))
-      .map(e => `
-        <div class="rel-entry-item" onclick="event.stopPropagation();openEditEntry(${e.id})" style="cursor:pointer;" onmouseover="this.style.background='#1a1a1a'" onmouseout="this.style.background=''">
-          <div class="rel-entry-left">
-            <div class="rel-entry-note">${e.note || '—'}</div>
-            <div class="rel-entry-date">${formatDate(e.date)}</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
-            <div class="rel-entry-amount" style="color:var(--accent-income);">+${formatCurrency(e.amount)}</div>
-            <span style="font-size:11px;color:#444;">✏️</span>
-          </div>
-        </div>`).join('');
-    const subId = 'rel-inc-' + i;
-    return `<div class="rel-cat-item" id="${subId}">
-      <div class="rel-cat-header" onclick="toggleRelCat('inc-${i}')">
-        <span class="rel-cat-icon">💰</span>
-        <span class="rel-cat-name">${cat}</span>
-        <span class="rel-cat-amount" style="color:var(--accent-income);">${formatCurrency(data.total)}${vsLabel}</span>
-        <span class="rel-cat-pct">${pct}%</span>
-        <span class="rel-cat-chevron">›</span>
-      </div>
-      <div class="rel-cat-bar"><div class="rel-cat-bar-fill" style="width:${pct}%;background:${color};"></div></div>
-      <div class="rel-cat-subs">
-        <div class="rel-sub-item sub-open" style="pointer-events:none;">
-          <div class="rel-sub-entries" style="display:block;">${entryItems}</div>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-
-  // Wire up toggle
-  sorted.forEach((_, i) => {
-    const el = document.getElementById('rel-cat-item-inc-' + i);
-    if (el) el.onclick = () => el.classList.toggle('open');
-  });
-  document.querySelectorAll('[id^="rel-inc-"] .rel-cat-header').forEach(h => {
-    h.onclick = () => h.closest('.rel-cat-item').classList.toggle('open');
-  });
-}
-
 // ===== ONBOARDING =====
 function showOnboarding() {
+  // Pre-fill name if already set
+  if (userName) document.getElementById('ob-name').value = userName;
+  // Build cycle picker
+  const picker = document.getElementById('ob-cycle-picker');
+  if (!picker.children.length) {
+    for (let d = 1; d <= 28; d++) {
+      const el = document.createElement('div');
+      el.className = 'ob-day' + (d === cicloInicio ? ' sel' : '');
+      el.textContent = d;
+      el.onclick = () => obSelectDay(d);
+      picker.appendChild(el);
+    }
+    obUpdateCyclePreview(cicloInicio);
+  }
   document.getElementById('onboarding-overlay').classList.add('open');
 }
 
-function obNext(step) {
-  if (step === 1) {
-    const dia = parseInt(document.getElementById('ob-ciclo').value);
-    if (!dia || dia < 1 || dia > 28) { showToast('⚠️ Dia entre 1 e 28'); return; }
-    cicloInicio = dia;
-  }
-  if (step === 2) {
-    const key = document.getElementById('ob-gemini').value.trim();
-    if (key) geminiKey = key;
-  }
-  document.getElementById('ob-step-' + step).style.display = 'none';
-  document.getElementById('ob-step-' + (step + 1)).style.display = '';
+function obGoTo(step) {
+  [1,2,3].forEach(s => {
+    const el = document.getElementById('ob-s' + s);
+    el.style.display = s === step ? '' : 'none';
+    if (s === step) { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; }
+  });
 }
 
-function obFinish(enableCofres) {
-  cofresEnabled = enableCofres;
+function obSelectDay(d) {
+  document.querySelectorAll('.ob-day').forEach((el, i) => el.classList.toggle('sel', i + 1 === d));
+  cicloInicio = d;
+  obUpdateCyclePreview(d);
+}
+
+function obUpdateCyclePreview(d) {
+  const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), d);
+  if (start > now) start.setMonth(start.getMonth() - 1);
+  const end = new Date(start); end.setMonth(end.getMonth() + 1); end.setDate(end.getDate() - 1);
+  const el = document.getElementById('ob-cycle-preview');
+  if (el) el.innerHTML = `<strong>Ciclo atual:</strong> ${start.getDate()} ${months[start.getMonth()]} – ${end.getDate()} ${months[end.getMonth()]}`;
+}
+
+let obCofresChoice = true;
+function obSelectCofre(choice) {
+  obCofresChoice = choice;
+  document.getElementById('ob-cofre-yes').classList.toggle('sel', choice);
+  document.getElementById('ob-cofre-no').classList.toggle('sel', !choice);
+}
+
+function obFinish() {
+  const nameVal = document.getElementById('ob-name').value.trim();
+  if (nameVal) userName = nameVal;
+  cofresEnabled = obCofresChoice;
+  onboardingDone = true;
   const menuCofres = document.getElementById('menu-cofres');
   if (menuCofres) menuCofres.style.display = cofresEnabled ? '' : 'none';
+  const sbCofres = document.getElementById('sb-btn-cofres');
+  if (sbCofres) sbCofres.style.display = cofresEnabled ? '' : 'none';
+  if (cofresEnabled) {
+    const poupanca = expenseCats.find(g => g.cat === '🏦 Poupança');
+    if (poupanca && !poupanca.subs.includes('Cofres')) poupanca.subs.push('Cofres');
+  }
+  updateAvatar();
   document.getElementById('onboarding-overlay').classList.remove('open');
   scheduleSave();
   renderAll();
-  showToast('✅ Tudo pronto! Bem-vindo!');
+  setTimeout(obStartTour, 300);
+}
+
+function updateAvatar() {
+  const el = document.getElementById('user-avatar');
+  if (!el) return;
+  if (userName) {
+    el.textContent = userName.charAt(0).toUpperCase();
+    el.classList.add('visible');
+  } else {
+    el.classList.remove('visible');
+  }
+}
+
+// ── Guided tour ──
+let obTourStep = 0;
+const OB_TOUR = [
+  {
+    targetId: 'cat-picker-btn',
+    text: '💡 Toca aqui para escolher a categoria. Em "Gerir" podes criar as tuas próprias sub-categorias.',
+    pos: 'below'
+  },
+  {
+    targetId: 'today-balance',
+    text: '📊 O saldo reflete o teu ciclo completo — não o mês do calendário. O ciclo começa no dia que escolheste.',
+    pos: 'below'
+  },
+  {
+    targetId: 'nav-menu',
+    text: '☰ No Menu encontras Cofres, Orçamentos, Relatórios, Património e Definições.',
+    pos: 'above'
+  }
+];
+
+function obStartTour() {
+  obTourStep = 0;
+  document.getElementById('ob-tour-overlay').classList.add('open');
+  obRenderTour();
+}
+
+function obRenderTour() {
+  const step = OB_TOUR[obTourStep];
+
+  // Dots
+  document.getElementById('ob-tour-dots').innerHTML = OB_TOUR.map((_, i) =>
+    `<div class="ob-tour-dot${i === obTourStep ? ' active' : ''}"></div>`).join('');
+
+  // Button
+  document.getElementById('ob-tour-next').textContent =
+    obTourStep < OB_TOUR.length - 1 ? 'Próxima →' : 'Pronto ✓';
+
+  // Spotlight
+  const targetEl = document.getElementById(step.targetId);
+  const spot = document.getElementById('ob-tour-spot');
+  const bubble = document.getElementById('ob-tour-bubble');
+  if (targetEl) {
+    const r = targetEl.getBoundingClientRect();
+    spot.style.cssText = `top:${r.top - 4}px;left:${r.left - 4}px;width:${r.width + 8}px;height:${r.height + 8}px;`;
+    // Position bubble
+    const maxW = Math.min(window.innerWidth, 480);
+    const bLeft = Math.min(r.left, maxW - 272);
+    if (step.pos === 'above') {
+      bubble.style.cssText = `bottom:${window.innerHeight - r.top + 12}px;left:${bLeft}px;display:block;`;
+    } else {
+      bubble.style.cssText = `top:${r.bottom + 12}px;left:${bLeft}px;display:block;`;
+    }
+  }
+  bubble.textContent = step.text;
+  bubble.style.animation = 'none';
+  void bubble.offsetWidth;
+  bubble.style.animation = '';
+}
+
+function obTourNext() {
+  if (obTourStep < OB_TOUR.length - 1) {
+    obTourStep++;
+    obRenderTour();
+  } else {
+    document.getElementById('ob-tour-overlay').classList.remove('open');
+    showToast('✅ Tudo pronto! Bem-vindo' + (userName ? ', ' + userName : '') + '!');
+  }
 }
 
 // ===== CONFIRM MODAL =====
@@ -5520,7 +5110,7 @@ function showToast(msg) {
 // ===== INIT =====
 window.addEventListener('load', () => {
   const dateInput = document.getElementById('date-input');
-  if (dateInput) dateInput.max = '';
+  if (dateInput) dateInput.max = todayStr();
   if (typeof google !== 'undefined') {
     initAuth();
   } else {
