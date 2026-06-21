@@ -1920,6 +1920,7 @@ let cicloInicio     = 25; // day of month cycle starts
 let cicloOffset     = 0;  // 0 = current, -1 = previous, etc.
 let entriesQuery    = '';
 let entriesSortMode = 'date'; // 'date' | 'intro'
+let sessionLastDate = null;   // resets to today on each page load
 let accessToken  = null;
 let driveFileId  = null;
 let syncTimeout  = null;
@@ -2481,8 +2482,7 @@ function onDateChange(val) {
   }
 }
 function resetDatePicker() {
-  // Use date of last entry, or today if none
-  const lastDate = entries.length > 0 ? entries[0].date : todayStr();
+  const lastDate = sessionLastDate || todayStr();
   const isToday  = lastDate === todayStr();
   document.getElementById('date-input').value = lastDate;
   if (isToday) {
@@ -2695,6 +2695,7 @@ function addEntry() {
 function commitEntry(entry) {
   entries.unshift(entry);
   saveData(entries);
+  sessionLastDate = entry.date;
   document.getElementById('amount-input').value='';
   document.getElementById('note-input').value='';
   resetDatePicker();
