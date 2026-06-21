@@ -13,20 +13,21 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif;
-    min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 24px 0; }
 
   /* ── Phone shell ── */
   .phone {
     width: 390px; height: 780px; background: var(--bg);
     border-radius: 40px; border: 2px solid #333;
     overflow: hidden; position: relative;
-    box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.8); flex-shrink: 0;
   }
 
   /* ── Screens ── */
   .screen {
     position: absolute; inset: 0; display: flex; flex-direction: column;
-    padding: 0; opacity: 0; pointer-events: none;
+    opacity: 0; pointer-events: none;
     transform: translateX(60px);
     transition: opacity 0.35s ease, transform 0.35s ease;
     overflow: hidden;
@@ -34,25 +35,36 @@
   .screen.active { opacity: 1; pointer-events: all; transform: translateX(0); }
   .screen.out { opacity: 0; transform: translateX(-60px); }
 
-  /* ── Navigation dots ── */
-  .nav-dots {
-    display: flex; justify-content: center; gap: 8px; padding: 14px 0 0;
-    position: absolute; bottom: 24px; left: 0; right: 0;
+  /* ── Shared: avatar ── */
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--accent); color: #0d0d0d;
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 14px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   }
-  .dot { width: 6px; height: 6px; border-radius: 99px; background: var(--border);
-    transition: all 0.3s; }
-  .dot.active { background: var(--accent); width: 20px; }
+
+  /* ── Shared: bottom nav (app) ── */
+  .app-nav {
+    border-top: 1px solid var(--border); display: flex;
+    padding: 10px 0 16px; flex-shrink: 0; background: var(--bg);
+  }
+  .app-nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    font-size: 10px; color: var(--muted); cursor: pointer;
+  }
+  .app-nav-item.active { color: var(--accent); }
+  .app-nav-icon { font-size: 20px; }
 
   /* ── Buttons ── */
   .btn-primary {
     background: var(--accent); color: #0d0d0d; border: none; border-radius: 14px;
-    padding: 16px 24px; font-family: 'Syne', sans-serif; font-size: 15px;
+    padding: 15px 24px; font-family: 'Syne', sans-serif; font-size: 15px;
     font-weight: 800; cursor: pointer; width: 100%; transition: opacity 0.15s;
   }
   .btn-primary:active { opacity: 0.85; }
   .btn-secondary {
     background: var(--card2); color: var(--text); border: 1px solid var(--border);
-    border-radius: 14px; padding: 16px 24px; font-family: 'Syne', sans-serif;
+    border-radius: 14px; padding: 15px 24px; font-family: 'Syne', sans-serif;
     font-size: 15px; font-weight: 700; cursor: pointer; width: 100%; transition: opacity 0.15s;
   }
   .btn-google {
@@ -61,20 +73,14 @@
     font-weight: 700; cursor: pointer; width: 100%; display: flex;
     align-items: center; justify-content: center; gap: 10px; transition: opacity 0.15s;
   }
-  .btn-google:active { opacity: 0.85; }
   .skip-btn {
     background: none; border: none; color: var(--muted); font-family: 'DM Sans', sans-serif;
     font-size: 13px; cursor: pointer; padding: 8px; text-decoration: underline;
   }
 
   /* ── Progress bar wizard ── */
-  .wizard-progress {
-    display: flex; gap: 6px; padding: 20px 24px 0;
-  }
-  .wp-step {
-    flex: 1; height: 3px; border-radius: 99px; background: var(--border);
-    transition: background 0.4s;
-  }
+  .wizard-progress { display: flex; gap: 6px; padding: 20px 24px 0; }
+  .wp-step { flex: 1; height: 3px; border-radius: 99px; background: var(--border); transition: background 0.4s; }
   .wp-step.done { background: var(--accent); }
   .wp-step.active { background: var(--accent); opacity: 0.5; }
 
@@ -90,221 +96,123 @@
   /* ════════════════════════════════════════
      SCREEN 1 — LOGIN
   ═══════════════════════════════════════ */
-  #s-login {
-    background: linear-gradient(180deg, #111 0%, #0d0d0d 100%);
-    justify-content: flex-end; padding-bottom: 40px;
-  }
-  .login-top {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; padding: 40px 32px 20px;
-  }
-  .login-logo {
-    font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800;
-    letter-spacing: -0.5px; margin-bottom: 6px;
-    animation: logoIn 0.8s cubic-bezier(.22,1,.36,1) both;
-  }
+  #s-login { background: linear-gradient(180deg, #111 0%, #0d0d0d 100%); justify-content: flex-end; padding-bottom: 40px; }
+  .login-top { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 32px 20px; }
+  .login-logo { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; animation: logoIn 0.8s cubic-bezier(.22,1,.36,1) both; }
   .login-logo span { color: var(--accent); }
-  @keyframes logoIn {
-    from { opacity: 0; transform: translateY(-20px) scale(0.9); }
-    to   { opacity: 1; transform: none; }
-  }
-  .login-tagline {
-    font-size: 13px; color: var(--muted); margin-bottom: 40px;
-    animation: fadeUp 0.6s 0.2s both;
-  }
-  .feature-list {
-    width: 100%; display: flex; flex-direction: column; gap: 14px;
-    animation: fadeUp 0.6s 0.35s both;
-  }
-  .feature-item {
-    display: flex; align-items: center; gap: 14px;
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 12px 16px;
-  }
+  @keyframes logoIn { from { opacity: 0; transform: translateY(-20px) scale(0.9); } to { opacity: 1; transform: none; } }
+  .login-tagline { font-size: 13px; color: var(--muted); margin-bottom: 40px; animation: fadeUp 0.6s 0.2s both; }
+  .feature-list { width: 100%; display: flex; flex-direction: column; gap: 14px; animation: fadeUp 0.6s 0.35s both; }
+  .feature-item { display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; }
   .feature-icon { font-size: 22px; flex-shrink: 0; }
   .feature-text { font-size: 13px; color: var(--muted); line-height: 1.4; }
   .feature-text strong { color: var(--text); display: block; margin-bottom: 1px; }
-  .login-bottom {
-    padding: 0 24px; display: flex; flex-direction: column; gap: 10px;
-    animation: fadeUp 0.6s 0.5s both;
-  }
-  .login-terms {
-    text-align: center; font-size: 11px; color: var(--muted); margin-top: 4px;
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: none; }
-  }
+  .login-bottom { padding: 0 24px; display: flex; flex-direction: column; gap: 10px; animation: fadeUp 0.6s 0.5s both; }
+  .login-terms { text-align: center; font-size: 11px; color: var(--muted); margin-top: 4px; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 
   /* ════════════════════════════════════════
-     SCREEN 2 — WIZARD STEP 1: NOME
+     SCREENS 2–4 — WIZARD
   ═══════════════════════════════════════ */
-  .wizard-body {
-    flex: 1; display: flex; flex-direction: column;
-    padding: 28px 24px 0; overflow: hidden;
-  }
-  .wizard-emoji { font-size: 52px; margin-bottom: 20px; }
-  .wizard-title {
-    font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800;
-    line-height: 1.2; margin-bottom: 8px;
-  }
-  .wizard-subtitle { font-size: 14px; color: var(--muted); margin-bottom: 28px; line-height: 1.5; }
-  .wizard-footer { padding: 20px 24px 32px; display: flex; flex-direction: column; gap: 10px; }
+  .wizard-body { flex: 1; display: flex; flex-direction: column; padding: 24px 24px 0; overflow: hidden; }
+  .wizard-emoji { font-size: 44px; margin-bottom: 14px; }
+  .wizard-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; line-height: 1.2; margin-bottom: 8px; }
+  .wizard-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 22px; line-height: 1.5; }
+  .wizard-footer { padding: 16px 24px 28px; display: flex; flex-direction: column; gap: 10px; }
 
-  /* ════════════════════════════════════════
-     SCREEN 3 — WIZARD STEP 2: CICLO
-  ═══════════════════════════════════════ */
-  .cycle-picker {
-    display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 8px;
-  }
-  .cycle-day {
-    aspect-ratio: 1; background: var(--card2); border: 1.5px solid var(--border);
-    border-radius: 10px; display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s;
-  }
+  /* Cycle day picker */
+  .cycle-picker { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+  .cycle-day { aspect-ratio: 1; background: var(--card2); border: 1.5px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
   .cycle-day:hover { border-color: var(--accent); color: var(--accent); }
   .cycle-day.selected { background: var(--accent); color: #0d0d0d; border-color: var(--accent); font-weight: 800; }
-  .cycle-preview {
-    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-    padding: 12px 16px; margin-top: 16px; font-size: 13px; color: var(--muted);
-  }
+  .cycle-preview { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; margin-top: 12px; font-size: 13px; color: var(--muted); }
   .cycle-preview strong { color: var(--text); }
 
-  /* ════════════════════════════════════════
-     SCREEN 4 — WIZARD STEP 3: COFRES
-  ═══════════════════════════════════════ */
-  .cofre-option {
-    background: var(--card); border: 1.5px solid var(--border); border-radius: 14px;
-    padding: 16px; cursor: pointer; transition: all 0.2s; margin-bottom: 12px;
-    display: flex; align-items: flex-start; gap: 14px;
-  }
+  /* Cofre options */
+  .cofre-option { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 14px; cursor: pointer; transition: all 0.2s; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 12px; }
   .cofre-option.selected { border-color: var(--accent); background: rgba(200,241,53,0.05); }
-  .cofre-option-icon { font-size: 28px; flex-shrink: 0; }
+  .cofre-option-icon { font-size: 26px; flex-shrink: 0; }
   .cofre-option-text { flex: 1; }
-  .cofre-option-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; margin-bottom: 4px; }
-  .cofre-option-desc { font-size: 13px; color: var(--muted); line-height: 1.4; }
-  .cofre-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border);
-    flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s; }
+  .cofre-option-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 3px; }
+  .cofre-option-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
+  .cofre-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
   .cofre-option.selected .cofre-check { background: var(--accent); border-color: var(--accent); }
-  .cofre-check::after { content: '✓'; font-size: 12px; font-weight: 800; color: #0d0d0d; opacity: 0; transition: opacity 0.2s; }
+  .cofre-check::after { content: '✓'; font-size: 11px; font-weight: 800; color: #0d0d0d; opacity: 0; transition: opacity 0.2s; }
   .cofre-option.selected .cofre-check::after { opacity: 1; }
 
   /* ════════════════════════════════════════
-     SCREEN 5 — EMPTY STATE
+     SCREEN 5 — EMPTY STATE (real app look)
   ═══════════════════════════════════════ */
-  #s-empty { background: var(--bg); display: flex; flex-direction: column; }
-  .app-topbar {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 14px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0;
-  }
-  .app-topbar-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
-    color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-  .avatar {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: var(--accent); color: #0d0d0d;
-    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 14px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .welcome-card {
-    margin: 14px 16px 0; background: linear-gradient(135deg, rgba(200,241,53,0.1), rgba(200,241,53,0.03));
-    border: 1px solid rgba(200,241,53,0.2); border-radius: 16px; padding: 16px 18px;
-    flex-shrink: 0;
-  }
-  .welcome-greeting { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 4px; }
-  .welcome-greeting span { color: var(--accent); }
-  .welcome-sub { font-size: 13px; color: var(--muted); line-height: 1.4; }
-  .summary-row { display: flex; gap: 8px; padding: 12px 16px; flex-shrink: 0; }
-  .summary-chip {
-    flex: 1; background: var(--card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 10px 12px;
-  }
-  .summary-chip .lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
-  .summary-chip .val { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; margin-top: 2px; }
-  .empty-cta { padding: 0 16px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
-  .btn-add-first {
-    background: var(--accent); color: #0d0d0d; border: none; border-radius: 14px;
-    padding: 15px 24px; font-family: 'Syne', sans-serif; font-size: 15px;
-    font-weight: 800; cursor: pointer; width: 100%; display: flex;
-    align-items: center; justify-content: center; gap: 8px;
-  }
-  .app-bottomnav {
-    margin-top: auto; border-top: 1px solid var(--border);
-    display: flex; padding: 10px 0 14px; flex-shrink: 0;
-  }
-  .app-nav-item {
-    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
-    font-size: 10px; color: var(--muted); cursor: pointer;
-  }
-  .app-nav-item.active { color: var(--accent); }
-  .app-nav-icon { font-size: 20px; }
+  #s-empty { background: var(--bg); }
+
+  /* App header */
+  .app-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .app-logo { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
+  .app-logo span { color: var(--accent); }
+
+  /* Summary */
+  .app-summary { display: flex; gap: 8px; padding: 10px 14px; flex-shrink: 0; }
+  .app-summary-card { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 8px 10px; }
+  .app-summary-card .lbl { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .app-summary-card .val { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-top: 2px; white-space: nowrap; }
+  .app-summary-card .sub { font-size: 9px; color: var(--muted); margin-top: 2px; }
+
+  /* Quick-add form */
+  .app-quick-add { background: var(--card); border: 1px solid var(--border); border-radius: 14px; margin: 0 14px; padding: 12px 14px; flex-shrink: 0; }
+  .qa-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .qa-title { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .qa-import { font-size: 11px; color: var(--muted); border: 1px solid var(--border); border-radius: 7px; padding: 4px 8px; }
+  .qa-toggle { display: flex; gap: 6px; margin-bottom: 9px; }
+  .qa-toggle-btn { flex: 1; background: var(--card2); border: 1.5px solid var(--border); border-radius: 9px; padding: 7px 0; font-size: 12px; font-weight: 700; color: var(--muted); text-align: center; }
+  .qa-toggle-btn.active { background: var(--accent); color: #0d0d0d; border-color: var(--accent); }
+  .qa-amount-row { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: 10px; padding: 7px 12px; margin-bottom: 8px; gap: 6px; }
+  .qa-currency { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--accent); }
+  .qa-amount-val { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--border); }
+  .qa-cat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+  .qa-cat-label { font-size: 11px; color: var(--muted); }
+  .qa-cat-manage { font-size: 11px; color: var(--muted); border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; }
+  .qa-cat-btn { display: flex; align-items: center; justify-content: space-between; background: var(--card2); border: 1.5px solid var(--border); border-radius: 10px; padding: 8px 12px; margin-bottom: 7px; }
+  .qa-cat-btn span { font-size: 13px; }
+  .qa-row { display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--border); border-radius: 10px; padding: 8px 12px; margin-bottom: 7px; font-size: 13px; color: var(--muted); }
+  .qa-add-btn { background: var(--accent); color: #0d0d0d; border: none; border-radius: 10px; padding: 11px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800; width: 100%; }
 
   /* ════════════════════════════════════════
      SCREEN 6 — GUIDED TOUR
   ═══════════════════════════════════════ */
   #s-tour { background: var(--bg); }
-  .tour-overlay {
-    position: absolute; inset: 0; pointer-events: none;
-  }
-  .tour-dim { position: absolute; inset: 0; background: rgba(0,0,0,0.72); }
   .tour-spotlight {
-    position: absolute; border-radius: 12px;
-    box-shadow: 0 0 0 9999px rgba(0,0,0,0.72);
-    transition: all 0.4s cubic-bezier(.22,1,.36,1);
-    pointer-events: none;
-  }
-  .tour-app-bg {
-    position: absolute; inset: 0; display: flex; flex-direction: column;
+    position: absolute; border-radius: 10px;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.75);
+    transition: all 0.45s cubic-bezier(.22,1,.36,1);
+    pointer-events: none; z-index: 10;
   }
   .tour-bubble {
     position: absolute; background: var(--accent); color: #0d0d0d;
-    border-radius: 14px; padding: 12px 16px; font-size: 13px; font-weight: 700;
-    line-height: 1.45; max-width: 220px;
+    border-radius: 14px; padding: 11px 15px; font-size: 12px; font-weight: 700;
+    line-height: 1.5; max-width: 230px; z-index: 11;
     box-shadow: 0 8px 28px rgba(200,241,53,0.35);
-    transition: all 0.4s cubic-bezier(.22,1,.36,1);
   }
-  .tour-bubble-arrow {
-    position: absolute; width: 0; height: 0;
-  }
+  @keyframes bubbleIn { from { opacity: 0; transform: scale(0.85) translateY(8px); } to { opacity: 1; transform: none; } }
+  .tour-bubble { animation: bubbleIn 0.35s cubic-bezier(.22,1,.36,1) both; }
   .tour-footer {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    padding: 14px 16px 20px;
+    position: absolute; bottom: 0; left: 0; right: 0; z-index: 12;
+    padding: 12px 16px 20px;
     display: flex; align-items: center; justify-content: space-between;
-    background: linear-gradient(to top, rgba(13,13,13,0.98) 70%, transparent);
+    background: linear-gradient(to top, rgba(13,13,13,1) 60%, transparent);
   }
   .tour-dots { display: flex; gap: 6px; }
   .tour-dot { width: 6px; height: 6px; border-radius: 99px; background: var(--border); transition: all 0.3s; }
   .tour-dot.active { background: var(--accent); width: 18px; }
-  .tour-next-btn {
-    background: var(--accent); color: #0d0d0d; border: none; border-radius: 12px;
-    padding: 10px 20px; font-family: 'Syne', sans-serif; font-size: 14px;
-    font-weight: 800; cursor: pointer; pointer-events: all;
-  }
+  .tour-next-btn { background: var(--accent); color: #0d0d0d; border: none; border-radius: 12px; padding: 10px 20px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; pointer-events: all; }
 
   /* ── Navigation arrows ── */
-  .nav-arrows {
-    display: flex; justify-content: center; gap: 16px; margin-top: 24px;
-  }
-  .nav-arrow {
-    background: var(--card); border: 1px solid var(--border); border-radius: 99px;
-    width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
-    font-size: 18px; cursor: pointer; color: var(--text); transition: all 0.15s;
-    user-select: none;
-  }
+  .nav-arrows { display: flex; justify-content: center; gap: 16px; margin-top: 20px; }
+  .nav-arrow { background: var(--card); border: 1px solid var(--border); border-radius: 99px; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; color: var(--text); transition: all 0.15s; user-select: none; }
   .nav-arrow:hover { border-color: var(--accent); color: var(--accent); }
   .nav-arrow:disabled { opacity: 0.3; cursor: default; }
-  .screen-label {
-    margin-top: 12px; font-size: 12px; color: var(--muted); text-align: center;
-    font-family: 'DM Sans', sans-serif;
-  }
+  .screen-label { margin-top: 10px; font-size: 12px; color: var(--muted); text-align: center; }
 
-  @keyframes tooltipIn {
-    from { opacity: 0; transform: scale(0.85) translateY(8px); }
-    to   { opacity: 1; transform: none; }
-  }
-  .tour-bubble { animation: tooltipIn 0.35s cubic-bezier(.22,1,.36,1) both; }
-
-  /* Google icon SVG inline */
+  @keyframes pulse { 0%,100%{border-color:rgba(200,241,53,0.25);}50%{border-color:rgba(200,241,53,0.5);} }
   .google-icon { width: 20px; height: 20px; }
 </style>
 </head>
@@ -329,7 +237,7 @@
           <div class="feature-icon">🏦</div>
           <div class="feature-text">
             <strong>Cofres de poupança</strong>
-            Separa dinheiro por objectivos e acompanha o progresso.
+            Guarda mensalmente para despesas irregulares, para que não pesem quando chegam.
           </div>
         </div>
         <div class="feature-item">
@@ -358,14 +266,14 @@
   <!-- ══ SCREEN 2: WIZARD — NOME ══ -->
   <div class="screen" id="s-w1">
     <div class="wizard-progress">
-      <div class="wp-step active" id="wp1-1"></div>
-      <div class="wp-step" id="wp1-2"></div>
-      <div class="wp-step" id="wp1-3"></div>
+      <div class="wp-step active"></div>
+      <div class="wp-step"></div>
+      <div class="wp-step"></div>
     </div>
     <div class="wizard-body">
       <div class="wizard-emoji">👋</div>
       <div class="wizard-title">Bem-vindo ao<br>MoneyHolic!</div>
-      <div class="wizard-subtitle">Vamos configurar a app em 3 passos rápidos para que funcione exactamente para ti.</div>
+      <div class="wizard-subtitle">Vamos configurar a app em 3 passos rápidos para que funcione exatamente para ti.</div>
       <label style="font-size:12px;color:var(--muted);margin-bottom:8px;display:block;">Como te chamas?</label>
       <input class="form-input" id="name-input" type="text" placeholder="ex: Emanuel" style="font-size:18px;font-weight:700;">
     </div>
@@ -382,13 +290,13 @@
       <div class="wp-step active"></div>
       <div class="wp-step"></div>
     </div>
-    <div class="wizard-body" style="overflow-y:auto;">
+    <div class="wizard-body">
       <div class="wizard-emoji">📅</div>
       <div class="wizard-title">O teu ciclo financeiro</div>
       <div class="wizard-subtitle">Em que dia do mês começa o teu período financeiro? Normalmente coincide com o dia do salário.</div>
       <div class="cycle-picker" id="cycle-picker"></div>
       <div class="cycle-preview" id="cycle-preview">
-        <strong>Ciclo actual:</strong> selecciona um dia
+        <strong>Ciclo atual:</strong> seleciona um dia
       </div>
     </div>
     <div class="wizard-footer">
@@ -406,24 +314,24 @@
     </div>
     <div class="wizard-body">
       <div class="wizard-emoji">🏦</div>
-      <div class="wizard-title">Usas poupanças com objectivo?</div>
-      <div class="wizard-subtitle" style="margin-bottom:20px;">Os cofres permitem separar dinheiro para metas específicas — férias, fundo de emergência, carro, etc.</div>
+      <div class="wizard-title">Queres usar cofres?</div>
+      <div class="wizard-subtitle" style="margin-bottom:16px;">Os cofres permitem guardar mensalmente uma parte do dinheiro para despesas irregulares — seguro do carro, férias, revisão — para que quando chegarem não pesem tanto no orçamento.</div>
 
       <div class="cofre-option selected" id="cofre-yes" onclick="selectCofre('yes')">
         <div class="cofre-option-icon">✅</div>
         <div class="cofre-option-text">
           <div class="cofre-option-title">Sim, quero usar cofres</div>
-          <div class="cofre-option-desc">Activa a funcionalidade de poupanças com objectivos e acompanhamento de progresso.</div>
+          <div class="cofre-option-desc">Ativa poupanças por objetivo com acompanhamento de progresso mensal.</div>
         </div>
-        <div class="cofre-check" id="check-yes"></div>
+        <div class="cofre-check"></div>
       </div>
       <div class="cofre-option" id="cofre-no" onclick="selectCofre('no')">
         <div class="cofre-option-icon">➡️</div>
         <div class="cofre-option-text">
           <div class="cofre-option-title">Não por agora</div>
-          <div class="cofre-option-desc">Podes activar mais tarde nas Definições.</div>
+          <div class="cofre-option-desc">Podes ativar mais tarde nas Definições.</div>
         </div>
-        <div class="cofre-check" id="check-no"></div>
+        <div class="cofre-check"></div>
       </div>
     </div>
     <div class="wizard-footer">
@@ -432,74 +340,121 @@
     </div>
   </div>
 
-  <!-- ══ SCREEN 5: EMPTY STATE ══ -->
+  <!-- ══ SCREEN 5: EMPTY STATE — real app look ══ -->
   <div class="screen" id="s-empty">
-    <div class="app-topbar">
-      <div class="app-topbar-title">⚡ Registos</div>
+    <div class="app-header">
+      <div class="app-logo">MONEY<span>HOLIC</span></div>
       <div class="avatar" id="avatar-initial">E</div>
     </div>
-    <div class="welcome-card">
-      <div class="welcome-greeting">Olá, <span id="welcome-name">Emanuel</span>! 👋</div>
-      <div class="welcome-sub">A tua conta está pronta. Regista a primeira despesa ou receita para começar.</div>
-    </div>
-    <div class="summary-row">
-      <div class="summary-chip">
+    <div class="app-summary">
+      <div class="app-summary-card">
         <div class="lbl">Despesas</div>
-        <div class="val" style="color:var(--red);">€0,00</div>
+        <div class="val" style="color:var(--red);">€0</div>
+        <div class="sub">0 hoje</div>
       </div>
-      <div class="summary-chip">
+      <div class="app-summary-card">
         <div class="lbl">Receitas</div>
-        <div class="val" style="color:var(--accent-income);">€0,00</div>
+        <div class="val" style="color:var(--accent-income);">€0</div>
+        <div class="sub">0 hoje</div>
       </div>
-      <div class="summary-chip">
+      <div class="app-summary-card">
         <div class="lbl">Saldo</div>
-        <div class="val">€0,00</div>
+        <div class="val" style="color:var(--accent);">€0</div>
+        <div class="sub">ciclo</div>
       </div>
     </div>
-    <div class="empty-cta">
-      <button class="btn-add-first">➕ Registar primeira despesa</button>
+    <div class="app-quick-add">
+      <div class="qa-title-row">
+        <span class="qa-title">⚡ Registo rápido</span>
+        <span class="qa-import">📥 Importar extrato</span>
+      </div>
+      <div class="qa-toggle">
+        <div class="qa-toggle-btn active">📤 Despesa</div>
+        <div class="qa-toggle-btn">📥 Receita</div>
+      </div>
+      <div class="qa-amount-row">
+        <span class="qa-currency">€</span>
+        <span class="qa-amount-val">0,00</span>
+      </div>
+      <div class="qa-cat-header">
+        <span class="qa-cat-label">Sub-categoria</span>
+        <span class="qa-cat-manage">⚙️ Gerir</span>
+      </div>
+      <div class="qa-cat-btn">
+        <span>📦 Escolher categoria</span>
+        <span style="color:var(--muted);font-size:12px;">›</span>
+      </div>
+      <div class="qa-row">✏️ <span>Nota opcional (ex: almoço com colega)</span></div>
+      <div class="qa-row">📅 <span>Hoje</span></div>
+      <button class="qa-add-btn">+ Registar despesa</button>
     </div>
-    <div class="app-bottomnav">
-      <div class="app-nav-item active"><div class="app-nav-icon">⚡</div>Registos</div>
-      <div class="app-nav-item"><div class="app-nav-icon">🏦</div>Cofres</div>
-      <div class="app-nav-item"><div class="app-nav-icon">📊</div>Relatórios</div>
-      <div class="app-nav-item"><div class="app-nav-icon">⚙️</div>Definições</div>
+    <!-- Welcome hint -->
+    <div style="margin:10px 14px 0;background:rgba(200,241,53,0.06);border:1px dashed rgba(200,241,53,0.25);border-radius:12px;padding:10px 14px;text-align:center;animation:pulse 2s infinite;">
+      <div id="welcome-greeting" style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;margin-bottom:2px;">Olá, <span id="welcome-name">Emanuel</span>! 👋</div>
+      <div style="font-size:12px;color:var(--muted);">A tua conta está pronta. Regista a primeira despesa.</div>
+    </div>
+    <div class="app-nav" style="margin-top:auto;">
+      <div class="app-nav-item active"><div class="app-nav-icon">💸</div>Registos</div>
+      <div class="app-nav-item"><div class="app-nav-icon">☰</div>Menu</div>
     </div>
   </div>
 
   <!-- ══ SCREEN 6: GUIDED TOUR ══ -->
   <div class="screen" id="s-tour">
-    <!-- Static app background -->
-    <div class="tour-app-bg">
-      <div class="app-topbar">
-        <div class="app-topbar-title">⚡ Registos</div>
-        <div class="avatar" id="tour-avatar">E</div>
+    <!-- Static app background (same layout as screen 5) -->
+    <div class="app-header">
+      <div class="app-logo">MONEY<span>HOLIC</span></div>
+      <div class="avatar" id="tour-avatar">E</div>
+    </div>
+    <div class="app-summary" id="tour-summary">
+      <div class="app-summary-card">
+        <div class="lbl">Despesas</div>
+        <div class="val" style="color:var(--red);">€247</div>
+        <div class="sub">4 hoje</div>
       </div>
-      <!-- Quick-add form skeleton -->
-      <div style="padding:10px 16px;display:flex;flex-direction:column;gap:8px;">
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;">
-          <span style="font-size:13px;color:var(--muted);">Categoria</span>
-          <span style="font-size:13px;color:var(--muted);">Alimentação › 🍕</span>
-        </div>
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;">
-          <span style="font-size:22px;font-family:'Syne',sans-serif;font-weight:800;color:var(--text);">€ 24,50</span>
-        </div>
-        <div style="background:var(--card2);border-radius:12px;height:44px;"></div>
-        <div style="background:var(--accent);border-radius:12px;height:46px;display:flex;align-items:center;justify-content:center;">
-          <span style="font-family:'Syne',sans-serif;font-weight:800;color:#0d0d0d;font-size:15px;">Registar despesa</span>
-        </div>
+      <div class="app-summary-card">
+        <div class="lbl">Receitas</div>
+        <div class="val" style="color:var(--accent-income);">€1.800</div>
+        <div class="sub">1 hoje</div>
       </div>
-      <div class="app-bottomnav" style="margin-top:auto;">
-        <div class="app-nav-item active" id="tour-nav-registos"><div class="app-nav-icon">⚡</div>Registos</div>
-        <div class="app-nav-item" id="tour-nav-cofres"><div class="app-nav-icon">🏦</div>Cofres</div>
-        <div class="app-nav-item" id="tour-nav-relatorios"><div class="app-nav-icon">📊</div>Relatórios</div>
-        <div class="app-nav-item" id="tour-nav-def"><div class="app-nav-icon">⚙️</div>Definições</div>
+      <div class="app-summary-card">
+        <div class="lbl">Saldo</div>
+        <div class="val" style="color:var(--accent);">€1.553</div>
+        <div class="sub">ciclo</div>
       </div>
     </div>
-    <!-- Spotlight + bubble -->
+    <div class="app-quick-add" id="tour-quick-add">
+      <div class="qa-title-row">
+        <span class="qa-title">⚡ Registo rápido</span>
+        <span class="qa-import">📥 Importar extrato</span>
+      </div>
+      <div class="qa-toggle">
+        <div class="qa-toggle-btn active">📤 Despesa</div>
+        <div class="qa-toggle-btn">📥 Receita</div>
+      </div>
+      <div class="qa-amount-row">
+        <span class="qa-currency">€</span>
+        <span class="qa-amount-val">24,50</span>
+      </div>
+      <div class="qa-cat-header">
+        <span class="qa-cat-label">Sub-categoria</span>
+        <span class="qa-cat-manage" id="tour-manage-btn">⚙️ Gerir</span>
+      </div>
+      <div class="qa-cat-btn" id="tour-cat-btn">
+        <span>🍕 Restaurantes</span>
+        <span style="color:var(--muted);font-size:12px;">›</span>
+      </div>
+      <div class="qa-row">✏️ <span style="color:var(--text);">Almoço de trabalho</span></div>
+      <div class="qa-row">📅 <span style="color:var(--text);">Hoje</span></div>
+      <button class="qa-add-btn">+ Registar despesa</button>
+    </div>
+    <div class="app-nav" id="tour-nav" style="margin-top:auto;">
+      <div class="app-nav-item active" id="tour-nav-reg"><div class="app-nav-icon">💸</div>Registos</div>
+      <div class="app-nav-item" id="tour-nav-menu"><div class="app-nav-icon">☰</div>Menu</div>
+    </div>
+    <!-- Spotlight + bubble (z-index above app) -->
     <div class="tour-spotlight" id="tour-spotlight"></div>
-    <div class="tour-bubble" id="tour-bubble"></div>
-    <!-- Footer -->
+    <div class="tour-bubble" id="tour-bubble" style="display:none;"></div>
     <div class="tour-footer">
       <div class="tour-dots" id="tour-dots"></div>
       <button class="tour-next-btn" id="tour-next-btn" onclick="tourNext()">Próxima →</button>
@@ -508,7 +463,6 @@
 
 </div><!-- /phone -->
 
-<!-- Navigation -->
 <div class="nav-arrows">
   <button class="nav-arrow" id="btn-prev" onclick="prevScreen()" disabled>‹</button>
   <button class="nav-arrow" id="btn-next" onclick="nextScreen()">›</button>
@@ -550,7 +504,6 @@ function updateNav() {
     `Ecrã ${current + 1} / ${SCREENS.length} — ${LABELS[current]}`;
 }
 
-// Sync name from wizard to empty state + tour avatar
 function syncName() {
   const raw = document.getElementById('name-input').value.trim();
   const name = raw || 'Utilizador';
@@ -560,7 +513,7 @@ function syncName() {
   document.getElementById('tour-avatar').textContent = initial;
 }
 
-// Cycle day picker
+// ── Cycle day picker ──
 let selectedDay = 25;
 const picker = document.getElementById('cycle-picker');
 for (let d = 1; d <= 28; d++) {
@@ -572,16 +525,14 @@ for (let d = 1; d <= 28; d++) {
 }
 function selectDay(d) {
   selectedDay = d;
-  document.querySelectorAll('.cycle-day').forEach((el, i) => {
-    el.classList.toggle('selected', i + 1 === d);
-  });
+  document.querySelectorAll('.cycle-day').forEach((el, i) => el.classList.toggle('selected', i + 1 === d));
   const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   const now = new Date();
   const start = new Date(now.getFullYear(), now.getMonth(), d);
   if (start > now) start.setMonth(start.getMonth() - 1);
   const end = new Date(start); end.setMonth(end.getMonth() + 1); end.setDate(end.getDate() - 1);
   document.getElementById('cycle-preview').innerHTML =
-    `<strong>Ciclo actual:</strong> ${start.getDate()} ${months[start.getMonth()]} – ${end.getDate()} ${months[end.getMonth()]}`;
+    `<strong>Ciclo atual:</strong> ${start.getDate()} ${months[start.getMonth()]} – ${end.getDate()} ${months[end.getMonth()]}`;
 }
 selectDay(25);
 
@@ -594,59 +545,52 @@ function selectCofre(choice) {
 let tourStep = 0;
 const TOUR_STEPS = [
   {
-    text: '💡 Aqui registas despesas e receitas — o teu painel principal.',
-    targetId: null, // topbar area — computed below
-    bubblePos: { top: '80px', left: '16px' },
-    spotBox: { top: 0, left: 0, width: '100%', height: '52px' }
+    text: '💡 Toca aqui para escolher a categoria e sub-categoria. Podes criar as tuas próprias em "Gerir".',
+    targetId: 'tour-cat-btn',
+    bubbleStyle: 'top:290px;left:14px;'
   },
   {
-    text: '📂 Escolhe a categoria e sub-categoria de cada despesa. Podes criar as tuas próprias.',
-    targetId: null,
-    bubblePos: { top: '130px', left: '16px' },
-    spotBox: { top: '62px', left: '16px', width: 'calc(100% - 32px)', height: '46px' }
+    text: '📊 O saldo mostra o teu ciclo financeiro completo — não o mês do calendário. O ciclo começa no dia que definiste.',
+    targetId: 'tour-summary',
+    bubbleStyle: 'top:110px;left:14px;'
   },
   {
-    text: '🏦 Em Cofres podes separar dinheiro para objetivos como férias ou fundo de emergência.',
-    targetId: 'tour-nav-cofres',
-    bubblePos: { bottom: '90px', left: '16px' },
-    spotBox: null
+    text: '☰ No Menu encontras Cofres, Orçamentos, Relatórios, Património e Definições.',
+    targetId: 'tour-nav-menu',
+    bubbleStyle: 'bottom:75px;left:14px;'
   }
 ];
 
+function getRelRect(el) {
+  const phone = document.querySelector('.phone');
+  const pr = phone.getBoundingClientRect();
+  const er = el.getBoundingClientRect();
+  return { top: er.top - pr.top, left: er.left - pr.left, width: er.width, height: er.height };
+}
+
 function renderTour() {
   const step = TOUR_STEPS[tourStep];
-  const phone = document.querySelector('.phone');
-  const phoneRect = phone.getBoundingClientRect();
 
   // Dots
-  const dotsEl = document.getElementById('tour-dots');
-  dotsEl.innerHTML = TOUR_STEPS.map((_, i) =>
+  document.getElementById('tour-dots').innerHTML = TOUR_STEPS.map((_, i) =>
     `<div class="tour-dot${i === tourStep ? ' active' : ''}"></div>`).join('');
 
-  // Button label
-  const btn = document.getElementById('tour-next-btn');
-  btn.textContent = tourStep < TOUR_STEPS.length - 1 ? 'Próxima →' : 'Começar ✓';
+  // Button
+  document.getElementById('tour-next-btn').textContent =
+    tourStep < TOUR_STEPS.length - 1 ? 'Próxima →' : 'Começar ✓';
 
   // Spotlight
   const spot = document.getElementById('tour-spotlight');
-  if (step.spotBox) {
-    const sb = step.spotBox;
-    spot.style.cssText = `top:${sb.top};left:${sb.left};width:${sb.width};height:${sb.height};`;
-  } else if (step.targetId) {
-    const el = document.getElementById(step.targetId);
-    if (el) {
-      const r = el.getBoundingClientRect();
-      spot.style.cssText = `top:${r.top - phoneRect.top - 4}px;left:${r.left - phoneRect.left - 4}px;width:${r.width + 8}px;height:${r.height + 8}px;`;
-    }
-  } else {
-    spot.style.cssText = 'display:none';
+  const targetEl = document.getElementById(step.targetId);
+  if (targetEl) {
+    const r = getRelRect(targetEl);
+    spot.style.cssText = `top:${r.top - 4}px;left:${r.left - 4}px;width:${r.width + 8}px;height:${r.height + 8}px;`;
   }
 
   // Bubble
   const bubble = document.getElementById('tour-bubble');
   bubble.textContent = step.text;
-  const bp = step.bubblePos;
-  bubble.style.cssText = Object.entries(bp).map(([k,v]) => `${k}:${v}`).join(';');
+  bubble.style.cssText = step.bubbleStyle + 'display:block;';
   bubble.style.animation = 'none';
   void bubble.offsetWidth;
   bubble.style.animation = '';
@@ -657,7 +601,6 @@ function tourNext() {
     tourStep++;
     renderTour();
   } else {
-    // End of tour — loop back to start of mockup
     goTo(0);
   }
 }
