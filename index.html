@@ -1195,6 +1195,21 @@
   background: var(--accent); color: #0d0d0d; border: none; border-radius: 12px;
   padding: 10px 20px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer;
 }
+/* ── WELCOME SPLASH ── */
+.welcome-splash {
+  position: fixed; inset: 0; z-index: 1100; background: #0d0d0d;
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.welcome-splash.open {
+  display: flex;
+  animation: splashFadeOut 0.5s 1.8s ease both;
+}
+@keyframes splashFadeOut { to { opacity: 0; } }
+.welcome-splash-emoji { font-size: 56px; margin-bottom: 16px; animation: splashIn 0.5s cubic-bezier(.22,1,.36,1) both; }
+.welcome-splash-text { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800;
+  animation: splashIn 0.5s 0.1s cubic-bezier(.22,1,.36,1) both; }
+@keyframes splashIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
 </style>
 </head>
 <body>
@@ -1435,7 +1450,15 @@
   </div>
   <div style="padding:0 16px 80px;" id="definicoes-content">
 
-    <!-- Gemini API Key -->
+    <!-- Perfil -->
+    <div class="breakdown-wrap" style="margin-bottom:16px;">
+      <div class="breakdown-title">👤 Perfil</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">O teu nome aparece no ecrã de boas-vindas e no avatar do cabeçalho.</p>
+      <div class="form-row" style="margin-bottom:8px;">
+        <input type="text" class="form-input" id="def-name" placeholder="O teu nome" autocomplete="given-name">
+      </div>
+      <button style="background:var(--accent);color:#0d0d0d;border:none;border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="saveUserName()">Guardar nome</button>
+    </div>
     <div class="breakdown-wrap" style="margin-bottom:16px;">
       <div class="breakdown-title">🤖 Gemini API Key</div>
       <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Necessária para importar extratos com IA. Obtém a tua chave gratuita em <a href="https://aistudio.google.com" target="_blank" style="color:var(--accent);">aistudio.google.com</a></p>
@@ -2215,6 +2238,8 @@ async function onAuthorised() {
   // Show onboarding for new users
   if (!onboardingDone) {
     setTimeout(showOnboarding, 400);
+  } else {
+    setTimeout(showWelcomeSplash, 300);
   }
   updateAvatar();
   // Refresh token every 45 min silently
@@ -4552,6 +4577,9 @@ function submitImport() {
 // ===== DEFINIÇÕES =====
 function renderDefinicoes() {
   if (!document.getElementById('def-user-email')) return;
+  // Name
+  const defName = document.getElementById('def-name');
+  if (defName) defName.value = userName || '';
   // Gemini key
   const keyInput = document.getElementById('def-gemini-key');
   if (keyInput) {
@@ -5048,6 +5076,26 @@ function updateAvatar() {
   }
 }
 
+function saveUserName() {
+  const val = (document.getElementById('def-name').value || '').trim();
+  if (!val) { showToast('⚠️ Introduz um nome'); return; }
+  userName = val;
+  updateAvatar();
+  scheduleSave();
+  showToast('✅ Nome guardado!');
+}
+
+function showWelcomeSplash() {
+  if (!userName) return;
+  if (sessionStorage.getItem('splashShown')) return;
+  sessionStorage.setItem('splashShown', '1');
+  const el = document.getElementById('welcome-splash');
+  if (!el) return;
+  document.getElementById('welcome-splash-name').textContent = 'Olá, ' + userName + '!';
+  el.classList.add('open');
+  setTimeout(() => el.classList.remove('open'), 2200);
+}
+
 // ── Guided tour ──
 let obTourStep = 0;
 const OB_TOUR = [
@@ -5162,5 +5210,11 @@ window.addEventListener('load', () => {
 </script>
 </div><!-- /main-content -->
 </div><!-- /app-shell -->
+
+<!-- WELCOME SPLASH -->
+<div id="welcome-splash" class="welcome-splash">
+  <div class="welcome-splash-emoji">👋</div>
+  <div class="welcome-splash-text" id="welcome-splash-name">Olá!</div>
+</div>
 </body>
 </html>
