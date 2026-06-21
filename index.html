@@ -4934,31 +4934,152 @@ function toggleRelSub(id) {
 
 // ===== ONBOARDING =====
 function showOnboarding() {
+  // Pre-fill name if already set
+  if (userName) document.getElementById('ob-name').value = userName;
+  // Build cycle picker
+  const picker = document.getElementById('ob-cycle-picker');
+  if (!picker.children.length) {
+    for (let d = 1; d <= 28; d++) {
+      const el = document.createElement('div');
+      el.className = 'ob-day' + (d === cicloInicio ? ' sel' : '');
+      el.textContent = d;
+      el.onclick = () => obSelectDay(d);
+      picker.appendChild(el);
+    }
+    obUpdateCyclePreview(cicloInicio);
+  }
   document.getElementById('onboarding-overlay').classList.add('open');
 }
 
-function obNext(step) {
-  if (step === 1) {
-    const dia = parseInt(document.getElementById('ob-ciclo').value);
-    if (!dia || dia < 1 || dia > 28) { showToast('⚠️ Dia entre 1 e 28'); return; }
-    cicloInicio = dia;
-  }
-  if (step === 2) {
-    const key = document.getElementById('ob-gemini').value.trim();
-    if (key) geminiKey = key;
-  }
-  document.getElementById('ob-step-' + step).style.display = 'none';
-  document.getElementById('ob-step-' + (step + 1)).style.display = '';
+function obGoTo(step) {
+  [1,2,3].forEach(s => {
+    const el = document.getElementById('ob-s' + s);
+    el.style.display = s === step ? '' : 'none';
+    if (s === step) { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; }
+  });
 }
 
-function obFinish(enableCofres) {
-  cofresEnabled = enableCofres;
+function obSelectDay(d) {
+  document.querySelectorAll('.ob-day').forEach((el, i) => el.classList.toggle('sel', i + 1 === d));
+  cicloInicio = d;
+  obUpdateCyclePreview(d);
+}
+
+function obUpdateCyclePreview(d) {
+  const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), d);
+  if (start > now) start.setMonth(start.getMonth() - 1);
+  const end = new Date(start); end.setMonth(end.getMonth() + 1); end.setDate(end.getDate() - 1);
+  const el = document.getElementById('ob-cycle-preview');
+  if (el) el.innerHTML = `<strong>Ciclo atual:</strong> ${start.getDate()} ${months[start.getMonth()]} – ${end.getDate()} ${months[end.getMonth()]}`;
+}
+
+let obCofresChoice = true;
+function obSelectCofre(choice) {
+  obCofresChoice = choice;
+  document.getElementById('ob-cofre-yes').classList.toggle('sel', choice);
+  document.getElementById('ob-cofre-no').classList.toggle('sel', !choice);
+}
+
+function obFinish() {
+  const nameVal = document.getElementById('ob-name').value.trim();
+  if (nameVal) userName = nameVal;
+  cofresEnabled = obCofresChoice;
+  onboardingDone = true;
   const menuCofres = document.getElementById('menu-cofres');
   if (menuCofres) menuCofres.style.display = cofresEnabled ? '' : 'none';
+  const sbCofres = document.getElementById('sb-btn-cofres');
+  if (sbCofres) sbCofres.style.display = cofresEnabled ? '' : 'none';
+  if (cofresEnabled) {
+    const poupanca = expenseCats.find(g => g.cat === '🏦 Poupança');
+    if (poupanca && !poupanca.subs.includes('Cofres')) poupanca.subs.push('Cofres');
+  }
+  updateAvatar();
   document.getElementById('onboarding-overlay').classList.remove('open');
   scheduleSave();
   renderAll();
-  showToast('✅ Tudo pronto! Bem-vindo!');
+  setTimeout(obStartTour, 300);
+}
+
+function updateAvatar() {
+  const el = document.getElementById('user-avatar');
+  if (!el) return;
+  if (userName) {
+    el.textContent = userName.charAt(0).toUpperCase();
+    el.classList.add('visible');
+  } else {
+    el.classList.remove('visible');
+  }
+}
+
+// ── Guided tour ──
+let obTourStep = 0;
+const OB_TOUR = [
+  {
+    targetId: 'cat-picker-btn',
+    text: '💡 Toca aqui para escolher a categoria. Em "Gerir" podes criar as tuas próprias sub-categorias.',
+    pos: 'below'
+  },
+  {
+    targetId: 'today-balance',
+    text: '📊 O saldo reflete o teu ciclo completo — não o mês do calendário. O ciclo começa no dia que escolheste.',
+    pos: 'below'
+  },
+  {
+    targetId: 'nav-menu',
+    text: '☰ No Menu encontras Cofres, Orçamentos, Relatórios, Património e Definições.',
+    pos: 'above'
+  }
+];
+
+function obStartTour() {
+  obTourStep = 0;
+  document.getElementById('ob-tour-overlay').classList.add('open');
+  obRenderTour();
+}
+
+function obRenderTour() {
+  const step = OB_TOUR[obTourStep];
+
+  // Dots
+  document.getElementById('ob-tour-dots').innerHTML = OB_TOUR.map((_, i) =>
+    `<div class="ob-tour-dot${i === obTourStep ? ' active' : ''}"></div>`).join('');
+
+  // Button
+  document.getElementById('ob-tour-next').textContent =
+    obTourStep < OB_TOUR.length - 1 ? 'Próxima →' : 'Pronto ✓';
+
+  // Spotlight
+  const targetEl = document.getElementById(step.targetId);
+  const spot = document.getElementById('ob-tour-spot');
+  const bubble = document.getElementById('ob-tour-bubble');
+  if (targetEl) {
+    const r = targetEl.getBoundingClientRect();
+    spot.style.cssText = `top:${r.top - 4}px;left:${r.left - 4}px;width:${r.width + 8}px;height:${r.height + 8}px;`;
+    // Position bubble
+    const maxW = Math.min(window.innerWidth, 480);
+    const bLeft = Math.min(r.left, maxW - 272);
+    if (step.pos === 'above') {
+      bubble.style.cssText = `bottom:${window.innerHeight - r.top + 12}px;left:${bLeft}px;display:block;`;
+    } else {
+      bubble.style.cssText = `top:${r.bottom + 12}px;left:${bLeft}px;display:block;`;
+    }
+  }
+  bubble.textContent = step.text;
+  bubble.style.animation = 'none';
+  void bubble.offsetWidth;
+  bubble.style.animation = '';
+}
+
+function obTourNext() {
+  if (obTourStep < OB_TOUR.length - 1) {
+    obTourStep++;
+    obRenderTour();
+  } else {
+    document.getElementById('ob-tour-overlay').classList.remove('open');
+    showToast('✅ Tudo pronto! Bem-vindo' + (userName ? ', ' + userName : '') + '!');
+  }
 }
 
 // ===== CONFIRM MODAL =====
