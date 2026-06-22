@@ -4974,13 +4974,9 @@ function normalizeDesc(desc) {
 }
 
 function isDuplicate(m) {
-  const mDate = new Date(m.data + 'T12:00:00Z').getTime();
-  return entries.find(e => {
-    if (Math.abs(e.amount - m.valor) >= 0.01) return false;
-    if (normalizeDesc(e.note || '') !== normalizeDesc(m.descricao)) return false;
-    const eDate = new Date(e.date + 'T12:00:00Z').getTime();
-    return Math.abs(mDate - eDate) <= 75 * 24 * 60 * 60 * 1000;
-  }) || null;
+  return entries.find(e =>
+    e.date === m.data && Math.abs(e.amount - m.valor) < 0.01
+  ) || null;
 }
 
 function findMemoryMatch(m) {
