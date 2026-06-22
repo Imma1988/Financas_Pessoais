@@ -4997,10 +4997,27 @@ Regras importantes:
 
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
-    // Parse JSON from response
+    // Parse JSON — with fallback for truncated responses
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('Gemini não devolveu JSON válido. Tenta com outro ficheiro.');
-    const parsed = JSON.parse(jsonMatch[0]);
+    let parsed;
+    try {
+      parsed = JSON.parse(jsonMatch[0]);
+    } catch(_) {
+      // Response was truncated — extract every complete movement object individually
+      const movimentos = [];
+      const objRe = /\{(?:[^{}]|\{[^{}]*\})*\}/g;
+      let m;
+      while ((m = objRe.exec(jsonMatch[0])) !== null) {
+        try {
+          const obj = JSON.parse(m[0]);
+          if (obj.data && obj.descricao !== undefined && obj.valor !== undefined) movimentos.push(obj);
+        } catch(_) {}
+      }
+      if (movimentos.length === 0) throw new Error('Resposta do Gemini foi cortada e não foi possível recuperar movimentos. Tenta um ficheiro mais pequeno.');
+      parsed = { movimentos };
+      showToast(`⚠️ Resposta parcial: ${movimentos.length} movimentos recuperados.`);
+    }
     importedMovements = parsed.movimentos || [];
 
     renderImportReview();
