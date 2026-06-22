@@ -4973,11 +4973,7 @@ Regras importantes:
 
     let data;
     try { data = await callGemini(GEMINI_URL); }
-    catch(e) {
-      if (e.message.includes('404') || e.message.includes('not found') || e.message.includes('MODEL')) {
-        data = await callGemini(GEMINI_URL_FB);
-      } else { throw e; }
-    }
+    catch(_) { data = await callGemini(GEMINI_URL_FB); }
 
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
