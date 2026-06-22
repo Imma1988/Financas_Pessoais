@@ -2062,6 +2062,7 @@
 const CLIENT_ID    = '344816457312-pf9jjnsojiu4sves48acu4f60d0p4ue3.apps.googleusercontent.com';
 const WORKER_URL    = 'https://financas-gemini.imateixeira23054.workers.dev';
 const GEMINI_URL    = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const GEMINI_URL_FB = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 const DRIVE_FILE    = 'financas_dados.json';
 const DRIVE_FOLDER  = 'Finanças Pessoais';
 const SCOPES        = 'https://www.googleapis.com/auth/drive openid email profile';
@@ -3878,7 +3879,8 @@ async function applySugestao() {
     const prompt = `Sou utilizador de uma app de finanças pessoais. Gastos em "${orcCatSelected.catKey}" (${orcCatSelected.catType === 'parent' ? 'categoria' : 'sub-categoria'}): ${histStr}. Sugere um orçamento mensal razoável (em EUR) e uma frase curta em português (máx 12 palavras) a explicar porquê. Responde APENAS em JSON: {"valor": 300, "mensagem": "..."}`;
     try {
       const body = { contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.2, maxOutputTokens: 120 } };
-      const resp = await fetch(`${GEMINI_URL}?key=${geminiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      let resp = await fetch(`${GEMINI_URL}?key=${geminiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      if (!resp.ok) resp = await fetch(`${GEMINI_URL_FB}?key=${geminiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       const data = await resp.json();
       const txt  = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
       const match = txt.match(/\{[\s\S]*?\}/);
@@ -4947,28 +4949,41 @@ Regras importantes:
       contents: [{
         parts: [ { text: promptText }, filePart ]
       }],
-      generationConfig: { temperature: 0.1 }
+      generationConfig: { temperature: 0.1, maxOutputTokens: 8192 }
     };
 
-    // Call Gemini API directly
+    // Call Gemini API directly (with 1.5-flash fallback)
     if (!geminiKey) {
       document.getElementById('import-upload-section').style.display = '';
       document.getElementById('import-loading-section').style.display = 'none';
       document.getElementById('import-error-msg').style.display = '';
       return;
     }
-    const response = await fetch(`${GEMINI_URL}?key=${geminiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody)
-    });
 
-    const data = await response.json();
+    async function callGemini(url) {
+      const r = await fetch(`${url}?key=${geminiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error?.message || `Gemini HTTP ${r.status}`);
+      return d;
+    }
+
+    let data;
+    try { data = await callGemini(GEMINI_URL); }
+    catch(e) {
+      if (e.message.includes('404') || e.message.includes('not found') || e.message.includes('MODEL')) {
+        data = await callGemini(GEMINI_URL_FB);
+      } else { throw e; }
+    }
+
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
     // Parse JSON from response
     const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('Resposta inválida do Gemini');
+    if (!jsonMatch) throw new Error('Gemini não devolveu JSON válido. Tenta com outro ficheiro.');
     const parsed = JSON.parse(jsonMatch[0]);
     importedMovements = parsed.movimentos || [];
 
