@@ -171,27 +171,6 @@
     border-radius: 99px; padding: 7px 16px; font-size: 13px; font-weight: 600; color: var(--accent); }
   .trust-note { margin-top: 24px; font-size: 13px; color: var(--muted); }
 
-  /* ── SOCIAL PROOF ── */
-  .stats-row {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
-    background: var(--border); border-radius: 20px; overflow: hidden; margin-bottom: 56px;
-  }
-  .stat { background: var(--card); padding: 36px 24px; text-align: center; }
-  .stat-n { font-family: 'Syne', sans-serif; font-size: 42px; font-weight: 800;
-    color: var(--accent); line-height: 1; margin-bottom: 6px; }
-  .stat-l { font-size: 13px; color: var(--muted); }
-  .testimonials { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .tcard { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
-  .tcard-q { font-size: 14px; line-height: 1.7; color: var(--text); font-style: italic; margin-bottom: 18px; }
-  .tcard-who { display: flex; align-items: center; gap: 10px; }
-  .tcard-av {
-    width: 34px; height: 34px; border-radius: 50%; background: var(--accent);
-    color: #0a0a0a; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 13px;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  }
-  .tcard-name { font-size: 13px; font-weight: 700; }
-  .tcard-role { font-size: 12px; color: var(--muted); }
-
   /* ── BLOG ── */
   .blog-grid {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -240,8 +219,6 @@
     .split { grid-template-columns: 1fr; gap: 36px; }
     .split-visual { display: none; }
     .mini-grid { grid-template-columns: 1fr; }
-    .stats-row { grid-template-columns: 1fr; }
-    .testimonials { grid-template-columns: 1fr; }
     .trust-box { padding: 40px 24px; }
     .hero-chips { flex-direction: column; align-items: center; gap: 10px; }
     .cta-bottom { padding: 80px 20px; }
@@ -422,53 +399,6 @@
   </div>
 </div>
 
-<!-- ── PROVA SOCIAL ── -->
-<div class="section">
-  <div class="wrap">
-    <div style="text-align:center;margin-bottom:56px;">
-      <div class="label">Comunidade</div>
-      <h2 class="h2">Já utilizado por quem toma o dinheiro a sério.</h2>
-    </div>
-    <div class="stats-row">
-      <div class="stat">
-        <div class="stat-n">+50k</div>
-        <div class="stat-l">Transações registadas</div>
-      </div>
-      <div class="stat">
-        <div class="stat-n">+800</div>
-        <div class="stat-l">Famílias e casais</div>
-      </div>
-      <div class="stat">
-        <div class="stat-n">100%</div>
-        <div class="stat-l">Gratuito, sempre</div>
-      </div>
-    </div>
-    <div class="testimonials">
-      <div class="tcard">
-        <div class="tcard-q">"Finalmente consigo ver para onde vai o dinheiro a dois. Antes era sempre uma conversa difícil — agora temos os dois acesso aos mesmos dados."</div>
-        <div class="tcard-who">
-          <div class="tcard-av">S</div>
-          <div><div class="tcard-name">Sara M.</div><div class="tcard-role">Lisboa · Professora</div></div>
-        </div>
-      </div>
-      <div class="tcard">
-        <div class="tcard-q">"Importei 6 meses de extratos em 10 minutos. A categorização automática poupou-me horas de trabalho. Recomendo a qualquer pessoa."</div>
-        <div class="tcard-who">
-          <div class="tcard-av">R</div>
-          <div><div class="tcard-name">Rui F.</div><div class="tcard-role">Porto · Engenheiro</div></div>
-        </div>
-      </div>
-      <div class="tcard">
-        <div class="tcard-q">"Os cofres mudaram a forma como encaro despesas como o seguro do carro. Já não é uma surpresa — está preparado há meses."</div>
-        <div class="tcard-who">
-          <div class="tcard-av">C</div>
-          <div><div class="tcard-name">Carla T.</div><div class="tcard-role">Braga · Marketeer</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- ── BLOG / SEO ── -->
 <div class="section section-alt">
   <div class="wrap">
@@ -478,49 +408,49 @@
       <p class="body">Conteúdos práticos sobre finanças pessoais focados na realidade portuguesa.</p>
     </div>
     <div class="blog-grid">
-      <a href="#" class="bcard">
+      <a href="/artigos/orcamento-familiar-portugal/" class="bcard">
         <div class="bcard-tag">Orçamento</div>
         <div class="bcard-title">Como criar um orçamento familiar em Portugal</div>
         <div class="bcard-desc">Despesas fixas, variáveis e poupanças — um guia adaptado ao custo de vida português.</div>
         <div class="bcard-more">Ler artigo →</div>
       </a>
-      <a href="#" class="bcard">
+      <a href="/artigos/financas-em-casal-sem-conflitos/" class="bcard">
         <div class="bcard-tag">Casal</div>
         <div class="bcard-title">Como gerir dinheiro em casal sem conflitos</div>
         <div class="bcard-desc">Estratégias para alinhar objetivos financeiros e evitar surpresas no fim do mês.</div>
         <div class="bcard-more">Ler artigo →</div>
       </a>
-      <a href="#" class="bcard">
+      <a href="/artigos/fundo-de-emergencia/" class="bcard">
         <div class="bcard-tag">Poupança</div>
         <div class="bcard-title">Como criar um fundo de emergência</div>
         <div class="bcard-desc">Quanto guardar, onde colocar e como construir a tua rede de segurança financeira.</div>
         <div class="bcard-more">Ler artigo →</div>
       </a>
-      <a href="#" class="bcard">
+      <a href="/artigos/quanto-poupar-por-mes/" class="bcard">
         <div class="bcard-tag">Poupança</div>
         <div class="bcard-title">Quanto devo poupar por mês?</div>
         <div class="bcard-desc">A regra dos 50/30/20 e como adaptar qualquer método ao teu salário e estilo de vida.</div>
         <div class="bcard-more">Ler artigo →</div>
       </a>
-      <a href="#" class="bcard">
+      <a href="/artigos/controlar-despesas-sem-excel/" class="bcard">
         <div class="bcard-tag">Produtividade</div>
         <div class="bcard-title">Como controlar despesas sem Excel</div>
         <div class="bcard-desc">Por que o Excel falha como ferramenta de controlo financeiro e o que usar em alternativa.</div>
         <div class="bcard-more">Ler artigo →</div>
       </a>
-      <a href="#" class="bcard">
+      <a href="/artigos/trade-republic-vs-conta-poupanca/" class="bcard">
         <div class="bcard-tag">Investimento</div>
         <div class="bcard-title">Trade Republic vs Conta Poupança em Portugal</div>
         <div class="bcard-desc">Comparação das principais opções de poupança e investimento disponíveis em Portugal.</div>
         <div class="bcard-more">Ler artigo →</div>
       </a>
-      <a href="#" class="bcard">
+      <a href="/artigos/certificados-de-aforro/" class="bcard">
         <div class="bcard-tag">Investimento</div>
         <div class="bcard-title">Certificados de Aforro explicados</div>
         <div class="bcard-desc">O que são, como funcionam e se ainda fazem sentido para poupar em Portugal.</div>
         <div class="bcard-more">Ler artigo →</div>
       </a>
-      <a href="#" class="bcard">
+      <a href="/artigos/preparar-despesas-anuais-cofres/" class="bcard">
         <div class="bcard-tag">Cofres</div>
         <div class="bcard-title">Como preparar despesas anuais com cofres</div>
         <div class="bcard-desc">IUC, IMI, seguro do carro, férias — reserva mensalmente para que não te apanhem de surpresa.</div>
