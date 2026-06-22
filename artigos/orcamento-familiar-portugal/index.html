@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Como criar um orçamento familiar em Portugal — MoneyHolic</title>
+<meta name="description" content="Guia prático para criar um orçamento familiar em Portugal. Despesas fixas, variáveis, poupança e a regra 50/30/20 adaptada à realidade portuguesa.">
+<link rel="canonical" href="https://moneyholic.pt/artigos/orcamento-familiar-portugal/">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a; --bg2: #0e0e0e; --card: #131313; --border: #1c1c1c;
+    --text: #f0f0f0; --muted: #686868; --accent: #c8f135;
+    --a-dim: rgba(200,241,53,0.07); --a-border: rgba(200,241,53,0.16);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10,10,10,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1100px; margin: 0 auto; padding: 10px 24px; }
+  .nav-logo { display: flex; align-items: center; text-decoration: none; flex-shrink: 0; }
+  .nav-logo img { height: 36px; width: auto; display: block; }
+  .nav-cta { background: var(--accent); color: #0a0a0a; border: none; border-radius: 10px; padding: 9px 18px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800; cursor: pointer; text-decoration: none; transition: opacity 0.15s; white-space: nowrap; }
+  .nav-cta:hover { opacity: 0.85; }
+  .article-wrap { max-width: 720px; margin: 0 auto; padding: 100px 24px 80px; }
+  .article-tag { display: inline-block; font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+  .article-title { font-family: 'Syne', sans-serif; font-weight: 800; letter-spacing: -0.8px; font-size: clamp(26px, 4vw, 40px); line-height: 1.2; margin-bottom: 16px; }
+  .article-meta { font-size: 13px; color: var(--muted); margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  .article-body { font-size: 16px; line-height: 1.8; }
+  .article-body h2 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin: 44px 0 16px; line-height: 1.3; }
+  .article-body h3 { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; margin: 28px 0 10px; color: #e0e0e0; }
+  .article-body p { margin-bottom: 20px; color: #c8c8c8; }
+  .article-body ul, .article-body ol { padding-left: 24px; margin-bottom: 20px; }
+  .article-body li { margin-bottom: 8px; color: #c8c8c8; }
+  .article-body strong { color: var(--text); }
+  .article-body a { color: var(--accent); text-decoration: none; }
+  .article-body a:hover { text-decoration: underline; }
+  .article-body table { width: 100%; border-collapse: collapse; margin: 28px 0; font-size: 14px; }
+  .article-body th { text-align: left; padding: 10px 14px; background: var(--card); border-bottom: 2px solid var(--border); font-family: 'Syne', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+  .article-body td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .callout { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 12px 12px 0; padding: 18px 20px; margin: 28px 0; }
+  .callout p { margin: 0; font-size: 14px; color: #c8c8c8; }
+  .article-cta { background: linear-gradient(135deg, rgba(200,241,53,0.08), rgba(200,241,53,0.03)); border: 1px solid rgba(200,241,53,0.2); border-radius: 20px; padding: 48px 40px; text-align: center; margin-top: 64px; }
+  .article-cta h3 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 12px; }
+  .article-cta p { color: var(--muted); font-size: 15px; margin-bottom: 28px; }
+  .btn-p { background: var(--accent); color: #0a0a0a; border-radius: 12px; padding: 14px 28px; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; text-decoration: none; white-space: nowrap; transition: opacity 0.15s; display: inline-block; }
+  .btn-p:hover { opacity: 0.88; }
+  footer { border-top: 1px solid var(--border); padding: 36px 24px; margin-top: 80px; }
+  .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); }
+  .footer-logo { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; color: var(--text); }
+  .footer-logo span { color: var(--accent); }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+  @media (max-width: 640px) { .article-cta { padding: 32px 24px; } .article-body h2 { font-size: 19px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="nav-logo"><img src="/logo.jpg" alt="MoneyHolic"></a>
+    <a href="/app" class="nav-cta">Começar grátis</a>
+  </div>
+</nav>
+
+<main class="article-wrap">
+  <div class="article-tag">Orçamento</div>
+  <h1 class="article-title">Como criar um orçamento familiar em Portugal</h1>
+  <div class="article-meta">6 min de leitura</div>
+
+  <div class="article-body">
+
+    <p>A maioria das pessoas que decide criar um orçamento familiar abandona-o ao fim de dois ou três meses. Não porque a ideia seja má — mas porque o método que tentaram era demasiado rígido, demasiado trabalhoso, ou simplesmente desligado da realidade portuguesa.</p>
+
+    <p>Este guia é diferente. Vamos construir um orçamento que funciona para salários normais, com rendas a pesar no bolso e contas que teimam em subir.</p>
+
+    <h2>O que é um orçamento familiar (e porque a maioria falha)</h2>
+
+    <p>Um orçamento familiar é, na sua essência, um plano para o teu dinheiro. Em vez de saber no fim do mês que "gastaste demais", defines à partida para onde vai cada euro.</p>
+
+    <p>O problema é que a maioria das pessoas aborda o orçamento da maneira errada: listam as despesas do mês passado, ficam chocadas com o resultado, prometem gastar menos — e repetem o ciclo. Um orçamento não é uma análise retrospetiva. É uma decisão antecipada.</p>
+
+    <p>Os orçamentos falham principalmente por três razões:</p>
+    <ul>
+      <li>São demasiado detalhados e difíceis de manter</li>
+      <li>Não incluem despesas irregulares (seguro do carro, férias, IUC)</li>
+      <li>Não têm margem para imprevistos, o que faz a pessoa desistir ao primeiro desvio</li>
+    </ul>
+
+    <h2>Passo 1 — Calcula o teu rendimento líquido real</h2>
+
+    <p>O ponto de partida é sempre o que entra na conta, não o que está no contrato. Se recebes um salário de €1.400 líquidos, esse é o teu número. Se tens subsídio de refeição em cartão, conta apenas com o que efectivamente utilizas para comida — não é poupança, é despesa disfarçada.</p>
+
+    <p>Se tens rendimentos variáveis — trabalho independente, comissões, rendas — usa a média dos últimos seis meses e sê conservador. É melhor sobrar do que faltar.</p>
+
+    <p>O <strong>salário mínimo nacional em 2025 é de €1.020 brutos</strong>, o que corresponde a cerca de €870–€890 líquidos dependendo da situação fiscal. Para quem vive neste nível de rendimento, um orçamento não é luxo — é necessidade.</p>
+
+    <h2>Passo 2 — Mapeia as despesas fixas</h2>
+
+    <p>Despesas fixas são as que tens todos os meses, no mesmo valor (ou muito próximo). Lista-as com rigor:</p>
+
+    <ul>
+      <li><strong>Habitação:</strong> renda ou prestação do crédito habitação</li>
+      <li><strong>Eletricidade:</strong> média mensal (varia, mas é previsível)</li>
+      <li><strong>Água:</strong> fatura bi ou trimestral dividida por mês</li>
+      <li><strong>Gás ou gasóleo da caldeira</strong></li>
+      <li><strong>Internet + telefone</strong></li>
+      <li><strong>Seguros</strong> (saúde, vida, habitação)</li>
+      <li><strong>Prestações de crédito</strong> (automóvel, pessoal, etc.)</li>
+      <li><strong>Creche, escola, ATL</strong></li>
+    </ul>
+
+    <p>Valores de referência comuns em Portugal: renda em Lisboa/Porto entre €700–€1.000+ para um T2; fora das grandes cidades, €400–€600. Eletricidade: €50–€80/mês em média para um apartamento. Água: €15–€25/mês. Internet: €30–€45/mês.</p>
+
+    <h2>Passo 3 — Estima as despesas variáveis</h2>
+
+    <p>Estas são as despesas que existem todos os meses mas variam em valor. Olha para os últimos três meses de extrato bancário e calcula a média:</p>
+
+    <ul>
+      <li>Alimentação (supermercado + mercado)</li>
+      <li>Combustível ou transportes</li>
+      <li>Refeições fora de casa</li>
+      <li>Farmácia e saúde</li>
+      <li>Roupa e calçado</li>
+      <li>Lazer e entretenimento</li>
+    </ul>
+
+    <p>Muita gente subestima esta categoria. Se no extrato vês €200 em supermercado mais €80 em restaurantes, o total da alimentação é €280 — não €200.</p>
+
+    <h2>Passo 4 — Define o que vais poupar primeiro</h2>
+
+    <p>A poupança não é o que sobra no fim do mês. É o que defines à partida que não vais gastar. Transfere o valor da poupança logo nos primeiros dias do mês, antes de gastar seja o que for.</p>
+
+    <p>Mesmo que seja só €50 ou €100 no início, o hábito importa mais do que o valor. Aumentas progressivamente à medida que otimizas as outras categorias.</p>
+
+    <h2>A regra dos 50/30/20 adaptada a Portugal</h2>
+
+    <div class="callout">
+      <p><strong>A regra 50/30/20:</strong> 50% do rendimento líquido para necessidades (habitação, alimentação, transporte, saúde), 30% para desejos (lazer, restaurantes, subscrições, roupa), e 20% para poupança e amortização de dívidas. Criada nos EUA, precisa de ajustes para a realidade portuguesa — especialmente em Lisboa e Porto, onde a habitação pode facilmente consumir 40–50% de um salário médio.</p>
+    </div>
+
+    <p>Em Portugal, uma versão mais realista pode ser <strong>60/20/20</strong> para quem vive nas grandes cidades: 60% necessidades, 20% desejos, 20% poupança. O importante é que a poupança seja sempre uma categoria definida, não um resíduo.</p>
+
+    <h2>Exemplo prático com salário de €1.400 líquidos</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Categoria</th>
+          <th>Valor</th>
+          <th>% do rendimento</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Renda</td>
+          <td>€600</td>
+          <td>43%</td>
+        </tr>
+        <tr>
+          <td>Alimentação</td>
+          <td>€250</td>
+          <td>18%</td>
+        </tr>
+        <tr>
+          <td>Eletricidade + água + internet</td>
+          <td>€120</td>
+          <td>9%</td>
+        </tr>
+        <tr>
+          <td>Transporte</td>
+          <td>€80</td>
+          <td>6%</td>
+        </tr>
+        <tr>
+          <td>Saúde + farmácia</td>
+          <td>€40</td>
+          <td>3%</td>
+        </tr>
+        <tr>
+          <td>Lazer + restaurantes</td>
+          <td>€110</td>
+          <td>8%</td>
+        </tr>
+        <tr>
+          <td><strong>Poupança</strong></td>
+          <td><strong>€100</strong></td>
+          <td><strong>7%</strong></td>
+        </tr>
+        <tr>
+          <td>Margem / imprevistos</td>
+          <td>€100</td>
+          <td>7%</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>Este exemplo mostra como com €1.400 e uma renda de €600, poupar €100/mês já é um esforço real. Não há margem para grandes erros — mas há margem para começar.</p>
+
+    <h2>O que fazer quando os números não fecham</h2>
+
+    <p>Se ao fazer as contas o total das despesas supera o rendimento, tens essencialmente dois caminhos: reduzir despesas ou aumentar rendimentos. O segundo demora mais, por isso começa pelo primeiro.</p>
+
+    <p>Despesas com mais margem para reduzir, sem impacto grave na qualidade de vida:</p>
+    <ul>
+      <li>Subscrições que não utilizas regularmente</li>
+      <li>Refeições fora de casa (comer mais vezes em casa poupa facilmente €100–€150/mês)</li>
+      <li>Compras por impulso (espera 48h antes de qualquer compra não essencial acima de €30)</li>
+    </ul>
+
+    <p>Se mesmo assim os números não fecham, o problema pode ser estrutural — renda demasiado alta em relação ao rendimento. Nesse caso, a solução passa por aumentar o rendimento (horas extra, trabalho freelance, mudança de emprego) ou por uma decisão mais difícil sobre habitação.</p>
+
+    <p>Ser honesto sobre esta situação é difícil, mas é o primeiro passo para mudar.</p>
+
+  </div>
+
+  <div class="article-cta">
+    <h3>Acompanha o teu orçamento automaticamente</h3>
+    <p>Importa os teus extratos, categoriza despesas e vê em tempo real se estás a cumprir o orçamento.</p>
+    <a href="/app" class="btn-p">Começar grátis →</a>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">MONEY<span>HOLIC</span></div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;">
+      <a href="/">Início</a>
+      <a href="/app">App</a>
+      <a href="mailto:info@moneyholic.pt">info@moneyholic.pt</a>
+    </div>
+    <div>© 2025 MoneyHolic</div>
+  </div>
+</footer>
+
+</body>
+</html>
