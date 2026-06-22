@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Como criar um fundo de emergência — MoneyHolic</title>
+<meta name="description" content="Quanto guardar, onde colocar e como construir a tua rede de segurança financeira. Guia prático para criar um fundo de emergência em Portugal.">
+<link rel="canonical" href="https://moneyholic.pt/artigos/fundo-de-emergencia/">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a; --bg2: #0e0e0e; --card: #131313; --border: #1c1c1c;
+    --text: #f0f0f0; --muted: #686868; --accent: #c8f135;
+    --a-dim: rgba(200,241,53,0.07); --a-border: rgba(200,241,53,0.16);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10,10,10,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1100px; margin: 0 auto; padding: 10px 24px; }
+  .nav-logo { display: flex; align-items: center; text-decoration: none; flex-shrink: 0; }
+  .nav-logo img { height: 36px; width: auto; display: block; }
+  .nav-cta { background: var(--accent); color: #0a0a0a; border: none; border-radius: 10px; padding: 9px 18px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800; cursor: pointer; text-decoration: none; transition: opacity 0.15s; white-space: nowrap; }
+  .nav-cta:hover { opacity: 0.85; }
+  .article-wrap { max-width: 720px; margin: 0 auto; padding: 100px 24px 80px; }
+  .article-tag { display: inline-block; font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+  .article-title { font-family: 'Syne', sans-serif; font-weight: 800; letter-spacing: -0.8px; font-size: clamp(26px, 4vw, 40px); line-height: 1.2; margin-bottom: 16px; }
+  .article-meta { font-size: 13px; color: var(--muted); margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  .article-body { font-size: 16px; line-height: 1.8; }
+  .article-body h2 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin: 44px 0 16px; line-height: 1.3; }
+  .article-body h3 { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; margin: 28px 0 10px; color: #e0e0e0; }
+  .article-body p { margin-bottom: 20px; color: #c8c8c8; }
+  .article-body ul, .article-body ol { padding-left: 24px; margin-bottom: 20px; }
+  .article-body li { margin-bottom: 8px; color: #c8c8c8; }
+  .article-body strong { color: var(--text); }
+  .article-body a { color: var(--accent); text-decoration: none; }
+  .article-body a:hover { text-decoration: underline; }
+  .article-body table { width: 100%; border-collapse: collapse; margin: 28px 0; font-size: 14px; }
+  .article-body th { text-align: left; padding: 10px 14px; background: var(--card); border-bottom: 2px solid var(--border); font-family: 'Syne', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+  .article-body td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .callout { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 12px 12px 0; padding: 18px 20px; margin: 28px 0; }
+  .callout p { margin: 0; font-size: 14px; color: #c8c8c8; }
+  .article-cta { background: linear-gradient(135deg, rgba(200,241,53,0.08), rgba(200,241,53,0.03)); border: 1px solid rgba(200,241,53,0.2); border-radius: 20px; padding: 48px 40px; text-align: center; margin-top: 64px; }
+  .article-cta h3 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 12px; }
+  .article-cta p { color: var(--muted); font-size: 15px; margin-bottom: 28px; }
+  .btn-p { background: var(--accent); color: #0a0a0a; border-radius: 12px; padding: 14px 28px; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; text-decoration: none; white-space: nowrap; transition: opacity 0.15s; display: inline-block; }
+  .btn-p:hover { opacity: 0.88; }
+  footer { border-top: 1px solid var(--border); padding: 36px 24px; margin-top: 80px; }
+  .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); }
+  .footer-logo { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; color: var(--text); }
+  .footer-logo span { color: var(--accent); }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+  @media (max-width: 640px) { .article-cta { padding: 32px 24px; } .article-body h2 { font-size: 19px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="nav-logo"><img src="/logo.jpg" alt="MoneyHolic"></a>
+    <a href="/app" class="nav-cta">Começar grátis</a>
+  </div>
+</nav>
+
+<main class="article-wrap">
+  <div class="article-tag">Poupança</div>
+  <h1 class="article-title">Como criar um fundo de emergência</h1>
+  <div class="article-meta">5 min de leitura</div>
+
+  <div class="article-body">
+
+    <p>O fundo de emergência é provavelmente a peça mais importante das finanças pessoais — e a mais ignorada. É chato de construir, não rende quase nada, e nunca se sabe quando (ou se) vai ser preciso. Mas quando acontece uma emergência sem fundo, o impacto pode ser devastador: dívidas de crédito a juros altos, venda de investimentos na pior altura, dependência de familiares.</p>
+
+    <p>Construir um fundo de emergência não é glamoroso. É apenas prudente.</p>
+
+    <h2>O que é um fundo de emergência (e o que não é)</h2>
+
+    <p>Um fundo de emergência é uma reserva de dinheiro líquido destinada exclusivamente a cobrir despesas inesperadas ou urgentes: perda de emprego, problema de saúde grave, avaria importante do carro ou da habitação.</p>
+
+    <p>Não é um fundo para férias. Não é para aproveitar uma promoção. Não é para cobrir despesas que deveriam estar no orçamento regular. A disciplina em não tocar neste dinheiro é tão importante quanto construí-lo.</p>
+
+    <h2>Quanto deves ter guardado</h2>
+
+    <p>A regra mais comum diz entre 3 e 6 meses de despesas essenciais. Mas o valor certo depende da tua situação.</p>
+
+    <div class="callout">
+      <p><strong>3 meses ou 6 meses?</strong> Tende para 3 meses se tens emprego estável no sector público ou contrato sem termo numa empresa grande, rendimentos do casal (dois salários protegem melhor), e poucas dependências financeiras. Tende para 6 meses se és trabalhador independente ou freelancer, o teu sector é volátil, tens dependentes (filhos, pais), ou o teu emprego é precário.</p>
+    </div>
+
+    <p>O cálculo é simples: soma as tuas <strong>despesas essenciais mensais</strong> — renda ou prestação, alimentação, transportes, saúde, serviços básicos — e multiplica por 3 ou 6.</p>
+
+    <p><strong>Exemplo:</strong> despesas essenciais de €1.200/mês → fundo mínimo de €3.600 (3 meses) ou €7.200 (6 meses). Este valor não inclui lazer nem extras — é mesmo só o mínimo para sobreviveres.</p>
+
+    <h2>Onde guardar o fundo de emergência</h2>
+
+    <p>O fundo de emergência tem dois requisitos fundamentais: tem de estar disponível rapidamente (liquidez) e não pode perder valor (segurança). Isso limita as opções.</p>
+
+    <ul>
+      <li><strong>Conta poupança:</strong> a opção mais simples. Mantém o dinheiro separado da conta à ordem, com liquidez imediata. As taxas variam muito — compara antes de escolher.</li>
+      <li><strong>Certificados de Aforro:</strong> garantidos pelo Estado português, boas taxas em certos períodos. Podes resgatar após os primeiros 3 meses, mas o resgate não é imediato — demora alguns dias úteis. Adequado para quem quer uma camada extra de segurança e não precisa do dinheiro no mesmo dia.</li>
+      <li><strong>Conta à ordem dedicada:</strong> menos rendimento, mas liquidez total. Neste caso, a separação física do dinheiro (numa conta diferente da tua conta do dia-a-dia) já ajuda a não tocar nele.</li>
+    </ul>
+
+    <p>O fundo de emergência <strong>não deve estar investido</strong> em ações, fundos ou qualquer ativo com risco de perda. A rentabilidade é secundária — o que importa é que o dinheiro esteja lá quando precisares.</p>
+
+    <h2>Como construir o fundo sem sentir o impacto</h2>
+
+    <p>Para a maioria das pessoas, acumular €3.000–€7.000 parece uma meta distante. A chave é dividir o objetivo e automatizar o processo.</p>
+
+    <ol>
+      <li><strong>Define a meta:</strong> calcula o teu número (3 ou 6 meses de despesas essenciais).</li>
+      <li><strong>Define o valor mensal:</strong> mesmo que seja €50 ou €100, começa já. O hábito é mais importante do que o valor.</li>
+      <li><strong>Automatiza a transferência:</strong> configura uma transferência automática no início do mês, antes de gastares seja o que for.</li>
+      <li><strong>Aumenta progressivamente:</strong> cada vez que o teu rendimento aumenta ou uma despesa desaparece, aumenta o valor mensal da poupança.</li>
+    </ol>
+
+    <p>Com €100/mês, chegas a €3.600 em 3 anos. Com €150/mês, em 2 anos. Não é rápido — mas é sólido.</p>
+
+    <h2>Os erros mais comuns</h2>
+
+    <ul>
+      <li><strong>Misturar o fundo com a conta à ordem:</strong> se o dinheiro está na mesma conta que usas no dia a dia, vai ser gasto. Mantém-no numa conta separada.</li>
+      <li><strong>Investir o fundo de emergência:</strong> é tentador quando as taxas de juro estão altas. Mas se o mercado cair e precisares do dinheiro, podes ter de vender em mau momento.</li>
+      <li><strong>Não repor o fundo depois de o usar:</strong> depois de uma emergência, a reconstrução do fundo deve voltar a ser prioridade máxima.</li>
+      <li><strong>Adiar até "ter mais dinheiro":</strong> começa com o que tens. Um fundo pequeno é sempre melhor do que nenhum.</li>
+    </ul>
+
+    <h2>O que contar como emergência (e o que não contar)</h2>
+
+    <p>A definição é crucial. O fundo existe para eventos imprevistos e urgentes que afetam as tuas necessidades básicas:</p>
+
+    <p><strong>Conta como emergência:</strong> perda de emprego, internamento hospitalar, avaria grave do carro (se dele dependes para trabalhar), fuga de água ou avaria elétrica grave na habitação.</p>
+
+    <p><strong>Não conta como emergência:</strong> o IUC que sabias que ia chegar, as férias de verão, a substituição do telemóvel que era velho, o Natal. Estas são despesas previsíveis que devem ter o seu próprio cofre de poupança no orçamento mensal.</p>
+
+  </div>
+
+  <div class="article-cta">
+    <h3>Acompanha as tuas poupanças com os Cofres</h3>
+    <p>Cria um cofre para o fundo de emergência e acompanha o progresso mês a mês.</p>
+    <a href="/app" class="btn-p">Começar grátis →</a>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">MONEY<span>HOLIC</span></div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;">
+      <a href="/">Início</a>
+      <a href="/app">App</a>
+      <a href="mailto:info@moneyholic.pt">info@moneyholic.pt</a>
+    </div>
+    <div>© 2025 MoneyHolic</div>
+  </div>
+</footer>
+
+</body>
+</html>

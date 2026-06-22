@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Como controlar despesas sem Excel — MoneyHolic</title>
+<meta name="description" content="Porque o Excel falha como ferramenta de controlo financeiro e o que usar em alternativa. Guia para quem quer controlar as suas finanças de forma simples.">
+<link rel="canonical" href="https://moneyholic.pt/artigos/controlar-despesas-sem-excel/">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a; --bg2: #0e0e0e; --card: #131313; --border: #1c1c1c;
+    --text: #f0f0f0; --muted: #686868; --accent: #c8f135;
+    --a-dim: rgba(200,241,53,0.07); --a-border: rgba(200,241,53,0.16);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10,10,10,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1100px; margin: 0 auto; padding: 10px 24px; }
+  .nav-logo { display: flex; align-items: center; text-decoration: none; flex-shrink: 0; }
+  .nav-logo img { height: 36px; width: auto; display: block; }
+  .nav-cta { background: var(--accent); color: #0a0a0a; border: none; border-radius: 10px; padding: 9px 18px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800; cursor: pointer; text-decoration: none; transition: opacity 0.15s; white-space: nowrap; }
+  .nav-cta:hover { opacity: 0.85; }
+  .article-wrap { max-width: 720px; margin: 0 auto; padding: 100px 24px 80px; }
+  .article-tag { display: inline-block; font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+  .article-title { font-family: 'Syne', sans-serif; font-weight: 800; letter-spacing: -0.8px; font-size: clamp(26px, 4vw, 40px); line-height: 1.2; margin-bottom: 16px; }
+  .article-meta { font-size: 13px; color: var(--muted); margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  .article-body { font-size: 16px; line-height: 1.8; }
+  .article-body h2 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin: 44px 0 16px; line-height: 1.3; }
+  .article-body h3 { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; margin: 28px 0 10px; color: #e0e0e0; }
+  .article-body p { margin-bottom: 20px; color: #c8c8c8; }
+  .article-body ul, .article-body ol { padding-left: 24px; margin-bottom: 20px; }
+  .article-body li { margin-bottom: 8px; color: #c8c8c8; }
+  .article-body strong { color: var(--text); }
+  .article-body a { color: var(--accent); text-decoration: none; }
+  .article-body a:hover { text-decoration: underline; }
+  .article-body table { width: 100%; border-collapse: collapse; margin: 28px 0; font-size: 14px; }
+  .article-body th { text-align: left; padding: 10px 14px; background: var(--card); border-bottom: 2px solid var(--border); font-family: 'Syne', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+  .article-body td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .callout { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 12px 12px 0; padding: 18px 20px; margin: 28px 0; }
+  .callout p { margin: 0; font-size: 14px; color: #c8c8c8; }
+  .article-cta { background: linear-gradient(135deg, rgba(200,241,53,0.08), rgba(200,241,53,0.03)); border: 1px solid rgba(200,241,53,0.2); border-radius: 20px; padding: 48px 40px; text-align: center; margin-top: 64px; }
+  .article-cta h3 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 12px; }
+  .article-cta p { color: var(--muted); font-size: 15px; margin-bottom: 28px; }
+  .btn-p { background: var(--accent); color: #0a0a0a; border-radius: 12px; padding: 14px 28px; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; text-decoration: none; white-space: nowrap; transition: opacity 0.15s; display: inline-block; }
+  .btn-p:hover { opacity: 0.88; }
+  footer { border-top: 1px solid var(--border); padding: 36px 24px; margin-top: 80px; }
+  .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); }
+  .footer-logo { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; color: var(--text); }
+  .footer-logo span { color: var(--accent); }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+  @media (max-width: 640px) { .article-cta { padding: 32px 24px; } .article-body h2 { font-size: 19px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="nav-logo"><img src="/logo.jpg" alt="MoneyHolic"></a>
+    <a href="/app" class="nav-cta">Começar grátis</a>
+  </div>
+</nav>
+
+<main class="article-wrap">
+  <div class="article-tag">Produtividade</div>
+  <h1 class="article-title">Como controlar despesas sem Excel</h1>
+  <div class="article-meta">4 min de leitura</div>
+
+  <div class="article-body">
+
+    <p>Toda a gente já tentou o Excel. Criaste as colunas, definiste as categorias, registaste as primeiras despesas com entusiasmo — e ao fim de dois meses o ficheiro estava fechado algures numa pasta e as finanças continuavam na mesma.</p>
+
+    <p>Não és caso único. O Excel é uma ferramenta extraordinária para quem sabe utilizá-la — mas para o controlo financeiro do dia a dia, tem falhas estruturais que a maioria das pessoas não consegue superar a longo prazo.</p>
+
+    <h2>O problema com o Excel (não é o Excel — és tu)</h2>
+
+    <p>Bem, na verdade é um pouco os dois. O Excel é uma ferramenta genérica de folha de cálculo — não foi desenhada para finanças pessoais. Tens de construir tudo do zero: categorias, fórmulas, gráficos, lógica de mês. Isso exige tempo, conhecimento técnico e, principalmente, motivação constante para manter tudo atualizado.</p>
+
+    <p>O problema mais profundo é comportamental: o registo manual cria atrito. Quanto mais atrito houver entre a despesa e o registo, menos vezes vais registar. E quando deixas de registar por três dias seguidos, o sentimento de "já está estragado" instala-se — e o ficheiro fecha.</p>
+
+    <h2>Os 5 motivos pelos quais o Excel não resulta para a maioria das pessoas</h2>
+
+    <ol>
+      <li><strong>Registo manual:</strong> tens de lembrar-te de abrir o ficheiro e registar cada despesa. Uma viagem ao supermercado, um café, um pagamento online — tudo tem de ser inserido à mão. Ninguém tem paciência para isso a longo prazo.</li>
+      <li><strong>Não está no telemóvel:</strong> as despesas acontecem quando estás fora de casa. O Excel está no computador. Esta separação é fatal para a consistência.</li>
+      <li><strong>Manutenção técnica:</strong> quando o ficheiro cresce, as fórmulas partem-se. Copiar para o mês seguinte cria erros. É tempo que não tens.</li>
+      <li><strong>Sem visualização imediata:</strong> para saber se estás a gastar demais numa categoria, tens de construir um gráfico ou olhar para números em bruto. Não há nenhum alerta que te avise.</li>
+      <li><strong>É um ficheiro, não uma ferramenta:</strong> o Excel não te envia notificações, não importa dados do banco, não sugere categorias. É um recipiente passivo — precisas de fazer tudo o trabalho.</li>
+    </ol>
+
+    <h2>O que realmente precisas de uma ferramenta de finanças</h2>
+
+    <p>Para que o controlo financeiro funcione a longo prazo, a ferramenta tem de ser <strong>fácil de usar no momento em que a despesa acontece</strong>. O atrito entre o gasto e o registo tem de ser mínimo.</p>
+
+    <p>As características que realmente importam:</p>
+
+    <ul>
+      <li>Disponível no telemóvel, sem passos extra para abrir</li>
+      <li>Importação de extratos bancários (para não precisar de registar tudo manualmente)</li>
+      <li>Categorização automática ou assistida — não começar do zero para cada despesa</li>
+      <li>Visão do mês a tempo real: quanto gastei até agora, quanto sobra</li>
+      <li>Resumos simples, sem precisar de construir dashboards</li>
+    </ul>
+
+    <div class="callout">
+      <p><strong>A regra do menor atrito:</strong> a melhor ferramenta de finanças é aquela que realmente vais utilizar. Uma app simples que usas todos os dias é infinitamente mais útil do que um Excel perfeito que abres uma vez por mês.</p>
+    </div>
+
+    <h2>Aplicações vs. Excel — quando faz sentido cada um</h2>
+
+    <p>O Excel ainda faz sentido em alguns contextos específicos: se és analista financeiro e queres modelar cenários complexos; se tens necessidades muito específicas que nenhuma app cobre; se és uma pessoa excecionalmente disciplinada com o registo manual e o computador está sempre aberto.</p>
+
+    <p>Para a esmagadora maioria das pessoas que quer apenas saber para onde vai o dinheiro e poupar mais, uma aplicação dedicada é quase sempre a escolha mais realista.</p>
+
+    <h2>O que procurar numa app de finanças pessoais</h2>
+
+    <p>Com tantas opções disponíveis, aqui estão as perguntas certas para escolher:</p>
+
+    <ul>
+      <li><strong>Importa extratos do meu banco?</strong> A importação automática ou por ficheiro CSV elimina 90% do trabalho manual. Verifica se é compatível com os bancos portugueses (CGD, BPI, Millennium, Santander, etc.).</li>
+      <li><strong>A categorização é inteligente?</strong> Uma boa app aprende os teus padrões e categoriza automaticamente as despesas recorrentes — o supermercado, o ginásio, a Netflix.</li>
+      <li><strong>Consigo definir um orçamento por categoria?</strong> Não basta ver o que gastaste — queres saber se estás dentro dos limites que definiste.</li>
+      <li><strong>Os dados são seguros?</strong> Verifica a política de privacidade. Numa app de finanças, os teus dados são sensíveis.</li>
+      <li><strong>Funciona offline ou precisa de ligação constante?</strong> Útil para registar despesas em locais sem rede.</li>
+    </ul>
+
+    <p>A transição do Excel para uma app dedicada pode parecer um passo atrás para quem está habituado à flexibilidade da folha de cálculo. Na prática, para a maioria das pessoas, é a diferença entre um sistema que funciona e um que fica abandonado ao fim de dois meses.</p>
+
+  </div>
+
+  <div class="article-cta">
+    <h3>Controlo financeiro sem o esforço do Excel</h3>
+    <p>Importa extratos automaticamente com IA e acompanha as tuas finanças sem registos manuais.</p>
+    <a href="/app" class="btn-p">Começar grátis →</a>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">MONEY<span>HOLIC</span></div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;">
+      <a href="/">Início</a>
+      <a href="/app">App</a>
+      <a href="mailto:info@moneyholic.pt">info@moneyholic.pt</a>
+    </div>
+    <div>© 2025 MoneyHolic</div>
+  </div>
+</footer>
+
+</body>
+</html>
