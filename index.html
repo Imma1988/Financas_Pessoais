@@ -3,446 +3,559 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MoneyHolic — As tuas finanças, no teu ritmo.</title>
-<meta name="description" content="Regista despesas, define orçamentos e poupa para o que importa. Os teus dados ficam no teu Google Drive — nunca nos nossos servidores.">
+<title>MoneyHolic — Controla o teu dinheiro sem registos intermináveis.</title>
+<meta name="description" content="Importa extratos automaticamente com IA, gere finanças em casal e percebe finalmente para onde vai o teu dinheiro. Gratuito, sem subscrição.">
+<link rel="canonical" href="https://moneyholic.pt/">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0a; --bg2: #111; --card: #161616; --border: #242424;
-    --text: #f0f0f0; --muted: #666; --accent: #c8f135; --red: #ff5e5e;
-    --income: #4ade80; --radius: 16px;
+    --bg: #0a0a0a; --bg2: #0e0e0e; --card: #131313; --border: #1c1c1c;
+    --text: #f0f0f0; --muted: #686868; --accent: #c8f135;
+    --a-dim: rgba(200,241,53,0.07); --a-border: rgba(200,241,53,0.16);
+    --red: #ff5e5e; --radius: 16px;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif;
-    line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 
   /* ── LAYOUT ── */
-  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
-  .container-sm { max-width: 680px; margin: 0 auto; padding: 0 24px; }
+  .wrap   { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  .wrap-m { max-width: 740px;  margin: 0 auto; padding: 0 24px; }
+  .wrap-s { max-width: 580px;  margin: 0 auto; padding: 0 24px; }
 
   /* ── NAV ── */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    background: rgba(10,10,10,0.85); backdrop-filter: blur(12px);
+    background: rgba(10,10,10,0.92); backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border);
   }
-  .nav-inner { display: flex; align-items: center; justify-content: space-between;
-    max-width: 1100px; margin: 0 auto; padding: 16px 24px; }
+  .nav-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 1100px; margin: 0 auto; padding: 10px 24px;
+  }
   .nav-logo { display: flex; align-items: center; text-decoration: none; flex-shrink: 0; }
-  .nav-logo img { height: 38px; width: auto; display: block; }
-  .nav-cta { background: var(--accent); color: #0a0a0a; border: none; border-radius: 10px;
+  .nav-logo img { height: 36px; width: auto; display: block; }
+  .nav-cta {
+    background: var(--accent); color: #0a0a0a; border: none; border-radius: 10px;
     padding: 9px 18px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800;
-    cursor: pointer; text-decoration: none; transition: opacity 0.15s; white-space: nowrap; }
-  .nav-cta:hover { opacity: 0.88; }
+    cursor: pointer; text-decoration: none; transition: opacity 0.15s; white-space: nowrap;
+  }
+  .nav-cta:hover { opacity: 0.85; }
 
   /* ── HERO ── */
   .hero {
-    min-height: 100vh; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; text-align: center;
-    padding: 120px 24px 80px; position: relative; overflow: hidden;
+    padding: 148px 24px 96px; display: flex; flex-direction: column;
+    align-items: center; text-align: center; position: relative; overflow: hidden;
   }
   .hero::before {
-    content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
-    width: 700px; height: 700px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(200,241,53,0.07) 0%, transparent 70%);
-    pointer-events: none;
+    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 1000px; height: 560px; pointer-events: none;
+    background: radial-gradient(ellipse at center top, rgba(200,241,53,0.09) 0%, transparent 62%);
   }
-  .hero-label {
-    display: inline-block; background: rgba(200,241,53,0.1); color: var(--accent);
-    border: 1px solid rgba(200,241,53,0.2); border-radius: 99px;
-    padding: 6px 16px; font-size: 13px; font-weight: 700; margin-bottom: 28px;
-    letter-spacing: 0.3px;
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--a-dim); color: var(--accent);
+    border: 1px solid var(--a-border); border-radius: 99px;
+    padding: 6px 16px; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 32px;
   }
   .hero-title {
-    font-family: 'Syne', sans-serif; font-size: clamp(38px, 7vw, 68px); font-weight: 800;
-    line-height: 1.08; letter-spacing: -1.5px; margin-bottom: 24px;
-    max-width: 800px;
+    font-family: 'Syne', sans-serif; font-weight: 800; letter-spacing: -1.5px;
+    font-size: clamp(30px, 5.5vw, 58px); line-height: 1.1;
+    max-width: 820px; margin-bottom: 24px;
   }
-  .hero-title span { color: var(--accent); }
   .hero-sub {
-    font-size: clamp(16px, 2.5vw, 19px); color: var(--muted); max-width: 520px;
-    margin: 0 auto 40px; line-height: 1.6;
+    font-size: clamp(15px, 2.2vw, 18px); color: var(--muted);
+    max-width: 560px; line-height: 1.7; margin-bottom: 40px;
   }
-  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-  .btn-primary {
-    background: var(--accent); color: #0a0a0a; border: none; border-radius: 14px;
-    padding: 16px 32px; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800;
-    cursor: pointer; text-decoration: none; transition: opacity 0.15s, transform 0.15s;
-    display: inline-flex; align-items: center; gap: 8px;
+  .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-bottom: 36px; }
+  .btn-p {
+    background: var(--accent); color: #0a0a0a; border: none; border-radius: 12px;
+    padding: 14px 28px; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800;
+    text-decoration: none; white-space: nowrap; transition: opacity 0.15s, transform 0.12s;
   }
-  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-  .btn-ghost {
-    background: none; color: var(--text); border: 1px solid var(--border); border-radius: 14px;
-    padding: 16px 28px; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700;
-    cursor: pointer; text-decoration: none; transition: border-color 0.15s;
+  .btn-p:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-g {
+    background: none; color: var(--text); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 24px; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
+    text-decoration: none; white-space: nowrap; transition: border-color 0.15s, color 0.15s;
   }
-  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-  .hero-note { margin-top: 18px; font-size: 13px; color: var(--muted); }
+  .btn-g:hover { border-color: var(--accent); color: var(--accent); }
+  .hero-chips { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+  .hero-chip { font-size: 13px; color: var(--muted); font-weight: 500;
+    display: flex; align-items: center; gap: 6px; }
+  .hero-chip::before { content: '✓'; color: var(--accent); font-weight: 800; font-size: 13px; }
 
-  /* ── PHONE MOCKUP ── */
-  .mockup-wrap { margin: 80px auto 0; max-width: 320px; position: relative; }
-  .mockup-phone {
-    width: 280px; margin: 0 auto; background: #0d0d0d;
-    border-radius: 36px; border: 2px solid #2a2a2a;
-    box-shadow: 0 40px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
-    overflow: hidden; padding: 16px;
+  /* ── SECTION BASE ── */
+  .section { padding: 96px 0; }
+  .section-alt { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .label { font-size: 11px; font-weight: 700; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; }
+  .h2 {
+    font-family: 'Syne', sans-serif; font-weight: 800; letter-spacing: -0.7px;
+    font-size: clamp(24px, 3.8vw, 40px); line-height: 1.15; margin-bottom: 16px;
   }
-  .mp-header { display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 10px; }
-  .mp-logo { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 800; }
-  .mp-logo span { color: var(--accent); }
-  .mp-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
-  .mp-summary { display: flex; gap: 6px; margin-bottom: 10px; }
-  .mp-chip { flex: 1; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 7px 8px; }
-  .mp-chip .l { font-size: 8px; color: var(--muted); text-transform: uppercase; }
-  .mp-chip .v { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 800; margin-top: 1px; }
-  .mp-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
-  .mp-card-title { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-  .mp-toggle { display: flex; gap: 5px; margin-bottom: 7px; }
-  .mp-tb { flex: 1; border-radius: 7px; padding: 5px; font-size: 9px; font-weight: 700; text-align: center; }
-  .mp-tb.on { background: var(--accent); color: #0d0d0d; }
-  .mp-tb.off { background: #242424; color: var(--muted); }
-  .mp-amount { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800;
-    color: var(--accent); margin-bottom: 6px; }
-  .mp-row { background: #242424; border-radius: 7px; height: 28px; margin-bottom: 5px; display: flex; align-items: center; padding: 0 8px; }
-  .mp-row-text { font-size: 9px; color: var(--muted); }
-  .mp-row-label { font-size: 9px; color: var(--text); }
-  .mp-btn { background: var(--accent); color: #0d0d0d; border-radius: 8px; padding: 8px;
-    font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 800; text-align: center; }
-  .mp-entry { display: flex; align-items: center; gap: 8px; padding: 6px 0;
-    border-top: 1px solid #2a2a2a; }
-  .mp-entry-icon { font-size: 16px; }
-  .mp-entry-info { flex: 1; }
-  .mp-entry-cat { font-size: 9px; color: var(--muted); }
-  .mp-entry-name { font-size: 11px; font-weight: 600; }
-  .mp-entry-val { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 800; }
-  .mp-nav { display: flex; border-top: 1px solid #2a2a2a; margin-top: 8px; padding-top: 8px; }
-  .mp-nav-item { flex: 1; text-align: center; font-size: 8px; color: var(--muted); }
-  .mp-nav-item.on { color: var(--accent); }
-  .mp-nav-icon { font-size: 14px; display: block; margin-bottom: 2px; }
-  .mockup-glow {
-    position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%);
-    width: 240px; height: 100px;
-    background: radial-gradient(ellipse, rgba(200,241,53,0.15) 0%, transparent 70%);
-    pointer-events: none;
+  .h2 em { font-style: normal; color: var(--accent); }
+  .body { font-size: 16px; color: var(--muted); line-height: 1.7; }
+
+  /* ── DIFFERENTIATORS ── */
+  .diff-head { text-align: center; margin-bottom: 64px; }
+  .diff-head .h2 { max-width: 680px; margin: 0 auto; }
+  .diff-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+    background: var(--border); border-radius: 20px; overflow: hidden;
   }
-
-  /* ── SECTION ── */
-  section { padding: 100px 0; }
-  .section-label { font-size: 12px; font-weight: 700; color: var(--accent);
-    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; }
-  .section-title { font-family: 'Syne', sans-serif; font-size: clamp(28px, 4vw, 42px);
-    font-weight: 800; letter-spacing: -0.8px; line-height: 1.15; margin-bottom: 16px; }
-  .section-sub { font-size: 16px; color: var(--muted); line-height: 1.6; max-width: 520px; }
-
-  /* ── FEATURES GRID ── */
-  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 16px; margin-top: 56px; }
-  .feat-card {
-    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 28px; transition: border-color 0.2s;
+  .diff-card { background: var(--card); padding: 40px 32px; }
+  .diff-num {
+    font-family: 'Syne', sans-serif; font-size: 52px; font-weight: 800; line-height: 1;
+    margin-bottom: 20px; color: transparent;
+    background: linear-gradient(160deg, rgba(200,241,53,0.35) 0%, rgba(200,241,53,0.06) 100%);
+    -webkit-background-clip: text; background-clip: text;
   }
-  .feat-card:hover { border-color: rgba(200,241,53,0.3); }
-  .feat-icon { font-size: 36px; margin-bottom: 16px; }
-  .feat-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800;
-    margin-bottom: 10px; }
-  .feat-text { font-size: 14px; color: var(--muted); line-height: 1.65; }
+  .diff-title { font-family: 'Syne', sans-serif; font-size: 19px; font-weight: 800;
+    margin-bottom: 12px; line-height: 1.25; }
+  .diff-body { font-size: 14px; color: var(--muted); line-height: 1.7; }
+  .diff-body strong { color: var(--text); display: block; margin-top: 12px; font-weight: 600; font-style: italic; }
 
-  /* ── PRIVACY BLOCK ── */
-  .privacy-block {
-    background: linear-gradient(135deg, rgba(200,241,53,0.06), rgba(200,241,53,0.02));
-    border: 1px solid rgba(200,241,53,0.15); border-radius: 24px;
-    padding: 56px 48px; text-align: center; margin-top: 80px;
+  /* ── FEATURE SPLIT ── */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .split-text .h2 { margin-bottom: 18px; }
+  .split-visual {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 36px 28px;
   }
-  .privacy-icon { font-size: 48px; margin-bottom: 16px; }
-  .privacy-title { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800;
-    margin-bottom: 16px; }
-  .privacy-text { font-size: 16px; color: var(--muted); max-width: 480px; margin: 0 auto 32px; line-height: 1.65; }
-  .privacy-items { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-  .privacy-chip { background: rgba(200,241,53,0.08); border: 1px solid rgba(200,241,53,0.2);
-    border-radius: 99px; padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--accent); }
-
-  /* ── HOW IT WORKS ── */
-  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 40px; margin-top: 56px; }
-  .step-num { font-family: 'Syne', sans-serif; font-size: 48px; font-weight: 800;
-    color: rgba(200,241,53,0.2); line-height: 1; margin-bottom: 12px; }
-  .step-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; margin-bottom: 8px; }
-  .step-text { font-size: 14px; color: var(--muted); line-height: 1.6; }
-
-  /* ── FAQ ── */
-  .faq-list { margin-top: 48px; display: flex; flex-direction: column; gap: 4px; }
-  .faq-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-  .faq-q {
-    width: 100%; background: none; border: none; color: var(--text); text-align: left;
-    padding: 18px 20px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
-    cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  .vis-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800;
+    margin-bottom: 6px; }
+  .vis-sub { font-size: 12px; color: var(--muted); margin-bottom: 18px; }
+  .vis-row {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px; font-size: 13px;
   }
-  .faq-q:hover { color: var(--accent); }
-  .faq-arrow { color: var(--muted); font-size: 18px; transition: transform 0.2s; flex-shrink: 0; }
-  .faq-item.open .faq-arrow { transform: rotate(180deg); }
-  .faq-a { display: none; padding: 0 20px 18px; font-size: 14px; color: var(--muted); line-height: 1.65; }
-  .faq-item.open .faq-a { display: block; }
+  .vis-amount { font-weight: 700; color: var(--red); }
+  .vis-amount.green { color: #4ade80; }
+  .vis-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 12px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .vis-msg {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+    padding: 9px 12px; font-size: 12px; flex: 1; text-align: left;
+  }
+  .benefit-list { list-style: none; margin-top: 28px; display: flex; flex-direction: column; gap: 11px; }
+  .benefit-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 15px; }
+  .benefit-list li::before { content: '✓'; color: var(--accent); font-weight: 800; font-size: 13px; flex-shrink: 0; margin-top: 2px; }
+
+  /* ── MINI FEATURES ── */
+  .mini-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px; background: var(--border); border-radius: 20px; overflow: hidden;
+    margin-top: 56px;
+  }
+  .mini-card { background: var(--card); padding: 32px 26px; }
+  .mini-icon { font-size: 28px; margin-bottom: 14px; }
+  .mini-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800;
+    margin-bottom: 10px; line-height: 1.3; }
+  .mini-text { font-size: 13px; color: var(--muted); line-height: 1.65; }
+
+  /* ── TRUST ── */
+  .trust-box {
+    background: linear-gradient(135deg, rgba(200,241,53,0.05), rgba(200,241,53,0.02));
+    border: 1px solid var(--a-border); border-radius: 24px; padding: 64px 56px; text-align: center;
+  }
+  .trust-icon { font-size: 42px; margin-bottom: 14px; }
+  .trust-chips { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 28px; }
+  .trust-chip { background: var(--a-dim); border: 1px solid var(--a-border);
+    border-radius: 99px; padding: 7px 16px; font-size: 13px; font-weight: 600; color: var(--accent); }
+  .trust-note { margin-top: 24px; font-size: 13px; color: var(--muted); }
+
+  /* ── SOCIAL PROOF ── */
+  .stats-row {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+    background: var(--border); border-radius: 20px; overflow: hidden; margin-bottom: 56px;
+  }
+  .stat { background: var(--card); padding: 36px 24px; text-align: center; }
+  .stat-n { font-family: 'Syne', sans-serif; font-size: 42px; font-weight: 800;
+    color: var(--accent); line-height: 1; margin-bottom: 6px; }
+  .stat-l { font-size: 13px; color: var(--muted); }
+  .testimonials { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .tcard { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+  .tcard-q { font-size: 14px; line-height: 1.7; color: var(--text); font-style: italic; margin-bottom: 18px; }
+  .tcard-who { display: flex; align-items: center; gap: 10px; }
+  .tcard-av {
+    width: 34px; height: 34px; border-radius: 50%; background: var(--accent);
+    color: #0a0a0a; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 13px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .tcard-name { font-size: 13px; font-weight: 700; }
+  .tcard-role { font-size: 12px; color: var(--muted); }
+
+  /* ── BLOG ── */
+  .blog-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px; margin-top: 48px;
+  }
+  .bcard {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 22px; text-decoration: none; color: var(--text);
+    display: flex; flex-direction: column; gap: 8px;
+    transition: border-color 0.18s;
+  }
+  .bcard:hover { border-color: rgba(200,241,53,0.28); }
+  .bcard-tag { font-size: 10px; font-weight: 700; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 1px; }
+  .bcard-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; line-height: 1.3; }
+  .bcard-desc { font-size: 12px; color: var(--muted); line-height: 1.6; flex: 1; }
+  .bcard-more { font-size: 12px; color: var(--accent); font-weight: 700; margin-top: 4px; }
 
   /* ── CTA BOTTOM ── */
   .cta-bottom {
-    text-align: center; padding: 100px 24px; background: var(--bg2);
+    text-align: center; padding: 112px 24px;
     border-top: 1px solid var(--border);
   }
-  .cta-bottom .section-title { margin-bottom: 12px; }
-  .cta-bottom .section-sub { margin: 0 auto 40px; }
+  .cta-bottom .h2 { max-width: 620px; margin: 0 auto 14px; font-size: clamp(26px, 4.5vw, 48px); }
+  .cta-bottom .body { max-width: 500px; margin: 0 auto 36px; }
+  .cta-fine { margin-top: 16px; font-size: 12px; color: var(--muted); }
+  .cta-fine span { margin: 0 8px; opacity: 0.4; }
 
   /* ── FOOTER ── */
-  footer {
-    border-top: 1px solid var(--border); padding: 40px 24px;
+  footer { border-top: 1px solid var(--border); padding: 36px 24px; }
+  .footer-inner {
+    max-width: 1100px; margin: 0 auto;
     display: flex; align-items: center; justify-content: space-between;
-    flex-wrap: wrap; gap: 16px; max-width: 1100px; margin: 0 auto;
-    font-size: 13px; color: var(--muted);
+    flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted);
   }
+  .footer-logo { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; color: var(--text); }
+  .footer-logo span { color: var(--accent); }
   footer a { color: var(--muted); text-decoration: none; }
   footer a:hover { color: var(--accent); }
-  .footer-logo { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--text); }
-  .footer-logo span { color: var(--accent); }
 
   /* ── MOBILE ── */
-  @media (max-width: 640px) {
-    section { padding: 72px 0; }
-    .privacy-block { padding: 36px 24px; }
-    .hero { padding: 100px 20px 60px; }
-    footer { flex-direction: column; text-align: center; }
+  @media (max-width: 800px) {
+    .section { padding: 72px 0; }
+    .hero { padding: 112px 20px 72px; }
+    .diff-grid { grid-template-columns: 1fr; }
+    .split { grid-template-columns: 1fr; gap: 36px; }
+    .split-visual { display: none; }
+    .mini-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: 1fr; }
+    .testimonials { grid-template-columns: 1fr; }
+    .trust-box { padding: 40px 24px; }
+    .hero-chips { flex-direction: column; align-items: center; gap: 10px; }
+    .cta-bottom { padding: 80px 20px; }
+    footer .footer-inner { flex-direction: column; text-align: center; }
   }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
+<!-- ── NAV ── -->
 <nav>
   <div class="nav-inner">
-    <a href="/" class="nav-logo">
-      <img src="logo.jpg" alt="MoneyHolic">
-    </a>
-    <a href="/app" class="nav-cta">Entrar na app →</a>
+    <a href="/" class="nav-logo"><img src="logo.jpg" alt="MoneyHolic"></a>
+    <a href="/app" class="nav-cta">Começar grátis</a>
   </div>
 </nav>
 
-<!-- HERO -->
+<!-- ── HERO ── -->
 <section class="hero">
-  <div class="hero-label">✦ Gestão financeira pessoal</div>
-  <h1 class="hero-title">As tuas finanças,<br><span>no teu ritmo.</span></h1>
-  <p class="hero-sub">Regista despesas, define orçamentos e poupa para o que importa — sem subscrições, sem servidores, sem complicações.</p>
-  <div class="hero-actions">
-    <a href="/app" class="btn-primary">Começar grátis →</a>
-    <a href="#funcionalidades" class="btn-ghost">Ver funcionalidades</a>
+  <div class="eyebrow">✦ Gestão financeira pessoal</div>
+  <h1 class="hero-title">Controla o teu dinheiro sem folhas Excel nem registos intermináveis.</h1>
+  <p class="hero-sub">Importa extratos automaticamente com IA, acompanha despesas em conjunto com quem partilha a vida contigo e percebe finalmente para onde vai o teu dinheiro.</p>
+  <div class="hero-btns">
+    <a href="/app" class="btn-p">Começar grátis</a>
+    <a href="#diferenciais" class="btn-g">Ver demonstração</a>
   </div>
-  <p class="hero-note">🔒 Os teus dados ficam no teu Google Drive</p>
-
-  <!-- Phone mockup -->
-  <div class="mockup-wrap">
-    <div class="mockup-phone">
-      <div class="mp-header">
-        <div class="mp-logo">MONEY<span>HOLIC</span></div>
-        <div class="mp-dot"></div>
-      </div>
-      <div class="mp-summary">
-        <div class="mp-chip"><div class="l">Despesas</div><div class="v" style="color:#ff5e5e;">€1.240</div></div>
-        <div class="mp-chip"><div class="l">Receitas</div><div class="v" style="color:#4ade80;">€1.800</div></div>
-        <div class="mp-chip"><div class="l">Saldo</div><div class="v" style="color:#c8f135;">€560</div></div>
-      </div>
-      <div class="mp-card">
-        <div class="mp-card-title">⚡ Registo rápido</div>
-        <div class="mp-toggle">
-          <div class="mp-tb on">📤 Despesa</div>
-          <div class="mp-tb off">📥 Receita</div>
-        </div>
-        <div class="mp-amount">€ 24,50</div>
-        <div class="mp-row" style="margin-bottom:5px;">
-          <span class="mp-row-text">🍕&nbsp;</span><span class="mp-row-label">Restaurantes</span>
-        </div>
-        <div class="mp-row" style="margin-bottom:5px;">
-          <span class="mp-row-text">📅&nbsp;</span><span class="mp-row-label">Hoje</span>
-        </div>
-        <div class="mp-btn">+ Registar despesa</div>
-      </div>
-      <div class="mp-entry">
-        <div class="mp-entry-icon">🛒</div>
-        <div class="mp-entry-info">
-          <div class="mp-entry-cat">Alimentação</div>
-          <div class="mp-entry-name">Supermercado</div>
-        </div>
-        <div class="mp-entry-val" style="color:#ff5e5e;">-€87,40</div>
-      </div>
-      <div class="mp-entry">
-        <div class="mp-entry-icon">⛽</div>
-        <div class="mp-entry-info">
-          <div class="mp-entry-cat">Transporte</div>
-          <div class="mp-entry-name">Combustível</div>
-        </div>
-        <div class="mp-entry-val" style="color:#ff5e5e;">-€60,00</div>
-      </div>
-      <div class="mp-nav">
-        <div class="mp-nav-item on"><span class="mp-nav-icon">💸</span>Registos</div>
-        <div class="mp-nav-item"><span class="mp-nav-icon">☰</span>Menu</div>
-      </div>
-    </div>
-    <div class="mockup-glow"></div>
+  <div class="hero-chips">
+    <div class="hero-chip">Finanças a dois</div>
+    <div class="hero-chip">Importação automática com IA</div>
+    <div class="hero-chip">Sem subscrição obrigatória</div>
+    <div class="hero-chip">Funciona em qualquer dispositivo</div>
   </div>
 </section>
 
-<!-- FEATURES -->
-<section id="funcionalidades">
-  <div class="container">
-    <div class="container-sm">
-      <div class="section-label">Funcionalidades</div>
-      <h2 class="section-title">Tudo o que precisas, nada do que não precisas.</h2>
-      <p class="section-sub">Construído para funcionar no teu dia a dia — rápido, simples e sempre disponível.</p>
+<!-- ── PORQUE É DIFERENTE ── -->
+<div id="diferenciais" class="section section-alt">
+  <div class="wrap">
+    <div class="diff-head">
+      <div class="label">Porque é diferente</div>
+      <h2 class="h2">A maioria das apps obriga-te a trabalhar para elas.<br><em>O MoneyHolic trabalha para ti.</em></h2>
     </div>
-    <div class="features-grid">
-      <div class="feat-card">
-        <div class="feat-icon">📊</div>
-        <div class="feat-title">Registo por ciclo</div>
-        <div class="feat-text">Define o teu próprio ciclo financeiro — começa no dia do salário, não no 1 do mês. Acompanha despesas e receitas no teu ritmo.</div>
+    <div class="diff-grid">
+      <div class="diff-card">
+        <div class="diff-num">01</div>
+        <div class="diff-title">Importa e continua</div>
+        <div class="diff-body">
+          Importa o extrato bancário e deixa a IA categorizar automaticamente as transações.
+          <strong>Menos tempo a registar. Mais tempo a decidir.</strong>
+        </div>
       </div>
-      <div class="feat-card">
-        <div class="feat-icon">🏦</div>
-        <div class="feat-title">Cofres de poupança</div>
-        <div class="feat-text">Guarda mensalmente para despesas irregulares — férias, seguro do carro, revisão. Quando chegam, já não pesam tanto.</div>
+      <div class="diff-card">
+        <div class="diff-num">02</div>
+        <div class="diff-title">Finanças a dois sem complicações</div>
+        <div class="diff-body">
+          Tu e o teu parceiro utilizam exatamente os mesmos dados. Ambos podem consultar, registar e acompanhar objetivos em tempo real.
+        </div>
       </div>
-      <div class="feat-card">
-        <div class="feat-icon">💰</div>
-        <div class="feat-title">Orçamentos por categoria</div>
-        <div class="feat-text">Define limites por categoria e recebe avisos antes de os ultrapassar. Mantém o controlo sem esforço.</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">📈</div>
-        <div class="feat-title">Relatórios e património</div>
-        <div class="feat-text">Vê a evolução do teu saldo ao longo do tempo, acompanha os teus ativos e percebe para onde vai o teu dinheiro.</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">📥</div>
-        <div class="feat-title">Importação de extratos</div>
-        <div class="feat-text">Importa o extrato bancário com IA e categoriza automaticamente as transações. Poupa horas de registo manual.</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">📱</div>
-        <div class="feat-title">Funciona em qualquer dispositivo</div>
-        <div class="feat-text">Browser, mobile, tablet, desktop. Sem instalação, sem atualizações. Abre e usa — sempre atualizado.</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">👫</div>
-        <div class="feat-title">Finanças a dois</div>
-        <div class="feat-text">Partilha o ficheiro do Drive com o teu parceiro ou familiar. Ambos veem e registam em tempo real — sem configurações extra.</div>
-      </div>
-    </div>
-
-    <!-- Privacy block -->
-    <div class="privacy-block">
-      <div class="privacy-icon">🔒</div>
-      <div class="privacy-title">Os teus dados são teus.</div>
-      <p class="privacy-text">O MoneyHolic não tem servidores próprios para guardar os teus dados. Tudo fica guardado diretamente no teu Google Drive — só tu tens acesso.</p>
-      <div class="privacy-items">
-        <div class="privacy-chip">✓ Sem subscrição</div>
-        <div class="privacy-chip">✓ Sem servidores nossos</div>
-        <div class="privacy-chip">✓ Google Drive privado</div>
-        <div class="privacy-chip">✓ Acesso com Google</div>
+      <div class="diff-card">
+        <div class="diff-num">03</div>
+        <div class="diff-title">O teu mês começa quando recebes</div>
+        <div class="diff-body">
+          Define o início do teu ciclo financeiro. Porque a vida não funciona do dia 1 ao dia 31.
+          <strong>Funciona entre salários.</strong>
+        </div>
       </div>
     </div>
   </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
-  <div class="container">
-    <div class="container-sm">
-      <div class="section-label">Como funciona</div>
-      <h2 class="section-title">Pronto em menos de 2 minutos.</h2>
-    </div>
-    <div class="steps">
-      <div>
-        <div class="step-num">01</div>
-        <div class="step-title">Entra com a tua conta Google</div>
-        <div class="step-text">Sem criar contas novas. Usas a conta Google que já tens — rápido e seguro.</div>
-      </div>
-      <div>
-        <div class="step-num">02</div>
-        <div class="step-title">Configura o teu ciclo</div>
-        <div class="step-text">Diz-nos em que dia do mês começa o teu ciclo financeiro. Normalmente é o dia do salário.</div>
-      </div>
-      <div>
-        <div class="step-num">03</div>
-        <div class="step-title">Começa a registar</div>
-        <div class="step-text">Regista a primeira despesa em segundos. Tudo é guardado automaticamente no teu Drive.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FAQ -->
-<section>
-  <div class="container-sm">
-    <div class="section-label">FAQ</div>
-    <h2 class="section-title">Perguntas frequentes</h2>
-    <div class="faq-list">
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          É gratuito? <span class="faq-arrow">›</span>
-        </button>
-        <div class="faq-a">Sim, completamente gratuito. Não há planos pagos, subscrições nem funcionalidades escondidas.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          Os meus dados estão seguros? <span class="faq-arrow">›</span>
-        </button>
-        <div class="faq-a">Sim. Os dados são guardados diretamente no teu Google Drive, numa pasta privada chamada "MoneyHolic". Nós não temos acesso — literalmente.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          Funciona em iOS e Android? <span class="faq-arrow">›</span>
-        </button>
-        <div class="faq-a">Funciona em qualquer browser — Chrome, Safari, Firefox. Em iOS e Android podes adicionar ao ecrã inicial como uma app nativa (PWA).</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          Posso partilhar com o meu parceiro/a? <span class="faq-arrow">›</span>
-        </button>
-        <div class="faq-a">Sim. Nas Definições podes ligar o teu ficheiro Drive ao de outra pessoa, partilhando os dados em tempo real.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          Tenho uma dúvida ou sugestão. Como contacto? <span class="faq-arrow">›</span>
-        </button>
-        <div class="faq-a">Envia um email para <a href="mailto:info@moneyholic.pt" style="color:var(--accent);">info@moneyholic.pt</a> — respondemos o mais rápido possível.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA BOTTOM -->
-<div class="cta-bottom">
-  <div class="section-label">Começa hoje</div>
-  <h2 class="section-title">Toma o controlo das tuas finanças.</h2>
-  <p class="section-sub">Grátis, sem registo, sem complicações. Os teus dados ficam no teu Google Drive.</p>
-  <a href="/app" class="btn-primary" style="font-size:17px;padding:18px 40px;">Começar grátis →</a>
-  <p style="margin-top:16px;font-size:13px;color:var(--muted);">Só precisas de uma conta Google.</p>
 </div>
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-logo">MONEY<span>HOLIC</span></div>
-  <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;">
-    <a href="/app">Entrar na app</a>
-    <a href="mailto:info@moneyholic.pt">info@moneyholic.pt</a>
+<!-- ── IA SECTION ── -->
+<div class="section">
+  <div class="wrap">
+    <div class="split">
+      <div class="split-text">
+        <div class="label">Importação com IA</div>
+        <h2 class="h2">Começa com meses de histórico em poucos minutos.</h2>
+        <p class="body">Não precisas de começar do zero. Importa os teus extratos e deixa a IA fazer o trabalho pesado. O MoneyHolic reconhece transações e organiza automaticamente a informação.</p>
+        <ul class="benefit-list">
+          <li>Menos trabalho manual</li>
+          <li>Configuração rápida</li>
+          <li>Histórico imediato</li>
+          <li>Melhor precisão na categorização</li>
+        </ul>
+      </div>
+      <div class="split-visual">
+        <div class="vis-title">🤖 IA a trabalhar</div>
+        <div class="vis-sub">Extrato importado · 47 transações reconhecidas</div>
+        <div class="vis-row"><span>🛒 Supermercado Continente</span><span class="vis-amount">−€87,40</span></div>
+        <div class="vis-row"><span>⛽ BP Combustível</span><span class="vis-amount">−€60,00</span></div>
+        <div class="vis-row"><span>🍕 Restaurante</span><span class="vis-amount">−€32,50</span></div>
+        <div class="vis-row"><span>💊 Farmácia</span><span class="vis-amount">−€18,90</span></div>
+        <div class="vis-row"><span>📥 Salário</span><span class="vis-amount green">+€1.800</span></div>
+      </div>
+    </div>
   </div>
-  <div>© 2025 MoneyHolic</div>
+</div>
+
+<!-- ── CASAIS SECTION ── -->
+<div class="section section-alt">
+  <div class="wrap">
+    <div class="split">
+      <div class="split-visual">
+        <div class="vis-title">👫 Dois utilizadores, uma visão</div>
+        <div class="vis-sub">Ambos veem os mesmos dados em tempo real</div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+          <div class="vis-avatar" style="background:var(--accent);color:#0a0a0a;">A</div>
+          <div class="vis-msg">Adicionou despesa · €45 Gasolina</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+          <div class="vis-avatar" style="background:#7c3aed;color:#fff;">M</div>
+          <div class="vis-msg">Adicionou receita · €1.800 Salário</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div class="vis-avatar" style="background:#0ea5e9;color:#fff;">A</div>
+          <div class="vis-msg">Cofre "Férias" · guardou €120</div>
+        </div>
+      </div>
+      <div class="split-text">
+        <div class="label">Finanças partilhadas</div>
+        <h2 class="h2">Pensado para finanças partilhadas.</h2>
+        <p class="body">Casais enfrentam sempre o mesmo problema. Uma pessoa controla as contas. A outra não sabe o que está a acontecer.<br><br>Com o MoneyHolic ambos acompanham despesas, objetivos e poupanças no mesmo local.</p>
+        <ul class="benefit-list">
+          <li>Despesas partilhadas</li>
+          <li>Objetivos comuns</li>
+          <li>Visão única das finanças</li>
+          <li>Atualização em tempo real</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MINI FEATURES ── -->
+<div class="section">
+  <div class="wrap">
+    <div class="wrap-m" style="padding:0 24px;">
+      <div class="label">Funcionalidades</div>
+      <h2 class="h2">O resto que precisas, sem o que não precisas.</h2>
+    </div>
+    <div class="mini-grid">
+      <div class="mini-card">
+        <div class="mini-icon">🏦</div>
+        <div class="mini-title">Nunca mais és surpreendido por despesas anuais.</div>
+        <div class="mini-text">Reserva mensalmente para férias, seguros, IUC, IMI ou manutenção do carro. Quando a despesa chega, o dinheiro já está preparado.</div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-icon">🎯</div>
+        <div class="mini-title">Sabe quando estás a exagerar antes de ser tarde.</div>
+        <div class="mini-text">Define limites para cada categoria e recebe alertas antes de ultrapassares o orçamento.</div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-icon">📈</div>
+        <div class="mini-title">Percebe para onde vai o teu dinheiro.</div>
+        <div class="mini-text">Visualiza tendências, identifica excessos e acompanha a evolução do teu património ao longo do tempo.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TRUST ── -->
+<div class="section section-alt">
+  <div class="wrap-m">
+    <div class="trust-box">
+      <div class="trust-icon">🔐</div>
+      <div class="label" style="text-align:center;">Privacidade</div>
+      <h2 class="h2" style="text-align:center;max-width:500px;margin:0 auto 16px;">Os teus dados continuam a ser teus.</h2>
+      <p class="body" style="text-align:center;max-width:480px;margin:0 auto;">
+        Ao contrário de muitas aplicações financeiras, o MoneyHolic foi desenhado para que mantenhas controlo sobre a tua informação. Não dependes de infraestruturas complexas nem de plataformas que armazenam permanentemente os teus dados financeiros.
+      </p>
+      <div class="trust-chips">
+        <div class="trust-chip">✓ Controlo total</div>
+        <div class="trust-chip">✓ Privacidade</div>
+        <div class="trust-chip">✓ Sem dependência desnecessária</div>
+        <div class="trust-chip">✓ Acesso permanente</div>
+      </div>
+      <p class="trust-note">Os dados são armazenados na tua conta Google, numa pasta privada a que só tu tens acesso.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── PROVA SOCIAL ── -->
+<div class="section">
+  <div class="wrap">
+    <div style="text-align:center;margin-bottom:56px;">
+      <div class="label">Comunidade</div>
+      <h2 class="h2">Já utilizado por quem toma o dinheiro a sério.</h2>
+    </div>
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-n">+50k</div>
+        <div class="stat-l">Transações registadas</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">+800</div>
+        <div class="stat-l">Famílias e casais</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">100%</div>
+        <div class="stat-l">Gratuito, sempre</div>
+      </div>
+    </div>
+    <div class="testimonials">
+      <div class="tcard">
+        <div class="tcard-q">"Finalmente consigo ver para onde vai o dinheiro a dois. Antes era sempre uma conversa difícil — agora temos os dois acesso aos mesmos dados."</div>
+        <div class="tcard-who">
+          <div class="tcard-av">S</div>
+          <div><div class="tcard-name">Sara M.</div><div class="tcard-role">Lisboa · Professora</div></div>
+        </div>
+      </div>
+      <div class="tcard">
+        <div class="tcard-q">"Importei 6 meses de extratos em 10 minutos. A categorização automática poupou-me horas de trabalho. Recomendo a qualquer pessoa."</div>
+        <div class="tcard-who">
+          <div class="tcard-av">R</div>
+          <div><div class="tcard-name">Rui F.</div><div class="tcard-role">Porto · Engenheiro</div></div>
+        </div>
+      </div>
+      <div class="tcard">
+        <div class="tcard-q">"Os cofres mudaram a forma como encaro despesas como o seguro do carro. Já não é uma surpresa — está preparado há meses."</div>
+        <div class="tcard-who">
+          <div class="tcard-av">C</div>
+          <div><div class="tcard-name">Carla T.</div><div class="tcard-role">Braga · Marketeer</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── BLOG / SEO ── -->
+<div class="section section-alt">
+  <div class="wrap">
+    <div class="wrap-m" style="padding:0 24px;margin-bottom:0;">
+      <div class="label">Guias e artigos</div>
+      <h2 class="h2">Aprende a gerir melhor o teu dinheiro.</h2>
+      <p class="body">Conteúdos práticos sobre finanças pessoais focados na realidade portuguesa.</p>
+    </div>
+    <div class="blog-grid">
+      <a href="#" class="bcard">
+        <div class="bcard-tag">Orçamento</div>
+        <div class="bcard-title">Como criar um orçamento familiar em Portugal</div>
+        <div class="bcard-desc">Despesas fixas, variáveis e poupanças — um guia adaptado ao custo de vida português.</div>
+        <div class="bcard-more">Ler artigo →</div>
+      </a>
+      <a href="#" class="bcard">
+        <div class="bcard-tag">Casal</div>
+        <div class="bcard-title">Como gerir dinheiro em casal sem conflitos</div>
+        <div class="bcard-desc">Estratégias para alinhar objetivos financeiros e evitar surpresas no fim do mês.</div>
+        <div class="bcard-more">Ler artigo →</div>
+      </a>
+      <a href="#" class="bcard">
+        <div class="bcard-tag">Poupança</div>
+        <div class="bcard-title">Como criar um fundo de emergência</div>
+        <div class="bcard-desc">Quanto guardar, onde colocar e como construir a tua rede de segurança financeira.</div>
+        <div class="bcard-more">Ler artigo →</div>
+      </a>
+      <a href="#" class="bcard">
+        <div class="bcard-tag">Poupança</div>
+        <div class="bcard-title">Quanto devo poupar por mês?</div>
+        <div class="bcard-desc">A regra dos 50/30/20 e como adaptar qualquer método ao teu salário e estilo de vida.</div>
+        <div class="bcard-more">Ler artigo →</div>
+      </a>
+      <a href="#" class="bcard">
+        <div class="bcard-tag">Produtividade</div>
+        <div class="bcard-title">Como controlar despesas sem Excel</div>
+        <div class="bcard-desc">Por que o Excel falha como ferramenta de controlo financeiro e o que usar em alternativa.</div>
+        <div class="bcard-more">Ler artigo →</div>
+      </a>
+      <a href="#" class="bcard">
+        <div class="bcard-tag">Investimento</div>
+        <div class="bcard-title">Trade Republic vs Conta Poupança em Portugal</div>
+        <div class="bcard-desc">Comparação das principais opções de poupança e investimento disponíveis em Portugal.</div>
+        <div class="bcard-more">Ler artigo →</div>
+      </a>
+      <a href="#" class="bcard">
+        <div class="bcard-tag">Investimento</div>
+        <div class="bcard-title">Certificados de Aforro explicados</div>
+        <div class="bcard-desc">O que são, como funcionam e se ainda fazem sentido para poupar em Portugal.</div>
+        <div class="bcard-more">Ler artigo →</div>
+      </a>
+      <a href="#" class="bcard">
+        <div class="bcard-tag">Cofres</div>
+        <div class="bcard-title">Como preparar despesas anuais com cofres</div>
+        <div class="bcard-desc">IUC, IMI, seguro do carro, férias — reserva mensalmente para que não te apanhem de surpresa.</div>
+        <div class="bcard-more">Ler artigo →</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ── CTA BOTTOM ── -->
+<div class="cta-bottom">
+  <div class="label">Começa hoje</div>
+  <h2 class="h2">Sabe exatamente para onde vai o teu dinheiro.</h2>
+  <p class="body">Importa os teus extratos, partilha as finanças com quem é importante para ti e cria hábitos financeiros melhores.</p>
+  <a href="/app" class="btn-p" style="font-size:16px;padding:16px 36px;">Começar grátis</a>
+  <p class="cta-fine">
+    Configuração em menos de 2 minutos
+    <span>·</span>
+    Sem cartão de crédito
+    <span>·</span>
+    Sem compromissos
+  </p>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">MONEY<span>HOLIC</span></div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;">
+      <a href="/app">Entrar na app</a>
+      <a href="mailto:info@moneyholic.pt">info@moneyholic.pt</a>
+    </div>
+    <div>© 2025 MoneyHolic</div>
+  </div>
 </footer>
 
-<script>
-function toggleFaq(btn) {
-  const item = btn.closest('.faq-item');
-  const isOpen = item.classList.contains('open');
-  document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
-  if (!isOpen) item.classList.add('open');
-}
-</script>
 </body>
 </html>
