@@ -2064,11 +2064,13 @@ const WORKER_URL    = 'https://financas-gemini.imateixeira23054.workers.dev';
 const GEMINI_MODELS = [
   'gemini-2.5-flash',
   'gemini-2.0-flash',
-  'gemini-1.5-flash',
+  'gemini-2.0-flash-lite',
+  'gemini-1.5-flash-latest',
+  'gemini-1.5-flash-8b',
 ];
 const GEMINI_BASE   = 'https://generativelanguage.googleapis.com/v1beta/models/';
 const GEMINI_URL    = GEMINI_BASE + 'gemini-2.5-flash:generateContent';
-const GEMINI_URL_FB = GEMINI_BASE + 'gemini-1.5-flash:generateContent';
+const GEMINI_URL_FB = GEMINI_BASE + 'gemini-2.0-flash-lite:generateContent';
 const DRIVE_FILE    = 'financas_dados.json';
 const DRIVE_FOLDER  = 'Finanças Pessoais';
 const SCOPES        = 'https://www.googleapis.com/auth/drive openid email profile';
