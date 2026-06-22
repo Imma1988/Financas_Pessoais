@@ -2065,8 +2065,7 @@ const GEMINI_MODELS = [
   'gemini-2.5-flash',
   'gemini-2.0-flash',
   'gemini-2.0-flash-lite',
-  'gemini-1.5-flash-latest',
-  'gemini-1.5-flash-8b',
+  'gemini-flash-latest',
 ];
 const GEMINI_BASE   = 'https://generativelanguage.googleapis.com/v1beta/models/';
 const GEMINI_URL    = GEMINI_BASE + 'gemini-2.5-flash:generateContent';
@@ -4960,7 +4959,7 @@ Regras importantes:
       contents: [{
         parts: [ { text: promptText }, filePart ]
       }],
-      generationConfig: { temperature: 0.1, maxOutputTokens: 8192 }
+      generationConfig: { temperature: 0.1, maxOutputTokens: 65536 }
     };
 
     // Call Gemini API directly (with 1.5-flash fallback)
