@@ -1753,6 +1753,7 @@
       <div id="import-error-msg" style="display:none;background:rgba(255,94,94,0.1);border:1px solid var(--red);border-radius:10px;padding:12px 14px;margin-top:12px;font-size:13px;color:var(--red);">
         ⚠️ API key do Gemini não configurada.<br><span style="color:var(--muted);">Vai a <strong style="color:var(--text);">Menu → Definições → Importação com IA</strong> para adicionar a tua key gratuita.</span>
       </div>
+      <div id="import-error-general" style="display:none;background:rgba(255,94,94,0.1);border:1px solid var(--red);border-radius:10px;padding:12px 14px;margin-top:12px;font-size:13px;color:var(--red);word-break:break-word;"></div>
     </div>
     <div id="import-loading-section" style="display:none;">
       <div class="import-loading">
@@ -4874,6 +4875,8 @@ function openImport() {
   // Hide error message
   const errMsg = document.getElementById('import-error-msg');
   if (errMsg) errMsg.style.display = 'none';
+  const errGen = document.getElementById('import-error-general');
+  if (errGen) errGen.style.display = 'none';
   document.getElementById('import-loading-section').style.display = 'none';
   document.getElementById('import-review-section').style.display = 'none';
   document.getElementById('import-file-input').value = '';
@@ -4903,7 +4906,12 @@ async function processImportFile(file) {
     const ext = file.name.split('.').pop().toLowerCase();
 
     if (ext === 'pdf') {
+      // PDFs > 3MB: send as base64 only if small enough; otherwise notify user
       const base64 = await fileToBase64(file);
+      const estimatedBytes = base64.length * 0.75;
+      if (estimatedBytes > 15 * 1024 * 1024) {
+        throw new Error('O PDF é demasiado grande para processar diretamente (>' + Math.round(estimatedBytes/1024/1024) + 'MB). Tenta exportar apenas o período que precisas ou dividir em ficheiros menores.');
+      }
       fileContent = { base64, mimeType: 'application/pdf' };
     } else if (ext === 'csv') {
       const text = await file.text();
@@ -4998,9 +5006,11 @@ Regras importantes:
     renderImportReview();
   } catch(e) {
     console.error(e);
-    showToast('❌ Erro ao processar ficheiro: ' + e.message);
     document.getElementById('import-upload-section').style.display = '';
     document.getElementById('import-loading-section').style.display = 'none';
+    const errEl = document.getElementById('import-error-general');
+    if (errEl) { errEl.textContent = '❌ ' + e.message; errEl.style.display = ''; }
+    else showToast('❌ ' + e.message);
   }
 }
 
