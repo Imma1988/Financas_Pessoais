@@ -5259,7 +5259,7 @@ function copyShareId() {
 }
 
 async function useSharedData() {
-  const id = document.getElementById('def-shared-input').value.trim();
+  const id = document.getElementById('def-share-id').value.trim();
   if (!id) { showToast('⚠️ Cola o ID de partilha'); return; }
   if (!await appConfirm('Vais passar a usar os dados de outra pessoa. Os teus dados ficam guardados mas deixarás de os ver aqui.', 'Usar dados partilhados', 'Confirmar', false)) return;
   sharedFileId = id;
