@@ -2061,6 +2061,7 @@
 // ===== CONFIG =====
 const CLIENT_ID    = '344816457312-pf9jjnsojiu4sves48acu4f60d0p4ue3.apps.googleusercontent.com';
 const WORKER_URL    = 'https://financas-gemini.imateixeira23054.workers.dev';
+const GEMINI_URL    = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 const DRIVE_FILE    = 'financas_dados.json';
 const DRIVE_FOLDER  = 'Finanças Pessoais';
 const SCOPES        = 'https://www.googleapis.com/auth/drive openid email profile';
@@ -3877,7 +3878,7 @@ async function applySugestao() {
     const prompt = `Sou utilizador de uma app de finanças pessoais. Gastos em "${orcCatSelected.catKey}" (${orcCatSelected.catType === 'parent' ? 'categoria' : 'sub-categoria'}): ${histStr}. Sugere um orçamento mensal razoável (em EUR) e uma frase curta em português (máx 12 palavras) a explicar porquê. Responde APENAS em JSON: {"valor": 300, "mensagem": "..."}`;
     try {
       const body = { contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.2, maxOutputTokens: 120 } };
-      const resp = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, geminiApiKey: geminiKey }) });
+      const resp = await fetch(`${GEMINI_URL}?key=${geminiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       const data = await resp.json();
       const txt  = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
       const match = txt.match(/\{[\s\S]*?\}/);
@@ -4949,17 +4950,17 @@ Regras importantes:
       generationConfig: { temperature: 0.1 }
     };
 
-    // Call Gemini via Cloudflare Worker
+    // Call Gemini API directly
     if (!geminiKey) {
       document.getElementById('import-upload-section').style.display = '';
       document.getElementById('import-loading-section').style.display = 'none';
       document.getElementById('import-error-msg').style.display = '';
       return;
     }
-    const response = await fetch(WORKER_URL, {
+    const response = await fetch(`${GEMINI_URL}?key=${geminiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...requestBody, geminiApiKey: geminiKey })
+      body: JSON.stringify(requestBody)
     });
 
     const data = await response.json();
