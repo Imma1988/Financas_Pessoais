@@ -612,13 +612,15 @@
     font-size: 10px; background: rgba(255,94,94,0.15); color: var(--red);
     border-radius: 4px; padding: 2px 6px; font-weight: 700; margin-left: 6px;
   }
-  .im-filter-bar { display: flex; gap: 6px; margin-bottom: 12px; }
+  .im-filter-bar { display: flex; gap: 6px; margin-bottom: 8px; }
   .im-filter-btn {
     background: none; border: 1px solid var(--border); border-radius: 8px;
     color: var(--muted); font-size: 12px; font-weight: 700; padding: 5px 12px;
     cursor: pointer; transition: all 0.15s;
   }
   .im-filter-btn.active { background: var(--a-dim); border-color: var(--a-border); color: var(--accent); }
+  .im-date-range { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .im-date-range label { font-size: 11px; color: var(--muted); white-space: nowrap; }
 
   .import-actions { display: flex; gap: 8px; margin-top: 16px; }
   .import-submit-btn { flex: 1; background: #a78bfa; color: #0d0d0d; border: none; border-radius: 12px; padding: 14px; font-family: 'Syne',sans-serif; font-size: 15px; font-weight: 800; cursor: pointer; transition: opacity 0.15s; }
@@ -1761,9 +1763,15 @@
     <div id="import-review-section" style="display:none;">
       <p style="font-size:12px;color:var(--muted);margin-bottom:12px;" id="import-summary"></p>
       <div class="im-filter-bar">
-        <button class="im-filter-btn active" data-filter="all"    onclick="filterImportMovements('all')">Todos</button>
+        <button class="im-filter-btn active" data-filter="all"     onclick="filterImportMovements('all')">Todos</button>
         <button class="im-filter-btn"        data-filter="expense" onclick="filterImportMovements('expense')">Despesas</button>
         <button class="im-filter-btn"        data-filter="income"  onclick="filterImportMovements('income')">Receitas</button>
+      </div>
+      <div class="im-date-range">
+        <label>De</label>
+        <input type="date" class="im-note-input" id="im-date-from" style="width:140px;" oninput="applyImportFilters()">
+        <label>até</label>
+        <input type="date" class="im-note-input" id="im-date-to"   style="width:140px;" oninput="applyImportFilters()">
       </div>
       <div id="import-movements-list"></div>
       <div class="import-actions">
@@ -5047,7 +5055,7 @@ function renderImportReview() {
       ? `<span class="im-duplicate-badge">⚠️ duplicado${exactDate ? '' : ' · registado em ' + dupDate}</span>`
       : '';
     return `
-      <div class="import-movement ${isSkipped?'skipped':''}" id="import-mov-${i}" data-tipo="${isExpense?'expense':'income'}">
+      <div class="import-movement ${isSkipped?'skipped':''}" id="import-mov-${i}" data-tipo="${isExpense?'expense':'income'}" data-date="${m.data}">
         <div class="im-top">
           <div class="im-desc">${m.descricao}${autoTag}${cashbackTag}${dupTag}</div>
           <div class="im-amount ${isExpense?'expense':'income'}">${isExpense?'-':'+'}${formatCurrency(m.valor)}</div>
@@ -5071,7 +5079,9 @@ function renderImportReview() {
     if (m._autoSkip || isDuplicate(m)) document.getElementById('import-mov-' + i).classList.add('skipped');
   });
 
-  // Reset filter to "Todos"
+  // Reset filters
+  const df = document.getElementById('im-date-from'); if (df) df.value = '';
+  const dt = document.getElementById('im-date-to');   if (dt) dt.value = '';
   filterImportMovements('all');
 }
 
@@ -5079,8 +5089,19 @@ function filterImportMovements(tipo) {
   document.querySelectorAll('.im-filter-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.filter === tipo)
   );
+  applyImportFilters();
+}
+
+function applyImportFilters() {
+  const tipo = document.querySelector('.im-filter-btn.active')?.dataset.filter || 'all';
+  const from = document.getElementById('im-date-from')?.value || '';
+  const to   = document.getElementById('im-date-to')?.value   || '';
   document.querySelectorAll('#import-movements-list .import-movement').forEach(el => {
-    el.style.display = (tipo === 'all' || el.dataset.tipo === tipo) ? '' : 'none';
+    const matchTipo = tipo === 'all' || el.dataset.tipo === tipo;
+    const d = el.dataset.date || '';
+    const matchFrom = !from || d >= from;
+    const matchTo   = !to   || d <= to;
+    el.style.display = (matchTipo && matchFrom && matchTo) ? '' : 'none';
   });
 }
 
