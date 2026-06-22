@@ -1,12 +1,3 @@
-
-    <div class="breakdown-wrap" style="margin-bottom:16px;">
-      <div class="breakdown-title">👤 Perfil</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">O teu nome aparece no ecrã de boas-vindas e no avatar do cabeçalho.</p>
-      <div class="form-row" style="margin-bottom:8px;">
-        <input type="text" class="form-input" id="def-name" placeholder="O teu nome" autocomplete="given-name">
-      </div>
-      <button style="background:var(--accent);color:#0d0d0d;border:none;border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="saveUserName()">Guardar nome</button>
-    </div>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -1498,6 +1489,16 @@
   </div>
   <div style="padding-bottom:80px;" id="definicoes-content">
 
+    <!-- Perfil -->
+    <div class="breakdown-wrap" style="margin-bottom:16px;">
+      <div class="breakdown-title">👤 Perfil</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">O teu nome aparece no ecrã de boas-vindas e no avatar do cabeçalho.</p>
+      <div class="form-row" style="margin-bottom:8px;">
+        <input type="text" class="form-input" id="def-name" placeholder="O teu nome" autocomplete="given-name">
+      </div>
+      <button style="background:var(--accent);color:#0d0d0d;border:none;border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="saveUserName()">Guardar nome</button>
+    </div>
+
     <!-- Gemini API Key -->
     <div class="breakdown-wrap" style="margin-bottom:16px;">
       <div class="breakdown-title">🤖 Gemini API Key</div>
@@ -2145,8 +2146,8 @@ function initAuth() {
           const sbUserEl = document.getElementById('sb-user');
           if (sbUserEl) sbUserEl.textContent = cachedEmail;
           renderAll(); renderCats(); setMode('expense'); resetDatePicker();
-          // Show onboarding for new users, or welcome splash for returning users
-          if (!onboardingDone) {
+          // Show onboarding if any step is still needed, otherwise welcome splash
+          if (!onboardingDone || !userName) {
             setTimeout(showOnboarding, 400);
           } else {
             setTimeout(showWelcomeSplash, 300);
@@ -2295,8 +2296,8 @@ async function onAuthorised() {
     const poupanca = expenseCats.find(g => g.cat === '🏦 Poupança');
     if (poupanca && !poupanca.subs.includes('Cofres')) poupanca.subs.push('Cofres');
   }
-  // Show onboarding for new users
-  if (entries.length === 0 && !geminiKey && cicloInicio === 25) {
+  // Show onboarding if any step is still needed
+  if (!onboardingDone || !userName) {
     setTimeout(showOnboarding, 500);
   }
   // Refresh token every 45 min silently
@@ -5144,6 +5145,9 @@ function submitImport() {
 // ===== DEFINIÇÕES =====
 function renderDefinicoes() {
   if (!document.getElementById('def-user-email')) return;
+  // Perfil name
+  const nameInput = document.getElementById('def-name');
+  if (nameInput) nameInput.value = userName || '';
   // Gemini key
   const keyInput = document.getElementById('def-gemini-key');
   if (keyInput) {
@@ -5647,12 +5651,24 @@ function renderRelReceitas(incomes, prevIncomes, totalInc) {
 }
 
 
+let obSelectedCofre = true;
+let obStepsToShow = [];
+let obCurrentIdx = 0;
+
 function showOnboarding() {
+  // Determine which steps are still needed
+  obStepsToShow = [];
+  if (!userName) obStepsToShow.push(1);
+  if (!onboardingDone) { obStepsToShow.push(2); obStepsToShow.push(3); }
+  if (obStepsToShow.length === 0) { showWelcomeSplash(); return; }
+
   // Pre-fill name if already set
-  if (userName) document.getElementById('ob-name').value = userName;
-  // Build cycle picker
+  const nameEl = document.getElementById('ob-name');
+  if (nameEl && userName) nameEl.value = userName;
+
+  // Build cycle picker once
   const picker = document.getElementById('ob-cycle-picker');
-  if (!picker.children.length) {
+  if (picker && !picker.children.length) {
     for (let d = 1; d <= 28; d++) {
       const el = document.createElement('div');
       el.className = 'ob-day' + (d === cicloInicio ? ' sel' : '');
@@ -5662,7 +5678,136 @@ function showOnboarding() {
     }
     obUpdateCyclePreview(cicloInicio);
   }
+
+  obCurrentIdx = 0;
+  obShowStepByIndex(0);
   document.getElementById('onboarding-overlay').classList.add('open');
+}
+
+function obShowStepByIndex(idx) {
+  obCurrentIdx = idx;
+  const step = obStepsToShow[idx];
+  for (let i = 1; i <= 3; i++) {
+    const s = document.getElementById('ob-s' + i);
+    if (s) s.style.display = 'none';
+  }
+  const cur = document.getElementById('ob-s' + step);
+  if (cur) {
+    cur.style.display = 'flex';
+    // Update progress dots to reflect position in obStepsToShow
+    const prog = cur.querySelector('.ob-progress');
+    if (prog) {
+      prog.innerHTML = obStepsToShow.map((_, i) =>
+        `<div class="ob-wp${i < idx ? ' done' : i === idx ? ' active' : ''}"></div>`
+      ).join('');
+    }
+  }
+}
+
+function obGoTo(targetStep) {
+  const curStep = obStepsToShow[obCurrentIdx];
+
+  // Save data from current step before moving
+  if (targetStep > curStep) {
+    if (curStep === 1) {
+      const n = document.getElementById('ob-name').value.trim();
+      if (n) userName = n;
+    }
+  }
+
+  // Find nearest available step in the direction of travel
+  let targetIdx;
+  if (targetStep > curStep) {
+    targetIdx = obStepsToShow.findIndex(s => s >= targetStep);
+    if (targetIdx === -1) { obFinish(); return; }
+  } else {
+    targetIdx = -1;
+    for (let i = obStepsToShow.length - 1; i >= 0; i--) {
+      if (obStepsToShow[i] <= targetStep) { targetIdx = i; break; }
+    }
+    if (targetIdx < 0) return;
+  }
+
+  obShowStepByIndex(targetIdx);
+}
+
+function obFinish() {
+  // Save name if on step 1
+  const nameEl = document.getElementById('ob-name');
+  if (nameEl && nameEl.value.trim()) userName = nameEl.value.trim();
+
+  // Apply cofres choice
+  cofresEnabled = obSelectedCofre;
+  const toggle = document.getElementById('def-cofres-toggle');
+  if (toggle) toggle.checked = cofresEnabled;
+  const menuCofres = document.getElementById('menu-cofres');
+  if (menuCofres) menuCofres.style.display = cofresEnabled ? '' : 'none';
+  if (cofresEnabled) {
+    const poupanca = expenseCats.find(g => g.cat === '🏦 Poupança');
+    if (poupanca && !poupanca.subs.includes('Cofres')) poupanca.subs.push('Cofres');
+  }
+
+  onboardingDone = true;
+  document.getElementById('onboarding-overlay').classList.remove('open');
+  updateAvatar();
+  scheduleSave();
+  setTimeout(obStartTour, 400);
+}
+
+function obSelectDay(d) {
+  cicloInicio = d;
+  document.querySelectorAll('#ob-cycle-picker .ob-day').forEach(el => {
+    el.classList.toggle('sel', parseInt(el.textContent) === d);
+  });
+  obUpdateCyclePreview(d);
+}
+
+function obUpdateCyclePreview(d) {
+  const el = document.getElementById('ob-cycle-preview');
+  if (!el) return;
+  const today = new Date();
+  const day = today.getDate();
+  const monthNames = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  let sm = today.getMonth(), sy = today.getFullYear();
+  if (day < d) { sm--; if (sm < 0) { sm = 11; sy--; } }
+  const endDate = new Date(sy, sm + 1, d - 1);
+  el.innerHTML = `<strong>Ciclo atual:</strong> ${d} ${monthNames[sm]} → ${endDate.getDate()} ${monthNames[endDate.getMonth()]}`;
+}
+
+function obSelectCofre(val) {
+  obSelectedCofre = val;
+  document.getElementById('ob-cofre-yes').classList.toggle('sel', val);
+  document.getElementById('ob-cofre-no').classList.toggle('sel', !val);
+}
+
+function updateAvatar() {
+  const el = document.getElementById('user-avatar');
+  if (!el) return;
+  if (userName) {
+    el.textContent = userName.charAt(0).toUpperCase();
+    el.classList.add('visible');
+  } else {
+    el.textContent = '';
+    el.classList.remove('visible');
+  }
+}
+
+function saveUserName() {
+  const val = document.getElementById('def-name').value.trim();
+  if (!val) { showToast('⚠️ Insere o teu nome'); return; }
+  userName = val;
+  updateAvatar();
+  scheduleSave();
+  showToast('✅ Nome guardado!');
+}
+
+function showWelcomeSplash() {
+  const el = document.getElementById('welcome-splash');
+  const nameEl = document.getElementById('welcome-splash-name');
+  if (!el) return;
+  if (nameEl) nameEl.textContent = userName ? 'Olá, ' + userName + '!' : 'Olá!';
+  el.classList.add('open');
+  setTimeout(() => el.classList.remove('open'), 2500);
 }
 
 // ── Guided tour ──
