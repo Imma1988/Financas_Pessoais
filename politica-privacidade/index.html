@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Política de Privacidade – MoneyHolic</title>
+<meta name="description" content="Política de Privacidade do MoneyHolic. Como tratamos os teus dados e os teus direitos ao abrigo do RGPD.">
+<link rel="icon" href="/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f12;
+    --surface: #14171c;
+    --border: #21262e;
+    --text: #e8eaed;
+    --muted: #8b9099;
+    --accent: #c8f135;
+    --accent-dark: #a8d120;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    font-size: 16px;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13,15,18,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    height: 60px;
+    gap: 12px;
+  }
+  nav a.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+  }
+  nav a.logo img {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  nav .spacer { flex: 1; }
+  nav a.back-link {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color .2s;
+  }
+  nav a.back-link:hover { color: var(--accent); }
+
+  /* HERO */
+  .page-hero {
+    padding: 64px 24px 40px;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  .page-hero .badge {
+    display: inline-block;
+    background: rgba(200,241,53,0.12);
+    color: var(--accent);
+    border: 1px solid rgba(200,241,53,0.25);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    padding: 4px 12px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+  .page-hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .page-hero .meta {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  /* CONTENT */
+  .content {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+  .content h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 40px 0 12px;
+    color: var(--text);
+  }
+  .content h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 24px 0 8px;
+    color: var(--text);
+  }
+  .content p {
+    color: #c0c5ce;
+    margin-bottom: 14px;
+  }
+  .content ul, .content ol {
+    margin: 8px 0 14px 20px;
+    color: #c0c5ce;
+  }
+  .content li { margin-bottom: 6px; }
+  .content a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .content a:hover { text-decoration: underline; }
+
+  .callout {
+    background: rgba(200,241,53,0.07);
+    border: 1px solid rgba(200,241,53,0.2);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    color: #c0c5ce;
+    font-size: 14px;
+  }
+  .callout strong { color: var(--accent); }
+
+  hr.section-sep {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 36px 0;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 28px 24px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">
+    <img src="/logo.jpg" alt="MoneyHolic">
+    MoneyHolic
+  </a>
+  <div class="spacer"></div>
+  <a href="/" class="back-link">← Voltar ao início</a>
+</nav>
+
+<div class="page-hero">
+  <div class="badge">Legal</div>
+  <h1>Política de Privacidade</h1>
+  <p class="meta">Última atualização: 1 de junho de 2025 &nbsp;·&nbsp; Versão 1.0</p>
+</div>
+
+<div class="content">
+
+  <div class="callout">
+    <strong>Resumo simples:</strong> o MoneyHolic guarda os teus dados <strong>na tua própria conta Google Drive</strong>. Nós não vemos, não armazenamos nem vendemos qualquer informação financeira tua. O único dado que recebemos do Google é o teu endereço de e-mail, utilizado exclusivamente para identificar a tua conta.
+  </div>
+
+  <h2>1. Quem somos</h2>
+  <p>O MoneyHolic (<strong>moneyholic.pt</strong>) é uma aplicação de gestão de finanças pessoais desenvolvida e operada por Emanuel Teixeira, com sede em Portugal.</p>
+  <p>Contacto: <a href="mailto:moneyholicapp@gmail.com">moneyholicapp@gmail.com</a></p>
+
+  <h2>2. Que dados recolhemos</h2>
+
+  <h3>2.1 Dados fornecidos pelo Google (OAuth 2.0)</h3>
+  <p>Quando te autenticas com a tua conta Google, o MoneyHolic recebe, com o teu consentimento explícito, as seguintes informações:</p>
+  <ul>
+    <li><strong>Endereço de e-mail</strong> — utilizado apenas para identificar a tua sessão</li>
+    <li><strong>Nome de perfil</strong> (opcional) — pode ser apresentado na interface da aplicação</li>
+    <li><strong>Foto de perfil</strong> (opcional) — apresentada no avatar da interface</li>
+  </ul>
+  <p>Estes dados são obtidos através do scope <code>openid email profile</code> do Google Identity e não são transmitidos a terceiros nem armazenados nos nossos servidores.</p>
+
+  <h3>2.2 Dados do Google Drive</h3>
+  <p>O MoneyHolic solicita acesso ao teu Google Drive (<code>https://www.googleapis.com/auth/drive</code>) exclusivamente para:</p>
+  <ul>
+    <li>Criar, ler e atualizar um ficheiro JSON (<code>financas_pessoais.json</code>) na tua conta Google Drive, onde são guardados os teus registos financeiros (movimentos, cofres, metas, configurações)</li>
+    <li>Ler ficheiros partilhados por ti (p. ex., ficheiro de dados de um cônjuge ou parceiro), apenas mediante indicação explícita por tua parte</li>
+  </ul>
+  <p>Os dados financeiros residem <strong>exclusivamente na tua conta Google Drive</strong>. O MoneyHolic não copia, não transmite nem armazena esses dados em qualquer servidor externo.</p>
+
+  <h3>2.3 Dados de importação de extratos (IA)</h3>
+  <p>Quando utilizas a funcionalidade de importação de extratos bancários, o conteúdo do ficheiro (PDF ou CSV) é enviado diretamente para a API da Google Gemini para processamento de inteligência artificial. Este envio é feito entre o teu browser e a API da Google. O MoneyHolic não guarda nem acede ao conteúdo desses ficheiros.</p>
+  <p>Consulta a <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Política de Privacidade da Google</a> para detalhes sobre o tratamento de dados pela API Gemini.</p>
+
+  <h3>2.4 Dados de utilização</h3>
+  <p>O MoneyHolic não utiliza ferramentas de analytics de terceiros nem recolhe dados de comportamento de utilização.</p>
+
+  <hr class="section-sep">
+
+  <h2>3. Base legal para o tratamento (RGPD)</h2>
+  <p>Ao abrigo do Regulamento Geral sobre a Proteção de Dados (RGPD – Regulamento UE 2016/679), o tratamento dos teus dados baseia-se em:</p>
+  <ul>
+    <li><strong>Consentimento</strong> (Art. 6.º, n.º 1, al. a): autorização explícita que concedes ao iniciar sessão com o Google e ao aprovar as permissões de acesso ao Drive</li>
+    <li><strong>Execução de contrato</strong> (Art. 6.º, n.º 1, al. b): necessidade de aceder ao Drive para prestar o serviço que solicitaste</li>
+  </ul>
+
+  <h2>4. Como utilizamos os dados</h2>
+  <ul>
+    <li>Identificar a tua conta e personalizar a interface</li>
+    <li>Ler e guardar os teus dados financeiros no teu Google Drive</li>
+    <li>Processar extratos bancários via IA (Gemini), enviando o ficheiro diretamente do teu browser para a API da Google</li>
+  </ul>
+  <p>Não utilizamos os teus dados para publicidade, perfilagem ou qualquer finalidade diferente da prestação do serviço MoneyHolic.</p>
+
+  <h2>5. Com quem partilhamos dados</h2>
+  <p>O MoneyHolic não vende, não aluga nem partilha os teus dados pessoais com terceiros, com a seguinte exceção técnica:</p>
+  <ul>
+    <li><strong>Google LLC</strong> — fornecedor de autenticação (Google OAuth), armazenamento (Google Drive) e IA (API Gemini). As transferências para os servidores da Google nos EUA são cobertas pelas Cláusulas Contratuais Tipo aprovadas pela Comissão Europeia</li>
+  </ul>
+
+  <h2>6. Retenção de dados</h2>
+  <p>Os dados armazenados no Google Drive são controlados por ti e persistem enquanto mantiveres o ficheiro na tua conta. Podes eliminá-los a qualquer momento através do próprio Google Drive.</p>
+  <p>O MoneyHolic não mantém cópias dos teus dados fora do Google Drive.</p>
+
+  <h2>7. Os teus direitos (RGPD)</h2>
+  <p>Como titular dos dados, tens os seguintes direitos, exercíveis através do contacto indicado abaixo:</p>
+  <ul>
+    <li><strong>Acesso</strong> — saber quais os dados que tratamos</li>
+    <li><strong>Retificação</strong> — corrigir dados incorretos</li>
+    <li><strong>Eliminação</strong> — solicitar a eliminação dos dados ("direito a ser esquecido")</li>
+    <li><strong>Portabilidade</strong> — receber os dados em formato estruturado</li>
+    <li><strong>Oposição</strong> — opor-te ao tratamento em determinadas circunstâncias</li>
+    <li><strong>Retirada do consentimento</strong> — a qualquer momento, sem afetar a licitude do tratamento anterior</li>
+  </ul>
+  <p>Para revogar o acesso do MoneyHolic ao teu Google Drive, acede a <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">myaccount.google.com/permissions</a> e remove a autorização à aplicação.</p>
+  <p>Tens ainda o direito de apresentar reclamação à <a href="https://www.cnpd.pt" target="_blank" rel="noopener">CNPD – Comissão Nacional de Proteção de Dados</a> (autoridade de controlo em Portugal).</p>
+
+  <h2>8. Segurança</h2>
+  <p>O MoneyHolic utiliza HTTPS em todas as comunicações. Os tokens de acesso OAuth são armazenados apenas em memória durante a sessão (não são persistidos em localStorage nem cookies). O acesso ao Google Drive é limitado ao ficheiro criado pela aplicação.</p>
+
+  <h2>9. Cookies</h2>
+  <p>O MoneyHolic não utiliza cookies de rastreamento nem cookies de terceiros. Poderão ser utilizados cookies técnicos estritamente necessários para o funcionamento da autenticação Google (geridos pelo próprio Google).</p>
+
+  <h2>10. Alterações a esta política</h2>
+  <p>Sempre que esta política for atualizada de forma significativa, a data de "última atualização" será alterada e, sempre que possível, será enviada uma notificação por e-mail. O uso continuado do serviço após a atualização constitui aceitação das alterações.</p>
+
+  <h2>11. Contacto</h2>
+  <p>Para qualquer questão relativa à privacidade ou ao exercício dos teus direitos:</p>
+  <p><strong>E-mail:</strong> <a href="mailto:moneyholicapp@gmail.com">moneyholicapp@gmail.com</a><br>
+  <strong>Aplicação:</strong> <a href="https://moneyholic.pt">moneyholic.pt</a></p>
+
+</div>
+
+<footer>
+  <p>© 2025 MoneyHolic &nbsp;·&nbsp;
+    <a href="/politica-privacidade/">Política de Privacidade</a> &nbsp;·&nbsp;
+    <a href="/termos-servico/">Termos de Serviço</a> &nbsp;·&nbsp;
+    <a href="mailto:moneyholicapp@gmail.com">Contacto</a>
+  </p>
+</footer>
+
+</body>
+</html>
