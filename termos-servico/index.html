@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Termos de Serviço – MoneyHolic</title>
+<meta name="description" content="Termos de Serviço do MoneyHolic. Condições de utilização da aplicação de gestão de finanças pessoais.">
+<link rel="icon" href="/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f12;
+    --surface: #14171c;
+    --border: #21262e;
+    --text: #e8eaed;
+    --muted: #8b9099;
+    --accent: #c8f135;
+    --accent-dark: #a8d120;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    font-size: 16px;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13,15,18,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    height: 60px;
+    gap: 12px;
+  }
+  nav a.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+  }
+  nav a.logo img {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  nav .spacer { flex: 1; }
+  nav a.back-link {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color .2s;
+  }
+  nav a.back-link:hover { color: var(--accent); }
+
+  /* HERO */
+  .page-hero {
+    padding: 64px 24px 40px;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  .page-hero .badge {
+    display: inline-block;
+    background: rgba(200,241,53,0.12);
+    color: var(--accent);
+    border: 1px solid rgba(200,241,53,0.25);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    padding: 4px 12px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+  .page-hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .page-hero .meta {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  /* CONTENT */
+  .content {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+  .content h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 40px 0 12px;
+    color: var(--text);
+  }
+  .content h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 24px 0 8px;
+    color: var(--text);
+  }
+  .content p {
+    color: #c0c5ce;
+    margin-bottom: 14px;
+  }
+  .content ul, .content ol {
+    margin: 8px 0 14px 20px;
+    color: #c0c5ce;
+  }
+  .content li { margin-bottom: 6px; }
+  .content a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .content a:hover { text-decoration: underline; }
+
+  .callout {
+    background: rgba(200,241,53,0.07);
+    border: 1px solid rgba(200,241,53,0.2);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    color: #c0c5ce;
+    font-size: 14px;
+  }
+  .callout strong { color: var(--accent); }
+
+  .callout-warn {
+    background: rgba(255,180,50,0.07);
+    border: 1px solid rgba(255,180,50,0.22);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    color: #c0c5ce;
+    font-size: 14px;
+  }
+  .callout-warn strong { color: #ffb432; }
+
+  hr.section-sep {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 36px 0;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 28px 24px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">
+    <img src="/logo.jpg" alt="MoneyHolic">
+    MoneyHolic
+  </a>
+  <div class="spacer"></div>
+  <a href="/" class="back-link">← Voltar ao início</a>
+</nav>
+
+<div class="page-hero">
+  <div class="badge">Legal</div>
+  <h1>Termos de Serviço</h1>
+  <p class="meta">Última atualização: 1 de junho de 2025 &nbsp;·&nbsp; Versão 1.0</p>
+</div>
+
+<div class="content">
+
+  <div class="callout">
+    <strong>Em resumo:</strong> o MoneyHolic é uma ferramenta pessoal de gestão financeira. Os teus dados são teus — ficam no teu Google Drive. Utiliza a aplicação de forma responsável e de acordo com estes termos.
+  </div>
+
+  <h2>1. Aceitação dos termos</h2>
+  <p>Ao acederes e utilizares o MoneyHolic (<strong>moneyholic.pt</strong>), aceitas ficar vinculado aos presentes Termos de Serviço ("Termos") e à nossa <a href="/politica-privacidade/">Política de Privacidade</a>. Se não concordares com algum destes termos, não deves utilizar o serviço.</p>
+
+  <h2>2. Descrição do serviço</h2>
+  <p>O MoneyHolic é uma aplicação web de gestão de finanças pessoais que permite:</p>
+  <ul>
+    <li>Registar e categorizar movimentos financeiros (despesas e receitas)</li>
+    <li>Criar e gerir cofres de poupança e metas financeiras</li>
+    <li>Importar extratos bancários através de processamento por inteligência artificial (IA)</li>
+    <li>Visualizar estatísticas e análises sobre os teus hábitos financeiros</li>
+    <li>Sincronizar dados com o teu Google Drive</li>
+  </ul>
+  <p>O serviço é disponibilizado "tal como está" e pode ser atualizado, alterado ou descontinuado a qualquer momento, com aviso prévio sempre que possível.</p>
+
+  <h2>3. Conta e autenticação</h2>
+  <p>O acesso ao MoneyHolic requer uma conta Google. Ao autenticares-te, autorizas o MoneyHolic a aceder às informações do teu perfil Google (nome, e-mail, foto) e ao teu Google Drive para armazenar os teus dados financeiros.</p>
+  <p>És responsável por:</p>
+  <ul>
+    <li>Manter a segurança da tua conta Google</li>
+    <li>Toda a atividade que ocorra através da tua conta MoneyHolic</li>
+    <li>Notificar-nos imediatamente em caso de acesso não autorizado: <a href="mailto:info@moneyholic.pt">info@moneyholic.pt</a></li>
+  </ul>
+
+  <h2>4. Armazenamento de dados</h2>
+  <p>Os teus dados financeiros são armazenados num ficheiro JSON na tua conta pessoal do Google Drive. O MoneyHolic não mantém cópias dos teus dados nos seus servidores. Desta forma:</p>
+  <ul>
+    <li>Tu tens controlo total sobre os teus dados</li>
+    <li>Podes exportar, editar ou eliminar os dados diretamente no Google Drive</li>
+    <li>A disponibilidade e segurança do armazenamento dependem igualmente dos serviços da Google</li>
+  </ul>
+
+  <div class="callout-warn">
+    <strong>Importante:</strong> recomendamos que faças cópias de segurança regulares do ficheiro de dados do Google Drive. O MoneyHolic não é responsável por perda de dados causada por eliminação acidental, falha nos serviços da Google ou revogação de permissões.
+  </div>
+
+  <h2>5. Utilização de inteligência artificial</h2>
+  <p>A funcionalidade de importação de extratos bancários utiliza a API Gemini da Google para processar e interpretar ficheiros (PDF, CSV). Ao utilizares esta funcionalidade:</p>
+  <ul>
+    <li>O conteúdo do ficheiro é transmitido diretamente do teu browser para a API Gemini</li>
+    <li>Aceitas os <a href="https://ai.google.dev/terms" target="_blank" rel="noopener">Termos de Serviço da API Gemini</a></li>
+    <li>Os resultados gerados por IA são sugestões e devem ser verificados por ti antes de serem guardados</li>
+  </ul>
+  <p>O MoneyHolic não garante a exatidão dos resultados da IA e não é responsável por erros de categorização ou valores incorretamente interpretados.</p>
+
+  <h2>6. Licença de utilização</h2>
+  <p>O MoneyHolic concede-te uma licença pessoal, não exclusiva, não transferível e revogável para utilizar a aplicação para fins pessoais e não comerciais.</p>
+  <p>É proibido:</p>
+  <ul>
+    <li>Copiar, modificar, distribuir ou criar obras derivadas da aplicação sem autorização expressa</li>
+    <li>Utilizar o serviço para fins comerciais sem acordo prévio por escrito</li>
+    <li>Tentar aceder a dados de outros utilizadores ou comprometer a segurança da aplicação</li>
+    <li>Usar a aplicação de forma contrária à lei aplicável</li>
+  </ul>
+
+  <h2>7. Conteúdo do utilizador</h2>
+  <p>Os dados financeiros que introduzes no MoneyHolic são da tua propriedade. Ao utilizares o serviço, concedes ao MoneyHolic acesso técnico a esses dados estritamente na medida necessária para prestar o serviço (leitura e escrita no teu Google Drive).</p>
+  <p>Não introduzas dados de terceiros sem o seu consentimento.</p>
+
+  <h2>8. Planos e pagamento</h2>
+  <p>O MoneyHolic pode disponibilizar funcionalidades gratuitas e funcionalidades premium (pagas). As condições de cada plano são apresentadas na aplicação e no site.</p>
+  <ul>
+    <li>Os preços podem ser alterados com aviso prévio mínimo de 30 dias</li>
+    <li>Os pagamentos processados são não reembolsáveis, salvo exigência legal contrária ou acordo expresso</li>
+    <li>Em caso de cancelamento de plano pago, o acesso premium mantém-se até ao fim do período já pago</li>
+  </ul>
+
+  <h2>9. Disponibilidade e manutenção</h2>
+  <p>O MoneyHolic esforça-se por manter o serviço disponível continuamente, mas não garante disponibilidade ininterrupta. O serviço pode ser temporariamente suspenso para manutenção, atualizações ou por razões fora do nosso controlo (p. ex., indisponibilidade dos serviços da Google).</p>
+
+  <h2>10. Limitação de responsabilidade</h2>
+  <p>Na máxima extensão permitida pela lei portuguesa, o MoneyHolic não é responsável por:</p>
+  <ul>
+    <li>Decisões financeiras tomadas com base em dados ou análises da aplicação</li>
+    <li>Perda de dados causada por falha nos serviços da Google ou eliminação pelo utilizador</li>
+    <li>Danos indiretos, incidentais ou consequentes resultantes da utilização ou incapacidade de utilização do serviço</li>
+    <li>Erros de interpretação de extratos bancários gerados pela IA</li>
+  </ul>
+  <p>O MoneyHolic não é um serviço de consultoria financeira, fiscal ou jurídica. As informações disponibilizadas têm caráter exclusivamente informativo.</p>
+
+  <h2>11. Indisponibilidade de terceiros</h2>
+  <p>O funcionamento do MoneyHolic depende de serviços de terceiros (Google OAuth, Google Drive, API Gemini). Não somos responsáveis por interrupções, alterações ou descontinuação desses serviços.</p>
+
+  <h2>12. Suspensão e encerramento de conta</h2>
+  <p>Podemos suspender ou encerrar o teu acesso ao MoneyHolic, sem aviso prévio, se:</p>
+  <ul>
+    <li>Violares estes Termos</li>
+    <li>A tua utilização prejudicar outros utilizadores ou a integridade do serviço</li>
+    <li>Assim for exigido por lei</li>
+  </ul>
+  <p>Podes encerrar a tua conta a qualquer momento, revogando o acesso do MoneyHolic ao teu Google em <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">myaccount.google.com/permissions</a>. Os teus dados ficam no Google Drive e podem ser eliminados por ti.</p>
+
+  <h2>13. Alterações aos Termos</h2>
+  <p>Podemos atualizar estes Termos periodicamente. A data de "última atualização" no topo da página reflete a versão mais recente. Alterações significativas serão comunicadas por e-mail (quando possível) ou através de um aviso na aplicação. O uso continuado do serviço após as alterações constitui aceitação dos novos Termos.</p>
+
+  <h2>14. Lei aplicável e foro competente</h2>
+  <p>Estes Termos são regidos pela lei portuguesa. Em caso de litígio, as partes submetem-se à jurisdição dos tribunais de Portugal, sem prejuízo do direito do utilizador enquanto consumidor ao abrigo da legislação de defesa do consumidor da UE.</p>
+  <p>Para resolução alternativa de litígios de consumo, podes recorrer ao <a href="https://www.consumidor.gov.pt" target="_blank" rel="noopener">Portal do Consumidor</a>.</p>
+
+  <h2>15. Contacto</h2>
+  <p>Para questões relativas a estes Termos:</p>
+  <p><strong>E-mail:</strong> <a href="mailto:info@moneyholic.pt">info@moneyholic.pt</a><br>
+  <strong>Aplicação:</strong> <a href="https://moneyholic.pt">moneyholic.pt</a></p>
+
+</div>
+
+<footer>
+  <p>© 2025 MoneyHolic &nbsp;·&nbsp;
+    <a href="/politica-privacidade/">Política de Privacidade</a> &nbsp;·&nbsp;
+    <a href="/termos-servico/">Termos de Serviço</a> &nbsp;·&nbsp;
+    <a href="mailto:info@moneyholic.pt">Contacto</a>
+  </p>
+</footer>
+
+</body>
+</html>
