@@ -855,6 +855,7 @@
     z-index: 151;
   }
   .bottom-sheet-overlay.open .bottom-sheet { transform: translateY(0); }
+  .bottom-sheet.vv-fullscreen { border-radius: 0; max-height: none; transition: none; }
   .bottom-sheet-handle { width: 36px; height: 4px; background: #333; border-radius: 99px; margin: 12px auto 0; flex-shrink: 0; }
   .bottom-sheet-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; padding: 12px 20px 8px; flex-shrink: 0; }
   .bottom-sheet-search {
@@ -2026,7 +2027,7 @@
 
 <!-- ORÇAMENTO CAT PICKER -->
 <div class="bottom-sheet-overlay" id="orc-cat-picker-overlay" onclick="handleOrcCatPickerOverlayClick(event)" style="z-index:250;">
-  <div class="bottom-sheet" onclick="event.stopPropagation()">
+  <div class="bottom-sheet" id="orc-cat-picker-sheet" onclick="event.stopPropagation()">
     <div class="bottom-sheet-handle"></div>
     <div class="bottom-sheet-title">Escolher categoria</div>
     <input type="text" class="bottom-sheet-search" id="orc-cat-picker-search" placeholder="🔍 Pesquisar..." oninput="renderOrcCatPickerList(this.value)">
@@ -5980,6 +5981,43 @@ window.addEventListener('load', () => {
     }, 100);
   }
 });
+
+// Bottom-sheet full-screen on keyboard open (visualViewport API)
+(function() {
+  if (!window.visualViewport) return;
+
+  function attachVV(sheetId, searchId) {
+    const sheet  = document.getElementById(sheetId);
+    const search = document.getElementById(searchId);
+    if (!sheet || !search) return;
+
+    function applyVV() {
+      const vv = window.visualViewport;
+      sheet.style.top       = vv.offsetTop + 'px';
+      sheet.style.height    = vv.height + 'px';
+      sheet.style.bottom    = 'auto';
+      sheet.style.maxHeight = 'none';
+      sheet.classList.add('vv-fullscreen');
+    }
+    function resetVV() {
+      sheet.style.top = sheet.style.height = sheet.style.bottom = sheet.style.maxHeight = '';
+      sheet.classList.remove('vv-fullscreen');
+      window.visualViewport.removeEventListener('resize', applyVV);
+    }
+
+    search.addEventListener('focus', () => {
+      window.visualViewport.addEventListener('resize', applyVV);
+      applyVV();
+    });
+    search.addEventListener('blur', () => {
+      // small delay so tap on list item registers before sheet resets
+      setTimeout(resetVV, 150);
+    });
+  }
+
+  attachVV('cat-picker-sheet',     'cat-picker-search');
+  attachVV('orc-cat-picker-sheet', 'orc-cat-picker-search');
+})();
 
 // Swipe to navigate cycles in Relatórios
 (function() {
