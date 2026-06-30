@@ -1119,15 +1119,6 @@
   }
 
   /* USER AVATAR */
-  .user-avatar {
-    width: 28px; height: 28px; border-radius: 50%;
-    background: var(--accent); color: #0d0d0d;
-    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 12px;
-    display: none; align-items: center; justify-content: center; flex-shrink: 0;
-    cursor: pointer; transition: opacity 0.15s;
-  }
-  .user-avatar:active { opacity: 0.75; }
-  .user-avatar.visible { display: flex; }
 
 
 /* ── ONBOARDING OVERLAY ── */
@@ -1309,7 +1300,6 @@
       <img src="/logo.jpg" style="height:56px;width:auto;display:block;">
     </div>
     <div class="header-right sync-indicator" style="position:static;font-size:11px;">
-            <div class="user-avatar" id="user-avatar" onclick="switchView('definicoes')" title="Definições"></div>
       <div class="sync-dot" id="sync-dot"></div>
       <span class="sync-label" id="sync-label">Guardado</span>
     </div>
@@ -1501,7 +1491,7 @@
     <!-- Perfil -->
     <div class="breakdown-wrap" style="margin-bottom:16px;">
       <div class="breakdown-title">👤 Perfil</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">O teu nome aparece no ecrã de boas-vindas e no avatar do cabeçalho.</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">O teu nome aparece no ecrã de boas-vindas.</p>
       <div class="form-row" style="margin-bottom:8px;">
         <input type="text" class="form-input" id="def-name" placeholder="O teu nome" autocomplete="given-name">
       </div>
@@ -2182,7 +2172,6 @@ function initAuth() {
           } else {
             setTimeout(showWelcomeSplash, 300);
           }
-          updateAvatar();
           const mce = document.getElementById('menu-cofres');
           if (mce) mce.style.display = cofresEnabled ? '' : 'none';
           const sce = document.getElementById('sb-btn-cofres');
@@ -5872,17 +5861,6 @@ function obSelectCofre(val) {
   document.getElementById('ob-cofre-no').classList.toggle('sel', !val);
 }
 
-function updateAvatar() {
-  const el = document.getElementById('user-avatar');
-  if (!el) return;
-  if (userName) {
-    el.textContent = userName.charAt(0).toUpperCase();
-    el.classList.add('visible');
-  } else {
-    el.textContent = '';
-    el.classList.remove('visible');
-  }
-}
 
 function saveUserName() {
   const val = document.getElementById('def-name').value.trim();
