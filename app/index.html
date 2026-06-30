@@ -5992,7 +5992,7 @@ window.addEventListener('load', () => {
     if (relatorioMode !== 'ciclos') return;
     const dx = e.changedTouches[0].clientX - swipeStartX;
     if (Math.abs(dx) < MIN_SWIPE) return;
-    navigateRelatorio(dx < 0 ? -1 : 1);
+    navigateRelatorio(dx < 0 ? 1 : -1);
   }, { passive: true });
 })();
 </script>
