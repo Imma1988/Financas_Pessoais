@@ -1443,9 +1443,13 @@
   </div>
   <div style="padding-bottom:80px;">
     <div class="type-toggle" style="margin-bottom:12px;">
-      <button class="range-btn active" id="rel-ciclo-atual" onclick="setRelatorioPeriod('atual')">Atual</button>
-      <button class="range-btn" id="rel-ciclo-anterior" onclick="setRelatorioPeriod('anterior')">Anterior</button>
-      <button class="range-btn" id="rel-ciclo-intervalo" onclick="setRelatorioPeriod('intervalo')">Intervalo</button>
+      <button class="range-btn active" id="rel-mode-ciclos" onclick="setRelatorioMode('ciclos')">Ciclos</button>
+      <button class="range-btn" id="rel-mode-intervalo" onclick="setRelatorioMode('intervalo')">Personalizado</button>
+    </div>
+    <div id="rel-ciclo-nav" style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;">
+      <button class="range-btn" style="padding:5px 14px;font-size:18px;line-height:1;" onclick="navigateRelatorio(-1)">‹</button>
+      <span id="rel-cycle-nav-label" style="font-size:13px;color:var(--muted);min-width:160px;text-align:center;"></span>
+      <button class="range-btn" id="rel-nav-next" style="padding:5px 14px;font-size:18px;line-height:1;" onclick="navigateRelatorio(1)">›</button>
     </div>
     <div id="rel-intervalo-inputs" style="display:none;margin-bottom:12px;gap:8px;">
       <input type="date" id="rel-date-from" class="form-input" style="margin-bottom:6px;" onchange="renderRelatorios()">
@@ -5352,7 +5356,8 @@ function saveCicloSettings() {
 document.addEventListener('input', e => { if(e.target.id==='ciclo-dia-input') updateCicloPreview(); });
 
 // ===== RELATÓRIOS =====
-let relatorioPeriod = 'atual';
+let relatorioMode   = 'ciclos';
+let relatorioOffset = 0;
 let relatorioTab    = 'exp';
 
 function switchRelTab(tab) {
@@ -5367,45 +5372,29 @@ const CAT_COLORS = [
   '#f135c8','#4ade80','#fb923c','#22d3ee','#818cf8','#facc15','#f472b6'
 ];
 
-function setRelatorioPeriod(p) {
-  relatorioPeriod = p;
-  ['atual','anterior','intervalo'].forEach(x => {
-    document.getElementById('rel-ciclo-' + x).className = 'range-btn' + (p===x?' active':'');
-  });
-  document.getElementById('rel-intervalo-inputs').style.display = p==='intervalo' ? 'flex' : 'none';
-  if (p==='intervalo') { document.getElementById('rel-intervalo-inputs').style.flexDirection='column'; }
+function setRelatorioMode(mode) {
+  relatorioMode = mode;
+  document.getElementById('rel-mode-ciclos').classList.toggle('active', mode === 'ciclos');
+  document.getElementById('rel-mode-intervalo').classList.toggle('active', mode === 'intervalo');
+  document.getElementById('rel-ciclo-nav').style.display = mode === 'ciclos' ? 'flex' : 'none';
+  const inp = document.getElementById('rel-intervalo-inputs');
+  inp.style.display = mode === 'intervalo' ? 'flex' : 'none';
+  if (mode === 'intervalo') inp.style.flexDirection = 'column';
+  renderRelatorios();
+}
+
+function navigateRelatorio(delta) {
+  relatorioOffset += delta;
+  if (relatorioOffset > 0) relatorioOffset = 0;
   renderRelatorios();
 }
 
 function getRelatorioDates() {
-  if (relatorioPeriod === 'atual') {
-    const { start, end } = getCicloRange();
-    return { start, end, label: cicloLabel() };
+  if (relatorioMode === 'ciclos') {
+    const { start, end } = getCicloRange(relatorioOffset);
+    return { start, end, label: cicloLabel(relatorioOffset) };
   }
-  if (relatorioPeriod === 'anterior') {
-    const now = new Date();
-    const day = now.getDate();
-    let s, e;
-    if (day >= cicloInicio) {
-      // Current cycle: cicloInicio this month → cicloInicio-1 next month
-      // Previous cycle: cicloInicio last month → cicloInicio-1 this month
-      const ps = new Date(now.getFullYear(), now.getMonth()-1, cicloInicio);
-      const pe = new Date(now.getFullYear(), now.getMonth(), cicloInicio-1);
-      s = ps.toISOString().split('T')[0];
-      e = pe.toISOString().split('T')[0];
-    } else {
-      // Current cycle started last month
-      // Previous cycle: cicloInicio 2 months ago → cicloInicio-1 last month
-      const ps = new Date(now.getFullYear(), now.getMonth()-2, cicloInicio);
-      const pe = new Date(now.getFullYear(), now.getMonth()-1, cicloInicio-1);
-      s = ps.toISOString().split('T')[0];
-      e = pe.toISOString().split('T')[0];
-    }
-    console.log('Período anterior:', s, 'até', e);
-    const fmt = d => new Date(d+'T12:00:00').toLocaleDateString('pt-PT',{day:'numeric',month:'short'});
-    return { start: s, end: e, label: fmt(s) + ' – ' + fmt(e) };
-  }
-  // intervalo
+  // personalizado
   const from = document.getElementById('rel-date-from')?.value;
   const to   = document.getElementById('rel-date-to')?.value;
   if (!from || !to) return null;
@@ -5429,7 +5418,11 @@ function renderRelatorios() {
     ['rel-vs-expense','rel-vs-income'].forEach(id => document.getElementById(id).textContent = '');
     return;
   }
-  document.getElementById('relatorio-period-label').textContent = dates.label;
+  document.getElementById('relatorio-period-label').textContent = '';
+  const navLabel = document.getElementById('rel-cycle-nav-label');
+  const navNext  = document.getElementById('rel-nav-next');
+  if (navLabel) navLabel.textContent = dates.label;
+  if (navNext)  navNext.disabled = relatorioOffset >= 0;
 
   const periodEntries  = getEntriesForPeriod(dates.start, dates.end);
   const expenses       = periodEntries.filter(e => e.type === 'expense');
@@ -5471,11 +5464,7 @@ function renderRelatorios() {
   }
 
   // Chart (always shows expenses)
-  if (relatorioPeriod === 'atual') {
-    renderPieChart(expenses, totalExp);
-  } else {
-    renderBarChart(expenses, prevEntries.filter(e=>e.type==='expense'), dates, prevDates);
-  }
+  renderPieChart(expenses, totalExp);
 
   // Tab: despesas or receitas
   if (relatorioTab === 'inc') {
