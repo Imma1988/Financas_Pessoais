@@ -1757,6 +1757,7 @@
       </div>
     </div>
     <div id="import-review-section" style="display:none;">
+      <div id="import-cc-notice" style="display:none;background:rgba(200,241,53,0.08);border:1px solid rgba(200,241,53,0.25);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--accent);"></div>
       <p style="font-size:12px;color:var(--muted);margin-bottom:12px;" id="import-summary"></p>
       <div class="im-filter-bar">
         <button class="im-filter-btn active" data-filter="all"     onclick="filterImportMovements('all')">Todos</button>
@@ -4856,6 +4857,7 @@ function submitContribuirTodos() {
 
 // ===== IMPORTAR EXTRATO =====
 let importedMovements = [];
+let importedCcMeta    = null; // { data_debito, nome_cartao } if credit card
 let geminiKey       = '';   // user's own Gemini API key
 let cofresEnabled   = false; // cofres feature off by default
 let sharedFileId    = '';   // if using shared data, the file ID of the owner
@@ -4864,6 +4866,7 @@ let importMemory = { matches: {}, skipped: [] }; // { matches: {"CONTINENTE": "S
 
 function openImport() {
   importedMovements = [];
+  importedCcMeta    = null;
   const uploadSection = document.getElementById('import-upload-section');
   uploadSection.style.display = '';
   // Hide error message
@@ -4929,8 +4932,11 @@ async function processImportFile(file) {
     // Build prompt for Gemini
     const allSubcats = expenseCats.flatMap(g => g.subs);
     const promptText = `Analisa este extrato bancário e extrai todos os movimentos financeiros.
-Para cada movimento devolve um JSON com esta estrutura exata:
+Devolve um JSON com esta estrutura exata:
 {
+  "cartao_credito": false,
+  "data_debito": null,
+  "nome_cartao": null,
   "movimentos": [
     {
       "data": "YYYY-MM-DD",
@@ -4951,6 +4957,9 @@ Regras importantes:
 - Ignora APENAS pagamentos do próprio cartão (ex: "PAGAMENTO DEBITO DIRETO", "PAGAMENTO CARTAO") — esses são liquidações internas
 - NÃO ignores créditos de programas de recompensa, reembolsos ou benefícios
 - cashback: identifica de forma inteligente qualquer crédito que seja um benefício/recompensa do cartão — pode aparecer como "PROGRAMA REEMBOLSO", "CASHBACK", "ABONO", "REEMBOLSO PROGRAMA", "DESCONTO PROGRAMA", "PONTOS CONVERTIDOS", "REWARDS", "BENEFICIO CARTAO" ou qualquer variante. Se for cashback/reembolso de programa, define tipo "income", subcategoria "Cashback" e cashback true
+- cartao_credito: true se este for um extrato de cartão de crédito, false se for extrato de conta à ordem/poupança
+- data_debito: se cartao_credito=true, extrai a data em que o valor será debitado na conta (pode aparecer como "data de pagamento", "data de débito", "data limite", "payment due date" ou similar). Formato YYYY-MM-DD. null se não encontrada.
+- nome_cartao: nome ou tipo do cartão conforme aparece no extrato (ex: "Cartão Visa Platinum", "Cartão Gold", "Mastercard"). null se não for cartão de crédito.
 - Devolve APENAS o JSON válido, sem texto adicional`;
 
     const filePart = fileContent.base64
@@ -5014,6 +5023,14 @@ Regras importantes:
     }
     importedMovements = parsed.movimentos || [];
 
+    // Credit card: store metadata and override all movement dates to debit date
+    if (parsed.cartao_credito && parsed.data_debito) {
+      importedCcMeta = { data_debito: parsed.data_debito, nome_cartao: parsed.nome_cartao || 'Cartão de crédito' };
+      importedMovements.forEach(m => { m.data = parsed.data_debito; });
+    } else if (parsed.cartao_credito) {
+      importedCcMeta = { data_debito: null, nome_cartao: parsed.nome_cartao || 'Cartão de crédito' };
+    }
+
     renderImportReview();
   } catch(e) {
     console.error(e);
@@ -5060,6 +5077,19 @@ function findMemoryMatch(m) {
 function renderImportReview() {
   document.getElementById('import-loading-section').style.display = 'none';
   document.getElementById('import-review-section').style.display = '';
+
+  // Credit card notice
+  const ccNotice = document.getElementById('import-cc-notice');
+  if (ccNotice) {
+    if (importedCcMeta) {
+      const fmt = d => d ? new Date(d+'T12:00:00').toLocaleDateString('pt-PT',{day:'numeric',month:'short'}) : null;
+      const dateStr = importedCcMeta.data_debito ? ` — débito a ${fmt(importedCcMeta.data_debito)}` : '';
+      ccNotice.textContent = `💳 ${importedCcMeta.nome_cartao}${dateStr}. Todos os movimentos datados à data de débito.`;
+      ccNotice.style.display = '';
+    } else {
+      ccNotice.style.display = 'none';
+    }
+  }
 
   const allSubcats = expenseCats.flatMap(g => g.subs);
   const incomeSubcats = incomeCats;
@@ -5226,6 +5256,7 @@ function submitImport() {
   closeImport();
   renderAll();
   showToast(`✅ ${count} movimentos registados!`);
+  if (importedCcMeta) setTimeout(showCcCalendarBanner, 600);
 }
 
 // ===== DEFINIÇÕES =====
@@ -5982,6 +6013,59 @@ window.addEventListener('load', () => {
   }
 });
 
+// ===== CREDIT CARD CALENDAR BANNER =====
+function showCcCalendarBanner() {
+  if (!importedCcMeta) return;
+  const banner = document.getElementById('cc-calendar-banner');
+  if (!banner) return;
+  const fmt = d => d ? new Date(d+'T12:00:00').toLocaleDateString('pt-PT',{day:'numeric',month:'long'}) : '';
+  document.getElementById('cc-banner-title').textContent = '💳 ' + importedCcMeta.nome_cartao;
+  document.getElementById('cc-banner-sub').textContent = importedCcMeta.data_debito
+    ? `Débito a ${fmt(importedCcMeta.data_debito)} — criar lembrete no Google Calendar?`
+    : 'Criar lembrete de débito no Google Calendar?';
+  document.getElementById('cc-debit-date-input').value = importedCcMeta.data_debito || '';
+  banner.style.display = '';
+  banner._dismiss = setTimeout(dismissCcBanner, 12000);
+}
+
+function dismissCcBanner() {
+  const banner = document.getElementById('cc-calendar-banner');
+  if (!banner) return;
+  clearTimeout(banner._dismiss);
+  banner.style.display = 'none';
+}
+
+function createCcCalendarEvent() {
+  const date = document.getElementById('cc-debit-date-input').value;
+  if (!date) { showToast('⚠️ Escolhe a data de débito'); return; }
+  const name = (importedCcMeta?.nome_cartao) || 'Cartão de crédito';
+
+  const calClient = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: 'https://www.googleapis.com/auth/calendar.events',
+    callback: async (resp) => {
+      if (resp.error) { showToast('❌ Acesso ao calendário negado'); return; }
+      const event = {
+        summary: `💳 Débito — ${name}`,
+        start: { date },
+        end:   { date },
+        reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: 1440 }] }
+      };
+      try {
+        const r = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${resp.access_token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(event)
+        });
+        if (!r.ok) throw new Error((await r.json()).error?.message || `HTTP ${r.status}`);
+        dismissCcBanner();
+        showToast('✅ Lembrete criado no Google Calendar!');
+      } catch(e) { showToast('❌ ' + e.message); }
+    }
+  });
+  calClient.requestAccessToken({ prompt: '' });
+}
+
 // Bottom-sheet full-screen on keyboard open (visualViewport API)
 (function() {
   if (!window.visualViewport) return;
@@ -6108,6 +6192,22 @@ window.addEventListener('load', () => {
   </div>
 
 </div>
+<!-- Credit card calendar banner -->
+<div id="cc-calendar-banner" style="display:none;position:fixed;bottom:80px;left:12px;right:12px;z-index:400;
+  background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+  <div style="font-size:13px;font-weight:700;margin-bottom:4px;" id="cc-banner-title">💳 Cartão de crédito</div>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:12px;" id="cc-banner-sub">Criar lembrete de débito no Google Calendar?</div>
+  <div style="margin-bottom:12px;">
+    <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Data do débito direto</label>
+    <input type="date" id="cc-debit-date-input" class="form-input" style="margin-bottom:0;">
+  </div>
+  <div style="display:flex;gap:8px;">
+    <button class="range-btn" style="flex:1;" onclick="dismissCcBanner()">Não, obrigado</button>
+    <button class="range-btn active" style="flex:1;background:var(--accent);color:#000;border-color:var(--accent);" onclick="createCcCalendarEvent()">📅 Criar lembrete</button>
+  </div>
+</div>
+
 <div id="welcome-splash" class="welcome-splash">
   <div class="welcome-splash-emoji">👋</div>
   <div class="welcome-splash-text" id="welcome-splash-name">Olá!</div>
