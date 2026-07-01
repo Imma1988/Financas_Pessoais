@@ -2706,6 +2706,8 @@ function resetDatePicker() {
 function monthStr()  { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; }
 function formatTime(iso) { return new Date(iso).toLocaleTimeString('pt-PT', {hour:'2-digit',minute:'2-digit'}); }
 function formatDate(iso) { return new Date(iso).toLocaleDateString('pt-PT', {day:'2-digit',month:'2-digit'}); }
+function isoToPT(iso) { if (!iso) return ''; const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; }
+function syncDateDisplay(input) { const t=document.getElementById(input.dataset.textid); if(t) t.value=isoToPT(input.value); }
 function formatCurrency(n) { return '€' + Math.abs(n).toFixed(2).replace('.',','); }
 function parseAmount(val) {
   const s = String(val).replace(/,/g, '.').replace(/\s/g, '');
@@ -5136,7 +5138,10 @@ function renderImportReview() {
           <div class="im-amount ${isExpense?'expense':'income'}">${isExpense?'-':'+'}${formatCurrency(m.valor)}</div>
         </div>
         <div style="display:flex;gap:8px;margin-bottom:6px;">
-          <input type="date" class="im-note-input" id="import-date-${i}" value="${m.data}" style="width:140px;flex-shrink:0;">
+          <div style="position:relative;width:140px;flex-shrink:0;">
+            <input type="text" class="im-note-input" id="import-date-text-${i}" value="${isoToPT(m.data)}" readonly style="width:100%;pointer-events:none;">
+            <input type="date" id="import-date-${i}" value="${m.data}" data-textid="import-date-text-${i}" onchange="syncDateDisplay(this)" style="position:absolute;opacity:0;inset:0;width:100%;height:100%;cursor:pointer;">
+          </div>
           <input type="text" class="im-note-input" id="import-note-${i}" style="flex:1;" value="${m.descricao.replace(/"/g,'&quot;')}" placeholder="Nota">
         </div>
         <div class="im-cat-row" style="margin-top:0;">
