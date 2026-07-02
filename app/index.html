@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<script>try{var _e=localStorage.getItem('mh_email');if(localStorage.getItem('gToken')&&_e&&localStorage.getItem('mh_data_'+_e))document.documentElement.classList.add('has-session');}catch(e){}</script>
 <title>Despesas & Receitas</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -674,7 +675,7 @@
     display: flex; flex-direction: column; align-items: center; justify-content: space-between;
     z-index: 1000;
   }
-  #login-screen.hidden { display: none; }
+  #login-screen.hidden, html.has-session #login-screen { display: none; }
   .ln-top { flex: 1; display: flex; flex-direction: column; align-items: center;
     justify-content: center; padding: 48px 28px 20px; width: 100%; max-width: 420px; }
   .ln-logo { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800;
@@ -2268,6 +2269,8 @@ function signIn() {
 }
 
 function showLoginError() {
+  document.documentElement.classList.remove('has-session');
+  document.getElementById('login-screen').classList.remove('hidden');
   document.getElementById('login-error').style.display = 'block';
 }
 
