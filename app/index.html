@@ -4867,14 +4867,23 @@ let currentUserEmail = '';
 let importMemory = { matches: {}, skipped: [] }; // { matches: {"CONTINENTE": "Supermercado"}, skipped: ["TRANSFERÊNCIA ENTRE CONTAS"] }
 
 function openImport() {
-  importedMovements = [];
-  importedCcMeta    = null;
-  const uploadSection = document.getElementById('import-upload-section');
-  uploadSection.style.display = '';
-  // Hide error message
   const errMsg = document.getElementById('import-error-msg');
-  if (errMsg) errMsg.style.display = 'none';
   const errGen = document.getElementById('import-error-general');
+
+  // If movements were loaded but not yet submitted, restore the review directly
+  if (importedMovements.length > 0) {
+    if (errMsg) errMsg.style.display = 'none';
+    if (errGen) errGen.style.display = 'none';
+    document.getElementById('import-upload-section').style.display = 'none';
+    document.getElementById('import-loading-section').style.display = 'none';
+    renderImportReview();
+    document.getElementById('import-modal-overlay').classList.add('open');
+    return;
+  }
+
+  importedCcMeta = null;
+  document.getElementById('import-upload-section').style.display = '';
+  if (errMsg) errMsg.style.display = 'none';
   if (errGen) errGen.style.display = 'none';
   document.getElementById('import-loading-section').style.display = 'none';
   document.getElementById('import-review-section').style.display = 'none';
@@ -5259,6 +5268,7 @@ function submitImport() {
   saveCofres(cofres);
   scheduleSave(); // save importMemory too
   closeImport();
+  importedMovements = [];
   renderAll();
   showToast(`✅ ${count} movimentos registados!`);
   if (importedCcMeta) setTimeout(showCcCalendarBanner, 600);
