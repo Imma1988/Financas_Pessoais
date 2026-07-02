@@ -2171,17 +2171,17 @@ function initAuth() {
           if (sbEl) sbEl.style.display = '';
           const sbUserEl = document.getElementById('sb-user');
           if (sbUserEl) sbUserEl.textContent = cachedEmail;
-          // Show splash BEFORE renderAll so it covers the render — not after
-          if (!onboardingDone || !userName) {
-            setTimeout(showOnboarding, 400);
-          } else {
-            showWelcomeSplash();
-          }
           renderAll(); renderCats(); setMode('expense'); resetDatePicker();
           const mce = document.getElementById('menu-cofres');
           if (mce) mce.style.display = cofresEnabled ? '' : 'none';
           const sce = document.getElementById('sb-btn-cofres');
           if (sce) sce.style.display = cofresEnabled ? '' : 'none';
+          // Show onboarding or splash BEFORE hiding login so app never flashes
+          if (!onboardingDone || !userName) {
+            showOnboarding();
+          } else {
+            showWelcomeSplash();
+          }
           document.getElementById('login-screen').classList.add('hidden');
         } catch(e) {}
       }
@@ -2292,8 +2292,10 @@ async function onAuthorised() {
   }
 
   if (!accessToken) return;
-  document.getElementById('login-screen').classList.add('hidden');
-  // Show sidebar and email immediately — don't wait for Drive load
+  // Track whether login screen is visible now (before any cache-path hid it)
+  const loginScreen = document.getElementById('login-screen');
+  const loginWasVisible = !loginScreen.classList.contains('hidden');
+  // Show sidebar immediately, but keep login screen until data is loaded
   const sbEl = document.getElementById('desktop-sidebar');
   if (sbEl) sbEl.style.display = '';
   const sbUserEl = document.getElementById('sb-user');
@@ -2305,26 +2307,28 @@ async function onAuthorised() {
   if (!accessToken) return;
   const sbCofresEl = document.getElementById('sb-btn-cofres');
   if (sbCofresEl) sbCofresEl.style.display = cofresEnabled ? '' : 'none';
-  // Apply cofres visibility after data loaded
   const menuCofresEl = document.getElementById('menu-cofres');
   if (menuCofresEl) menuCofresEl.style.display = cofresEnabled ? '' : 'none';
   setMode('expense');
   renderAll();
   renderCats();
   resetDatePicker();
-  // Apply cofres visibility
   const menuCofres = document.getElementById('menu-cofres');
   if (menuCofres) menuCofres.style.display = cofresEnabled ? '' : 'none';
   renderDefinicoes();
-  // Ensure Cofres sub-category exists if cofresEnabled
   if (cofresEnabled) {
     const poupanca = expenseCats.find(g => g.cat === '🏦 Poupança');
     if (poupanca && !poupanca.subs.includes('Cofres')) poupanca.subs.push('Cofres');
   }
-  // Show onboarding if any step is still needed
-  if (!onboardingDone || !userName) {
-    setTimeout(showOnboarding, 500);
+  // Only transition from login if it was still visible (cache path may have already done it)
+  if (loginWasVisible) {
+    if (!onboardingDone || !userName) {
+      showOnboarding(); // immediate — no flash
+    } else {
+      showWelcomeSplash(); // returning user on a fresh device
+    }
   }
+  loginScreen.classList.add('hidden');
   // Refresh token every 45 min silently
   setInterval(() => {
     if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
