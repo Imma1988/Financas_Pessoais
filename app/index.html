@@ -2171,13 +2171,13 @@ function initAuth() {
           if (sbEl) sbEl.style.display = '';
           const sbUserEl = document.getElementById('sb-user');
           if (sbUserEl) sbUserEl.textContent = cachedEmail;
-          renderAll(); renderCats(); setMode('expense'); resetDatePicker();
-          // Show onboarding if any step is still needed, otherwise welcome splash
+          // Show splash BEFORE renderAll so it covers the render — not after
           if (!onboardingDone || !userName) {
             setTimeout(showOnboarding, 400);
           } else {
-            setTimeout(showWelcomeSplash, 300);
+            showWelcomeSplash();
           }
+          renderAll(); renderCats(); setMode('expense'); resetDatePicker();
           const mce = document.getElementById('menu-cofres');
           if (mce) mce.style.display = cofresEnabled ? '' : 'none';
           const sce = document.getElementById('sb-btn-cofres');
