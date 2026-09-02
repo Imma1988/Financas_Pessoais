@@ -5504,18 +5504,15 @@ async function checkBankCallback() {
     if (!sessRes.ok) throw new Error(sessData.error || sessData.message || 'Erro ao criar sessão');
     bankSessionId = sessData.id || sessData.session_id || '';
 
-    // Fetch accounts
-    const accRes  = await fetch(BANKING_WORKER_URL + '/accounts?session_id=' + encodeURIComponent(bankSessionId));
-    const accData = await accRes.json();
-    if (!accRes.ok) throw new Error(accData.error || 'Erro ao obter contas');
-
-    const accounts = accData.accounts || [];
+    // Accounts come back directly in the session response
+    const accounts = sessData.accounts || [];
     if (accounts.length === 0) throw new Error('Nenhuma conta encontrada na sessão');
 
     // Auto-select first account (user can reconnect to pick a different one)
     const acc       = accounts[0];
     bankAccountUid  = acc.uid || acc.id || acc.resource_id || '';
     bankAccountName = acc.account_number?.iban
+      || acc.name
       || acc.display_name
       || acc.product
       || 'Conta bancária';
