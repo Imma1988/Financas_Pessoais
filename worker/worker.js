@@ -263,7 +263,8 @@ async function makeJWT(privateKeyPem) {
   const now = Math.floor(Date.now() / 1000);
   const header  = b64url(JSON.stringify({ alg: 'RS256', typ: 'JWT', kid: EB_APP_ID }));
   const payload = b64url(JSON.stringify({
-    iss: EB_APP_ID,
+    iss: 'enablebanking.com',
+    aud: 'api.enablebanking.com',
     iat: now,
     exp: now + 3600,
     jti: crypto.randomUUID(),
