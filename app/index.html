@@ -1572,13 +1572,19 @@
             <option value="PT">🇵🇹 PT</option>
           </select>
           <select class="form-input" id="def-banking-aspsp" style="flex:1;min-width:140px;">
-            <option value="Santander">Santander</option>
-            <option value="Millennium bcp">Millennium BCP</option>
-            <option value="Caixa Geral de Depositos">Caixa Geral de Depósitos</option>
-            <option value="Novo Banco">Novo Banco</option>
-            <option value="BPI">BPI</option>
-            <option value="ActivoBank">ActivoBank</option>
-            <option value="Demobank">Demobank (Sandbox)</option>
+            <optgroup label="🏦 Produção">
+              <option value="Santander Totta">Santander Totta</option>
+              <option value="Millennium bcp">Millennium BCP</option>
+              <option value="Caixa Geral de Depositos">Caixa Geral de Depósitos</option>
+              <option value="novobanco">Novo Banco</option>
+              <option value="BPI">BPI</option>
+              <option value="ActivoBank">ActivoBank</option>
+              <option value="BBVA">BBVA</option>
+            </optgroup>
+            <optgroup label="🧪 Sandbox (testes)">
+              <option value="Mock ASPSP">Mock ASPSP</option>
+              <option value="BBVA">BBVA (user1 / 1234 / OTP 012345)</option>
+            </optgroup>
           </select>
         </div>
         <button style="background:var(--accent);color:#0d0d0d;border:none;border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="connectBank()">🏦 Ligar ao banco</button>
