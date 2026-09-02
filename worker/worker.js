@@ -1,6 +1,7 @@
 // ===== CORS =====
 const ALLOWED_ORIGINS = [
   'https://moneyholic.pt',
+  'https://www.moneyholic.pt',
   'https://imma1988.github.io',
 ];
 
