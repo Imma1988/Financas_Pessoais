@@ -1,0 +1,7 @@
+name             = "financas-banking"
+main             = "banking.js"
+compatibility_date = "2024-09-23"
+
+# After deploying, add the private key secret:
+#   wrangler secret put EB_PRIVATE_KEY
+# Paste the full PEM content (including BEGIN/END lines) when prompted.

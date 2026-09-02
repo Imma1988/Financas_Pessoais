@@ -1551,6 +1551,41 @@
       </div>
     </div>
 
+    <!-- Open Banking -->
+    <div class="breakdown-wrap" style="margin-bottom:16px;">
+      <div class="breakdown-title">🏦 Open Banking</div>
+      <div id="def-banking-connected" style="display:none;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:13px;font-weight:700;color:var(--accent);">✅ Ligado:</span>
+          <span id="def-banking-account-name" style="font-size:13px;font-weight:700;color:var(--text);word-break:break-all;"></span>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Último sync: <span id="def-banking-last-sync">—</span></p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button style="background:var(--accent);color:#0d0d0d;border:none;border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="syncBank()">🔄 Sincronizar</button>
+          <button style="background:none;color:var(--red);border:1px solid var(--red);border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="disconnectBank()">Desligar</button>
+        </div>
+      </div>
+      <div id="def-banking-disconnected">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Liga diretamente ao teu banco para importar movimentos automaticamente via PSD2.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+          <select class="form-input" id="def-banking-country" style="width:auto;flex-shrink:0;">
+            <option value="PT">🇵🇹 PT</option>
+          </select>
+          <select class="form-input" id="def-banking-aspsp" style="flex:1;min-width:140px;">
+            <option value="Santander">Santander</option>
+            <option value="Millennium bcp">Millennium BCP</option>
+            <option value="Caixa Geral de Depositos">Caixa Geral de Depósitos</option>
+            <option value="Novo Banco">Novo Banco</option>
+            <option value="BPI">BPI</option>
+            <option value="ActivoBank">ActivoBank</option>
+            <option value="Demobank">Demobank (Sandbox)</option>
+          </select>
+        </div>
+        <button style="background:var(--accent);color:#0d0d0d;border:none;border-radius:8px;padding:9px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;" onclick="connectBank()">🏦 Ligar ao banco</button>
+        <p style="font-size:11px;color:var(--muted);margin-top:8px;">Os dados bancários nunca passam pela aplicação — ligação segura via standard europeu PSD2.</p>
+      </div>
+    </div>
+
     <!-- Categorias -->
     <div class="breakdown-wrap" style="margin-bottom:16px;">
       <div class="breakdown-title">🗂️ Categorias</div>
@@ -2058,7 +2093,8 @@
 <script>
 // ===== CONFIG =====
 const CLIENT_ID    = '344816457312-pf9jjnsojiu4sves48acu4f60d0p4ue3.apps.googleusercontent.com';
-const WORKER_URL    = 'https://financas-gemini.imateixeira23054.workers.dev';
+const WORKER_URL         = 'https://financas-gemini.imateixeira23054.workers.dev';
+const BANKING_WORKER_URL = 'https://financas-gemini.imateixeira23054.workers.dev/banking';
 const GEMINI_MODELS = [
   'gemini-2.5-flash',
   'gemini-2.0-flash',
@@ -2119,6 +2155,10 @@ let tiposCustom     = {};
 let cicloInicio     = 25; // day of month cycle starts
 let userName       = '';
 let onboardingDone = false;
+let bankSessionId    = '';
+let bankAccountUid   = '';
+let bankAccountName  = '';
+let bankLastSyncDate = '';
 let cicloOffset     = 0;  // 0 = current, -1 = previous, etc.
 let entriesQuery    = '';
 let entriesSortMode = 'date'; // 'date' | 'intro'
@@ -2332,6 +2372,8 @@ async function onAuthorised() {
     }
   }
   loginScreen.classList.add('hidden');
+  // Handle Enable Banking OAuth callback (redirect from bank login)
+  await checkBankCallback();
   // Refresh token every 45 min silently
   setInterval(() => {
     if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
@@ -2419,6 +2461,10 @@ function applyData(data) {
   userName       = data.userName       || '';
   onboardingDone = data.onboardingDone || false;
   deletedOrcIds   = new Set(data.deletedOrcIds   || []);
+  bankSessionId    = data.bankSessionId    || '';
+  bankAccountUid   = data.bankAccountUid   || '';
+  bankAccountName  = data.bankAccountName  || '';
+  bankLastSyncDate = data.bankLastSyncDate || '';
 }
 
 async function loadFromDrive() {
@@ -2565,7 +2611,7 @@ async function saveToDrive() {
       }
     }
 
-    const payload = JSON.stringify({ entries, expenseCats, incomeCats, cofres, ativos, orcamentos, cicloInicio, importMemory, tiposCustom, geminiKey, cofresEnabled, deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds], deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys], deletedAtivoIds: [...deletedAtivoIds], deletedOrcIds: [...deletedOrcIds], userName, onboardingDone });
+    const payload = JSON.stringify({ entries, expenseCats, incomeCats, cofres, ativos, orcamentos, cicloInicio, importMemory, tiposCustom, geminiKey, cofresEnabled, deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds], deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys], deletedAtivoIds: [...deletedAtivoIds], deletedOrcIds: [...deletedOrcIds], userName, onboardingDone, bankSessionId, bankAccountUid, bankAccountName, bankLastSyncDate });
 
     await fetch('https://www.googleapis.com/upload/drive/v3/files/' + driveFileId + '?uploadType=media', {
       method: 'PATCH',
@@ -2576,6 +2622,7 @@ async function saveToDrive() {
     // Update local cache
     const cacheData = { entries, expenseCats, incomeCats, cofres, ativos, orcamentos, tiposCustom,
       importMemory, geminiKey, cofresEnabled, cicloInicio, userName, onboardingDone,
+      bankSessionId, bankAccountUid, bankAccountName, bankLastSyncDate,
       deletedIds: [...deletedIds], deletedCofreIds: [...deletedCofreIds],
       deletedMovIds: [...deletedMovIds], deletedCatKeys: [...deletedCatKeys],
       deletedAtivoIds: [...deletedAtivoIds], deletedOrcIds: [...deletedOrcIds] };
@@ -5317,6 +5364,22 @@ function renderDefinicoes() {
     toggle.checked = cofresEnabled;
     updateCofresToggleUI(cofresEnabled);
   }
+  // Open Banking
+  const bankConn   = document.getElementById('def-banking-connected');
+  const bankDiscon = document.getElementById('def-banking-disconnected');
+  if (bankConn && bankDiscon) {
+    if (bankAccountUid) {
+      bankConn.style.display   = '';
+      bankDiscon.style.display = 'none';
+      const nameEl = document.getElementById('def-banking-account-name');
+      if (nameEl) nameEl.textContent = bankAccountName || 'Conta bancária';
+      const syncEl = document.getElementById('def-banking-last-sync');
+      if (syncEl) syncEl.textContent = bankLastSyncDate ? isoToPT(bankLastSyncDate) : 'Nunca';
+    } else {
+      bankConn.style.display   = 'none';
+      bankDiscon.style.display = '';
+    }
+  }
 }
 
 function updateCofresToggleUI(enabled) {
@@ -5382,6 +5445,148 @@ function saveCicloFromDef() {
   scheduleSave();
   renderAll();
   showToast('✅ Ciclo atualizado!');
+}
+
+// ===== OPEN BANKING =====
+
+async function connectBank() {
+  const aspsp   = document.getElementById('def-banking-aspsp')?.value || 'Santander';
+  const country = document.getElementById('def-banking-country')?.value || 'PT';
+  const redirectUrl = window.location.origin + window.location.pathname;
+
+  showToast('🔄 A preparar ligação...');
+  try {
+    const validUntil = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString().replace(/\.\d{3}Z$/, 'Z');
+    const res = await fetch(BANKING_WORKER_URL + '/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        access:       { valid_until: validUntil },
+        aspsp:        { name: aspsp, country },
+        redirect_url: redirectUrl,
+        psu_type:     'personal',
+        state:        'mh-' + Date.now(),
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || data.message || 'Erro ao iniciar autenticação');
+    window.location.href = data.url;
+  } catch (e) {
+    showToast('❌ ' + e.message);
+  }
+}
+
+async function checkBankCallback() {
+  const params = new URLSearchParams(window.location.search);
+  const code   = params.get('code');
+  if (!code) return;
+
+  // Clean URL immediately so a refresh doesn't re-trigger the flow
+  window.history.replaceState({}, '', window.location.pathname);
+
+  showToast('🔄 A estabelecer ligação com o banco...');
+  try {
+    const redirectUrl = window.location.origin + window.location.pathname;
+
+    // Exchange code for session
+    const sessRes  = await fetch(BANKING_WORKER_URL + '/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, redirect_url: redirectUrl }),
+    });
+    const sessData = await sessRes.json();
+    if (!sessRes.ok) throw new Error(sessData.error || sessData.message || 'Erro ao criar sessão');
+    bankSessionId = sessData.id || sessData.session_id || '';
+
+    // Fetch accounts
+    const accRes  = await fetch(BANKING_WORKER_URL + '/accounts?session_id=' + encodeURIComponent(bankSessionId));
+    const accData = await accRes.json();
+    if (!accRes.ok) throw new Error(accData.error || 'Erro ao obter contas');
+
+    const accounts = accData.accounts || [];
+    if (accounts.length === 0) throw new Error('Nenhuma conta encontrada na sessão');
+
+    // Auto-select first account (user can reconnect to pick a different one)
+    const acc       = accounts[0];
+    bankAccountUid  = acc.uid || acc.id || acc.resource_id || '';
+    bankAccountName = acc.account_number?.iban
+      || acc.display_name
+      || acc.product
+      || 'Conta bancária';
+
+    scheduleSave();
+    renderDefinicoes();
+    showToast('✅ Banco ligado com sucesso!');
+    menuNav('definicoes');
+  } catch (e) {
+    showToast('❌ ' + e.message);
+  }
+}
+
+async function syncBank() {
+  if (!bankAccountUid) { showToast('⚠️ Nenhuma conta ligada'); return; }
+
+  const today    = new Date().toISOString().slice(0, 10);
+  const dateFrom = bankLastSyncDate
+    ? bankLastSyncDate  // inclusive — boundary day re-fetched, fingerprint prevents duplicates
+    : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  showToast('🔄 A sincronizar transações...');
+  try {
+    const res  = await fetch(
+      `${BANKING_WORKER_URL}/transactions?account_id=${encodeURIComponent(bankAccountUid)}&date_from=${dateFrom}&date_to=${today}`
+    );
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || data.message || 'Erro ao obter transações');
+
+    const raw = data.transactions || data.booked || [];
+    if (raw.length === 0) {
+      showToast('✅ Sem novos movimentos');
+      return;
+    }
+
+    // Convert Enable Banking transactions → importedMovements format
+    importedMovements = raw.map(t => {
+      const raw_amount = parseFloat(t.transactionAmount?.amount ?? t.amount ?? 0);
+      const amount     = Math.abs(raw_amount);
+      const tipo       = raw_amount < 0 ? 'expense' : 'income';
+      const desc       = t.remittanceInformationUnstructured
+        || t.remittanceInformationStructured?.reference
+        || t.creditorName
+        || t.debtorName
+        || t.additionalInformation
+        || 'Movimento bancário';
+      return {
+        data:         t.bookingDate || t.valueDate || today,
+        descricao:    desc,
+        valor:        amount,
+        tipo,
+        subcategoria: '',
+        _fingerprint: `${t.bookingDate || today}:${amount.toFixed(2)}:${normalizeDesc(desc)}`,
+        _externalId:  t.entryReference || t.transactionId || '',
+      };
+    }).filter(m => m.valor > 0);
+
+    // Update last sync date to the most recent transaction date
+    const sortedDates = importedMovements.map(m => m.data).sort();
+    if (sortedDates.length > 0) bankLastSyncDate = sortedDates[sortedDates.length - 1];
+    scheduleSave();
+    renderDefinicoes();
+
+    // Feed into existing import review flow
+    importedCcMeta = null;
+    openImport();
+  } catch (e) {
+    showToast('❌ ' + e.message);
+  }
+}
+
+async function disconnectBank() {
+  if (!await appConfirm('Desligar a conta bancária? Os movimentos já importados ficam guardados.', 'Desligar banco', 'Confirmar', false)) return;
+  bankSessionId = bankAccountUid = bankAccountName = bankLastSyncDate = '';
+  scheduleSave();
+  renderDefinicoes();
+  showToast('Conta bancária desligada');
 }
 
 // ===== CICLO SETTINGS =====
