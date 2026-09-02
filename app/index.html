@@ -5542,7 +5542,11 @@ async function syncBank() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || data.message || 'Erro ao obter transações');
 
-    const raw = data.transactions || data.booked || [];
+    // Enable Banking returns { transactions: { booked: [...], pending: [...] } }
+    const raw = (Array.isArray(data.transactions) ? data.transactions : null)
+      || data.transactions?.booked
+      || data.booked
+      || [];
     if (raw.length === 0) {
       showToast('✅ Sem novos movimentos');
       return;
