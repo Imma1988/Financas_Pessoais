@@ -46,6 +46,11 @@ export default {
 
     // ===== OPEN BANKING (Enable Banking proxy) =====
 
+    // GET /banking/aspsps?country=PT — list available banks for a country
+    if (url.pathname === '/banking/aspsps' && request.method === 'GET') {
+      return handleBankingAspsps(request, env, origin);
+    }
+
     // POST /banking/auth — initiate bank OAuth, returns redirect URL
     if (url.pathname === '/banking/auth' && request.method === 'POST') {
       return handleBankingAuth(request, env, origin);
@@ -290,6 +295,19 @@ async function ebFetch(privateKey, method, path, body) {
     },
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
+}
+
+async function handleBankingAspsps(request, env, origin) {
+  const privateKey = env.EB_PRIVATE_KEY;
+  if (!privateKey) return jsonResponse({ error: 'EB_PRIVATE_KEY secret not configured' }, 503, origin);
+  try {
+    const url     = new URL(request.url);
+    const country = url.searchParams.get('country') || 'PT';
+    const res     = await ebFetch(privateKey, 'GET', `/aspsps?country=${country}&sandbox=true`);
+    return jsonResponse(await res.json(), res.status, origin);
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500, origin);
+  }
 }
 
 async function handleBankingAuth(request, env, origin) {
