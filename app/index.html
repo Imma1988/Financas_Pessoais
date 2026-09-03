@@ -5567,6 +5567,13 @@ async function syncBank() {
       };
     }).filter(m => m.valor > 0);
 
+    console.log('[syncBank] raw:', raw.length, 'mapped:', importedMovements.length, 'sample:', raw[0]);
+
+    if (importedMovements.length === 0) {
+      showToast('⚠️ Transações recebidas mas sem valor reconhecido — verifica o formato');
+      return;
+    }
+
     // Update last sync date to the most recent transaction date
     const sortedDates = importedMovements.map(m => m.data).sort();
     if (sortedDates.length > 0) bankLastSyncDate = sortedDates[sortedDates.length - 1];
