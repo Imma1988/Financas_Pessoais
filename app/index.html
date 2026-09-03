@@ -5553,24 +5553,33 @@ async function syncBank() {
     }
 
     // Convert Enable Banking transactions → importedMovements format
+    // API returns snake_case; credit_debit_indicator: DBIT=expense, CRDT=income
     importedMovements = raw.map(t => {
-      const raw_amount = parseFloat(t.transactionAmount?.amount ?? t.amount ?? 0);
-      const amount     = Math.abs(raw_amount);
-      const tipo       = raw_amount < 0 ? 'expense' : 'income';
-      const desc       = t.remittanceInformationUnstructured
-        || t.remittanceInformationStructured?.reference
+      const raw_amount = parseFloat(
+        t.transaction_amount?.amount ?? t.transactionAmount?.amount ?? t.amount ?? 0
+      );
+      const amount    = Math.abs(raw_amount);
+      const indicator = t.credit_debit_indicator || '';
+      const tipo      = indicator === 'CRDT' ? 'income'
+                      : indicator === 'DBIT' ? 'expense'
+                      : raw_amount < 0       ? 'expense' : 'income';
+      const desc = (Array.isArray(t.remittance_information) && t.remittance_information[0])
+        || t.remittanceInformationUnstructured
+        || t.creditor?.name
         || t.creditorName
+        || t.debtor?.name
         || t.debtorName
         || t.additionalInformation
         || 'Movimento bancário';
+      const date = t.booking_date || t.bookingDate || t.value_date || t.valueDate || today;
       return {
-        data:         t.bookingDate || t.valueDate || today,
+        data:         date,
         descricao:    desc,
         valor:        amount,
         tipo,
         subcategoria: '',
-        _fingerprint: `${t.bookingDate || today}:${amount.toFixed(2)}:${normalizeDesc(desc)}`,
-        _externalId:  t.entryReference || t.transactionId || '',
+        _fingerprint: `${date}:${amount.toFixed(2)}:${normalizeDesc(desc)}`,
+        _externalId:  t.entry_reference || t.entryReference || t.transaction_id || t.transactionId || '',
       };
     }).filter(m => m.valor > 0);
 
