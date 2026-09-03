@@ -620,7 +620,8 @@
     cursor: pointer; transition: all 0.15s;
   }
   .im-filter-btn.active { background: var(--a-dim); border-color: var(--a-border); color: var(--accent); }
-  .im-date-range { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .im-date-range { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; flex-wrap: nowrap; }
+  .im-date-range input[type="date"] { flex: 1; min-width: 0; }
   .im-date-range label { font-size: 11px; color: var(--muted); white-space: nowrap; }
 
   .import-actions { display: flex; gap: 8px; margin-top: 16px; }
@@ -1808,9 +1809,9 @@
       </div>
       <div class="im-date-range">
         <label>De</label>
-        <input type="date" class="im-note-input" id="im-date-from" style="width:140px;" oninput="applyImportFilters()">
+        <input type="date" class="im-note-input" id="im-date-from" oninput="applyImportFilters()">
         <label>até</label>
-        <input type="date" class="im-note-input" id="im-date-to"   style="width:140px;" oninput="applyImportFilters()">
+        <input type="date" class="im-note-input" id="im-date-to"   oninput="applyImportFilters()">
       </div>
       <div id="import-movements-list"></div>
       <div class="import-actions">
