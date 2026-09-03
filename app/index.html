@@ -5537,7 +5537,7 @@ async function syncBank() {
   showToast('🔄 A sincronizar transações...');
   try {
     const res  = await fetch(
-      `${BANKING_WORKER_URL}/transactions?account_id=${encodeURIComponent(bankAccountUid)}&date_from=${dateFrom}&date_to=${today}`
+      `${BANKING_WORKER_URL}/transactions?account_id=${encodeURIComponent(bankAccountUid)}&session_id=${encodeURIComponent(bankSessionId)}&date_from=${dateFrom}&date_to=${today}`
     );
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || data.message || 'Erro ao obter transações');
