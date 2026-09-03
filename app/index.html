@@ -5270,6 +5270,7 @@ function submitImport() {
 
   importedMovements.forEach((m, i) => {
     const card    = document.getElementById('import-mov-' + i);
+    if (card.style.display === 'none') return; // hidden by date/type filter — skip
     const skipped = card.classList.contains('skipped');
     const subcat  = document.getElementById('import-cat-' + i).value;
     const key     = m.descricao; // store original description as key
